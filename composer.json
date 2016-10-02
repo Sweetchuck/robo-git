@@ -1,0 +1,35 @@
+{
+    "name": "cheppers/robo-git",
+    "description": "Robo task to read the content of the staged files",
+    "license": "GPL-2.0",
+    "config": {
+        "bin-dir": "bin",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "cheppers/asset-jar": "^0.0.1",
+        "consolidation/robo": "1.0.0-RC2"
+    },
+    "require-dev": {
+        "cheppers/git-hooks": "^0.0.8",
+        "cheppers/robo-phpcs": "^0.0.7",
+        "codeception/codeception": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cheppers\\Robo\\Git\\": "src/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@deploy-git-hooks"
+        ],
+        "post-update-cmd": [
+            "@deploy-git-hooks"
+        ],
+        "deploy-git-hooks": "\\Cheppers\\GitHooks\\Main::deploy"
+    }
+}

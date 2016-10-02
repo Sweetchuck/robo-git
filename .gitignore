@@ -1,0 +1,11 @@
+
+/bin/
+/vendor/
+
+/tests/_data/actual/
+/tests/_output/
+/tests/_support/_generated/
+
+/.git-hooks.local
+
+tests/_output/*
