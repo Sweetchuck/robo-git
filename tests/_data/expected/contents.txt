@@ -1,0 +1,8 @@
+--- a.php ---
+<?php
+
+$a = "foo";
+--- b.php ---
+<?php
+
+$a = "foo";
