@@ -140,9 +140,7 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
     {
         $assetJar = new AssetJar();
 
-        $container = new \League\Container\Container();
-        $mainStdOutput = new \Helper\Dummy\Output();
-        \Robo\Robo::configureContainer($container, null, $mainStdOutput);
+        $container = \Robo\Robo::createDefaultContainer();
         \Robo\Robo::setContainer($container);
 
         /** @var \Cheppers\Robo\Git\Task\ReadStagedFilesTask $task */

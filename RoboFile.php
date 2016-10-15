@@ -10,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends \Robo\Tasks
     // @codingStandardsIgnoreEnd
 {
-    use \Cheppers\Robo\Phpcs\Task\LoadTasks;
+    use \Cheppers\Robo\Git\Task\LoadTasks;
 
     /**
      * @var array
@@ -48,6 +48,11 @@ class RoboFile extends \Robo\Tasks
     protected $phpdbgExecutable = 'phpdbg';
 
     /**
+     * @var string
+     */
+    protected $environment = 'dev';
+
+    /**
      * RoboFile constructor.
      */
     public function __construct()
@@ -62,6 +67,8 @@ class RoboFile extends \Robo\Tasks
      */
     public function githookPreCommit()
     {
+        $this->environment = 'git-hook';
+
         /** @var \Robo\Collection\CollectionBuilder $cb */
         $cb = $this->collectionBuilder();
 
@@ -144,25 +151,64 @@ class RoboFile extends \Robo\Tasks
     }
 
     /**
-     * @return \Cheppers\Robo\Phpcs\Task\PhpcsLint
+     * @return \Robo\Collection\CollectionBuilder
      */
     protected function getTaskPhpcsLint()
     {
-        return $this->taskPhpcsLint([
-            'colors' => 'always',
-            'standard' => 'PSR2',
-            'reports' => [
-                'full' => null,
-            ],
-            'files' => [
+        $env = $this->environment;
+        /** @var \Robo\Collection\CollectionBuilder $cb */
+        $cb = $this->collectionBuilder();
+
+        return $cb->addCode(function () use ($env) {
+            $files = [
                 'src/',
                 'tests/_data/RoboFile.php',
                 'tests/_support/Helper/',
                 'tests/acceptance/',
                 'tests/unit/',
                 'RoboFile.php',
-            ],
-        ]);
+            ];
+
+            /** @var \Robo\Task\Base\ExecStack $execStack */
+            $execStack = $this->taskExecStack();
+
+            $cmdPattern = '%s';
+            $cmdArgs = [escapeshellcmd('bin/phpcs')];
+
+            $cmdPattern .= ' --colors';
+
+            $cmdPattern .= ' --standard=%s';
+            $cmdArgs[] = 'PSR2';
+
+            $cmdPattern .= ' --report=%s';
+            $cmdArgs[] = 'full';
+
+            if ($env === 'git-hook') {
+                $gitReadStagedFiles = $this->taskGitReadStagedFiles();
+                $gitReadStagedFiles->setPaths($files);
+                $result = $gitReadStagedFiles->run();
+                if (!empty($result['files'])) {
+                    $cmdPattern = 'echo -n %s | ' . $cmdPattern . ' --stdin-path=%s';
+                    $cmdArgs = ['fileContent' => ''] + $cmdArgs + ['fileName' => ''];
+
+                    foreach ($result['files'] as $file) {
+                        $cmdArgs['fileContent'] = escapeshellarg($file['content']);
+                        $cmdArgs['fileName'] = escapeshellarg($file['fileName']);
+
+                        $execStack->exec(vsprintf($cmdPattern, $cmdArgs));
+                    }
+                }
+            } else {
+                $cmdPattern .= str_repeat(' %s', count($files));
+                foreach ($files as $file) {
+                    $cmdArgs[] = escapeshellarg($file);
+                }
+
+                $execStack->exec(vsprintf($cmdPattern, $cmdArgs));
+            }
+
+            return $execStack->run();
+        });
     }
 
     /**
