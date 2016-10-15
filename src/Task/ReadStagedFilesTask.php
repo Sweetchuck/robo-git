@@ -7,9 +7,7 @@ use Cheppers\AssetJar\AssetJarAwareInterface;
 use Cheppers\Robo\Git\Utils;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Robo\Common\BuilderAwareTrait;
 use Robo\Common\IO;
-use Robo\Contract\BuilderAwareInterface;
 use Robo\Contract\OutputAwareInterface;
 use Robo\Result;
 use Robo\Task\BaseTask;
@@ -23,12 +21,10 @@ use Symfony\Component\Process\Process;
  */
 class ReadStagedFilesTask extends BaseTask implements
     AssetJarAwareInterface,
-    BuilderAwareInterface,
     ContainerAwareInterface,
     OutputAwareInterface
 {
     use AssetJarAware;
-    use BuilderAwareTrait;
     use ContainerAwareTrait;
     use IO;
     use TaskAccessor;
