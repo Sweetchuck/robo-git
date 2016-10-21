@@ -1,3 +1,4 @@
+*** BEGIN Output ***
 --- a.php ---
 <?php
 
@@ -6,3 +7,4 @@ $a = "foo";
 <?php
 
 $a = "foo";
+*** END Output ***
