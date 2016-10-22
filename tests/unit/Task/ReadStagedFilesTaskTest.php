@@ -28,12 +28,12 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
-    // @codingStandardsIgnoreStart
-    protected function _before()
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
     {
-        // @codingStandardsIgnoreEnd
-
-        parent::_before();
+        parent::setUp();
 
         \Helper\Dummy\Process::reset();
         \Cheppers\Robo\Git\Task\Helper::$fileExistsReturnValues = [];
@@ -135,6 +135,7 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
      *
      * @param array $expected
      * @param array $stagedFileNames
+     * @param array $options
      */
     public function testRun(array $expected, array $stagedFileNames, array $options)
     {

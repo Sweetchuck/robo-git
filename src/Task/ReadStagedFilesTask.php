@@ -47,6 +47,7 @@ class ReadStagedFilesTask extends BaseTask implements
      * @var string|null
      */
     protected $workingDirectory = null;
+
     /**
      * @return string|null
      */
@@ -120,7 +121,6 @@ class ReadStagedFilesTask extends BaseTask implements
 
         return $this;
     }
-
     //endregion
 
     //region Option - paths
