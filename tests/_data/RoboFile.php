@@ -24,10 +24,12 @@ class RoboFile extends \Robo\Tasks
                 ->setWorkingDirectory($tmpDir)
                 ->run();
 
+            $this->output()->writeln('*** BEGIN Output ***');
             foreach ($result['files'] as $file) {
                 $this->output()->writeln("--- {$file['fileName']} ---");
                 $this->output()->write($file['content']);
             }
+            $this->output()->writeln('*** END Output ***');
         });
     }
 
@@ -48,12 +50,14 @@ class RoboFile extends \Robo\Tasks
 
             /** @var \Robo\Task\Base\ExecStack $execStack */
             $execStack = $this->taskExecStack();
+            $execStack->exec("echo '*** BEGIN Output ***'");
             foreach ($result['files'] as $file) {
                 $cmd = sprintf('echo "--- %s ---"', $file['fileName']);
                 $cmd .= ' ; ' . sprintf('cd %s', $result['workingDirectory']);
                 $cmd .= ' ; ' . $file['command'];
                 $execStack->exec($cmd);
             }
+            $execStack->exec("echo '*** END Output ***'");
 
             return $execStack->run();
         });

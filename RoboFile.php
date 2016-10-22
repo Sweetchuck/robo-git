@@ -171,6 +171,7 @@ class RoboFile extends \Robo\Tasks
 
             /** @var \Robo\Task\Base\ExecStack $execStack */
             $execStack = $this->taskExecStack();
+            $numOfCommands = 0;
 
             $cmdPattern = '%s';
             $cmdArgs = [escapeshellcmd('bin/phpcs')];
@@ -195,6 +196,7 @@ class RoboFile extends \Robo\Tasks
                         $cmdArgs['fileContent'] = escapeshellarg($file['content']);
                         $cmdArgs['fileName'] = escapeshellarg($file['fileName']);
 
+                        $numOfCommands++;
                         $execStack->exec(vsprintf($cmdPattern, $cmdArgs));
                     }
                 }
@@ -204,10 +206,11 @@ class RoboFile extends \Robo\Tasks
                     $cmdArgs[] = escapeshellarg($file);
                 }
 
+                $numOfCommands++;
                 $execStack->exec(vsprintf($cmdPattern, $cmdArgs));
             }
 
-            return $execStack->run();
+            return $numOfCommands ? $execStack->run() : 0;
         });
     }
 
