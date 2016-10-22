@@ -235,7 +235,7 @@ class ReadStagedFilesTask extends BaseTask implements
         if ($this->hasAssetJar()) {
             foreach ($this->assets as $key => $value) {
                 if ($this->getAssetJarMap($key)) {
-                    $this->setAssetJarValue($key, $this->assets[$key]);
+                    $this->setAssetJarValue($key, $value);
                 }
             }
         }
