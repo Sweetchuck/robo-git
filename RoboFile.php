@@ -10,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends \Robo\Tasks
     // @codingStandardsIgnoreEnd
 {
-    use \Cheppers\Robo\Git\Task\LoadTasks;
+    use \Cheppers\Robo\Git\GitTaskLoader;
 
     /**
      * @var array
@@ -47,10 +47,26 @@ class RoboFile extends \Robo\Tasks
      */
     protected $phpdbgExecutable = 'phpdbg';
 
+    //region Property - environment
     /**
      * @var string
      */
-    protected $environment = 'dev';
+    protected $environment = null;
+
+    /**
+     * @return string
+     */
+    protected function getEnvironment()
+    {
+        if ($this->environment) {
+            return $this->environment;
+        }
+
+        $packageNameUpper = strtoupper(str_replace('-', '_', $this->packageName));
+
+        return getenv("{$packageNameUpper}_ENVIRONMENT") ?: 'dev';
+    }
+    //endregion
 
     /**
      * RoboFile constructor.
@@ -155,7 +171,7 @@ class RoboFile extends \Robo\Tasks
      */
     protected function getTaskPhpcsLint()
     {
-        $env = $this->environment;
+        $env = $this->getEnvironment();
         /** @var \Robo\Collection\CollectionBuilder $cb */
         $cb = $this->collectionBuilder();
 
@@ -219,42 +235,65 @@ class RoboFile extends \Robo\Tasks
      */
     protected function getTaskCodecept()
     {
-        $this->initCodeceptionInfo();
+        $environment = $this->getEnvironment();
+        $withCoverage = $environment !== 'git-hook';
+        $withUnitReport = $environment !== 'git-hook';
+        $logDir = $this->getLogDir();
 
-        $cmd_args = [];
-        if ($this->isPhpExtensionAvailable('xdebug')) {
-            $cmd_pattern = '%s';
-            $cmd_args[] = escapeshellcmd("{$this->binDir}/codecept");
+        $cmdArgs = [];
+        if ($this->isPhpDbgAvailable() && !$this->isPhpExtensionAvailable('xdebug')) {
+            $cmdPattern = '%s -qrr %s';
+            $cmdArgs[] = escapeshellcmd($this->phpdbgExecutable);
+            $cmdArgs[] = escapeshellarg("{$this->binDir}/codecept");
         } else {
-            $cmd_pattern = '%s -qrr %s';
-            $cmd_args[] = escapeshellcmd($this->phpdbgExecutable);
-            $cmd_args[] = escapeshellarg("{$this->binDir}/codecept");
+            $cmdPattern = '%s';
+            $cmdArgs[] = escapeshellcmd("{$this->binDir}/codecept");
         }
 
-        $cmd_pattern .= ' --ansi';
-        $cmd_pattern .= ' --verbose';
+        $cmdPattern .= ' --ansi';
+        $cmdPattern .= ' --verbose';
 
-        $cmd_pattern .= ' --coverage=%s';
-        $cmd_args[] = escapeshellarg('coverage/coverage.serialized');
+        $tasks = [];
+        if ($withCoverage) {
+            $cmdPattern .= ' --coverage=%s';
+            $cmdArgs[] = escapeshellarg('coverage/coverage.serialized');
 
-        $cmd_pattern .= ' --coverage-xml=%s';
-        $cmd_args[] = escapeshellarg('coverage/coverage.xml');
+            $cmdPattern .= ' --coverage-xml=%s';
+            $cmdArgs[] = escapeshellarg('coverage/coverage.xml');
 
-        $cmd_pattern .= ' --coverage-html=%s';
-        $cmd_args[] = escapeshellarg('coverage/html');
+            $cmdPattern .= ' --coverage-html=%s';
+            $cmdArgs[] = escapeshellarg('coverage/html');
 
-        $cmd_pattern .= ' run';
+            $tasks['prepareCoverageDir'] = $this
+                ->taskFilesystemStack()
+                ->mkdir("$logDir/coverage");
+        }
 
-        $reportsDir = $this->codeceptionInfo['paths']['log'];
+        if ($withUnitReport) {
+            $cmdPattern .= ' --xml=%s';
+            $cmdArgs[] = escapeshellarg('junit/junit.xml');
+
+            $cmdPattern .= ' --html=%s';
+            $cmdArgs[] = escapeshellarg('junit/junit.html');
+
+            $tasks['prepareJUnitDir'] = $this
+                ->taskFilesystemStack()
+                ->mkdir("$logDir/junit");
+        }
+
+        $cmdPattern .= ' run';
+
+        if ($environment === 'jenkins') {
+            // Jenkins has to use a post-build action to mark the build "unstable".
+            $cmdPattern .= ' || [[ "${?}" == "1" ]]';
+        }
+
+        $tasks['runCodeception'] = $this->taskExec(vsprintf($cmdPattern, $cmdArgs));
 
         /** @var \Robo\Collection\CollectionBuilder $cb */
         $cb = $this->collectionBuilder();
-        $cb->addTaskList([
-            'prepareCoverageDir' => $this->taskFilesystemStack()->mkdir("$reportsDir/coverage"),
-            'runCodeception' => $this->taskExec(vsprintf($cmd_pattern, $cmd_args)),
-        ]);
 
-        return $cb;
+        return $cb->addTaskList($tasks);
     }
 
     /**
@@ -273,5 +312,31 @@ class RoboFile extends \Robo\Tasks
         }
 
         return in_array($extension, explode("\n", $process->getOutput()));
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isPhpDbgAvailable()
+    {
+        $command = sprintf(
+            '%s -i | grep -- %s',
+            escapeshellcmd($this->phpExecutable),
+            escapeshellarg('--enable-phpdbg')
+        );
+
+        return (new Process($command))->run() === 0;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getLogDir()
+    {
+        $this->initCodeceptionInfo();
+
+        return !empty($this->codeceptionInfo['paths']['log']) ?
+            $this->codeceptionInfo['paths']['log']
+            : 'tests/_output';
     }
 }

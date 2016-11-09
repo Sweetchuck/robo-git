@@ -27,4 +27,14 @@ class Utils
 
         return $escaped ?: "''";
     }
+
+    /**
+     * @param array $items
+     *
+     * @return array
+     */
+    public static function filterEnabled(array $items)
+    {
+        return gettype(reset($items)) === 'boolean' ? array_keys($items, true, true) : $items;
+    }
 }

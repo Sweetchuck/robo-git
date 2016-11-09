@@ -11,37 +11,19 @@ class Process extends \Symfony\Component\Process\Process
 {
 
     /**
-     * @var int[]
+     * @var array
      */
-    public static $exitCodes = [];
-
-    /**
-     * @var string[]
-     */
-    public static $stdOutputs = [];
-
-    /**
-     * @var string[]
-     */
-    public static $stdErrors = [];
-
-    /**
-     * @var int
-     */
-    public static $instanceIndex = -1;
+    public static $prophecy = [];
 
     /**
      * @var \Helper\Dummy\Process[]
      */
-    public static $instances = [];
+    public static $instances = null;
 
     public static function reset()
     {
-        static::$exitCodes = [];
-        static::$stdOutputs = [];
-        static::$stdErrors = [];
+        static::$prophecy = [];
         static::$instances = [];
-        static::$instanceIndex = -1;
     }
 
     /**
@@ -53,12 +35,11 @@ class Process extends \Symfony\Component\Process\Process
         array $env = null,
         $input = null,
         $timeout = 60,
-        array $options = array()
+        array $options = []
     ) {
         parent::__construct($commandline, $cwd, $env, $input, $timeout, $options);
 
         static::$instances[] = $this;
-        static::$instanceIndex++;
     }
 
     /**
@@ -66,7 +47,9 @@ class Process extends \Symfony\Component\Process\Process
      */
     public function run($callback = null)
     {
-        return $this->getExitCode();
+        $index = array_search($this, static::$instances);
+
+        return static::$prophecy[$index]['exitCode'];
     }
 
     /**
@@ -76,7 +59,7 @@ class Process extends \Symfony\Component\Process\Process
     {
         $index = array_search($this, static::$instances);
 
-        return static::$exitCodes[$index];
+        return static::$prophecy[$index]['exitCode'];
     }
 
     /**
@@ -86,7 +69,7 @@ class Process extends \Symfony\Component\Process\Process
     {
         $index = array_search($this, static::$instances);
 
-        return static::$stdOutputs[$index];
+        return static::$prophecy[$index]['stdOutput'];
     }
 
     /**
@@ -96,6 +79,6 @@ class Process extends \Symfony\Component\Process\Process
     {
         $index = array_search($this, static::$instances);
 
-        return static::$stdErrors[$index];
+        return static::$prophecy[$index]['stdError'];
     }
 }
