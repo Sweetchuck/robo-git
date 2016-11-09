@@ -162,9 +162,14 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
         $task->setOptions($options);
 
         \Cheppers\Robo\Git\Task\Helper::$fileExistsReturnValues = $stagedFileNames;
-        \Helper\Dummy\Process::$exitCodes = array_fill(0, count($expected['files']), 0);
+
+        $processIndex = count(\Helper\Dummy\Process::$instances);
         foreach ($expected['files'] as $file) {
-            \Helper\Dummy\Process::$stdOutputs[] = $file['content'];
+            \Helper\Dummy\Process::$prophecy[$processIndex++] = [
+                'exitCode' => 0,
+                'stdOutput' => $file['content'],
+                'stdError' => '',
+            ];
         }
 
         $result = $task->run();
@@ -186,9 +191,17 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
         );
         $method = static::getMethod('getStagedFileNames');
 
-        \Helper\Dummy\Process::$exitCodes = [0, 1];
-        \Helper\Dummy\Process::$stdOutputs = ["a.php\nb.php", ''];
-        \Helper\Dummy\Process::$stdErrors = ['', ''];
+        $processIndex = count(\Helper\Dummy\Process::$instances);
+        \Helper\Dummy\Process::$prophecy[$processIndex++] = [
+            'exitCode' => 0,
+            'stdOutput' => "a.php\nb.php",
+            'stdError' => '',
+        ];
+        \Helper\Dummy\Process::$prophecy[$processIndex++] = [
+            'exitCode' => 1,
+            'stdOutput' => '',
+            'stdError' => '',
+        ];
 
         $task->setPaths(['*.php']);
 
