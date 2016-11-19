@@ -11,7 +11,7 @@
     "prefer-stable": true,
     "require": {
         "cheppers/asset-jar": "^0.0.1",
-        "consolidation/robo": "^1.0.0"
+        "consolidation/robo": "^1.0"
     },
     "require-dev": {
         "cheppers/git-hooks": "^0.0.8",

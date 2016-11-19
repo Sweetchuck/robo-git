@@ -183,10 +183,10 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider casesGetCommand
-     *
      * @param string $expected
      * @param array $options
+     *
+     * @dataProvider casesGetCommand
      */
     public function testGetCommand($expected, array $options)
     {
@@ -285,6 +285,10 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param array $expected
+     * @param array $options
+     * @param string $stdOutput
+     *
      * @dataProvider casesParseStdOutput
      */
     public function testParseStdOutput(array $expected, array $options, $stdOutput)

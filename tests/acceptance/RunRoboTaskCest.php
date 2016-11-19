@@ -5,8 +5,10 @@ class RunRoboTaskCest
 {
     // @codingStandardsIgnoreEnd
 
+    /**
+     * @var string
+     */
     protected $expectedDir = '_data/expected';
-
 
     public function __construct()
     {

@@ -12,10 +12,7 @@ class RoboFile extends \Robo\Tasks
 
     public function readStagedFilesWithContent()
     {
-        /** @var \Robo\Collection\CollectionBuilder $cb */
-        $cb = $this->collectionBuilder();
-
-        return $cb->addCode(function () {
+        return $this->collectionBuilder()->addCode(function () {
             $tmpDir = $this->_tmpDir();
             $this->readStagedFilesPrepareTheGitRepo($tmpDir);
 
@@ -35,10 +32,7 @@ class RoboFile extends \Robo\Tasks
 
     public function readStagedFilesWithoutContent()
     {
-        /** @var \Robo\Collection\CollectionBuilder $cb */
-        $cb = $this->collectionBuilder();
-
-        return $cb->addCode(function () {
+        return $this->collectionBuilder()->addCode(function () {
             $tmpDir = $this->_tmpDir();
             $this->readStagedFilesPrepareTheGitRepo($tmpDir);
 
@@ -102,10 +96,7 @@ class RoboFile extends \Robo\Tasks
 
     public function listFiles()
     {
-        /** @var \Robo\Collection\CollectionBuilder $cb */
-        $cb = $this->collectionBuilder();
-
-        return $cb->addCode(function () {
+        return $this->collectionBuilder()->addCode(function () {
             $tmpDir = $this->_tmpDir();
             $this->listFilesPrepareTheGitRepo($tmpDir);
 
