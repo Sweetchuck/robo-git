@@ -85,14 +85,13 @@ class RoboFile extends \Robo\Tasks
     {
         $this->environment = 'git-hook';
 
-        /** @var \Robo\Collection\CollectionBuilder $cb */
-        $cb = $this->collectionBuilder();
-
-        return $cb->addTaskList([
-            'lint.composer.lock' => $this->taskComposerValidate(),
-            'lint.phpcs.psr2' => $this->getTaskPhpcsLint(),
-            'codecept' => $this->getTaskCodecept(),
-        ]);
+        return $this
+            ->collectionBuilder()
+            ->addTaskList([
+                'lint.composer.lock' => $this->taskComposerValidate(),
+                'lint.phpcs.psr2' => $this->getTaskPhpcsLint(),
+                'codecept' => $this->getTaskCodecept(),
+            ]);
     }
 
     /**
@@ -100,12 +99,11 @@ class RoboFile extends \Robo\Tasks
      */
     public function test()
     {
-        /** @var \Robo\Collection\CollectionBuilder $cb */
-        $cb = $this->collectionBuilder();
-
-        return $cb->addTaskList([
-            'codecept' => $this->getTaskCodecept(),
-        ]);
+        return $this
+            ->collectionBuilder()
+            ->addTaskList([
+                'codecept' => $this->getTaskCodecept(),
+            ]);
     }
 
     /**
@@ -115,14 +113,12 @@ class RoboFile extends \Robo\Tasks
      */
     public function lint()
     {
-        /** @var \Robo\Collection\CollectionBuilder $cb */
-        $cb = $this->collectionBuilder();
-        $cb->addTaskList([
-            'lint.composer.lock' => $this->taskComposerValidate(),
-            'lint.phpcs.psr2' => $this->getTaskPhpcsLint(),
-        ]);
-
-        return $cb;
+        return $this
+            ->collectionBuilder()
+            ->addTaskList([
+                'lint.composer.lock' => $this->taskComposerValidate(),
+                'lint.phpcs.psr2' => $this->getTaskPhpcsLint(),
+            ]);
     }
 
     /**
@@ -172,10 +168,8 @@ class RoboFile extends \Robo\Tasks
     protected function getTaskPhpcsLint()
     {
         $env = $this->getEnvironment();
-        /** @var \Robo\Collection\CollectionBuilder $cb */
-        $cb = $this->collectionBuilder();
 
-        return $cb->addCode(function () use ($env) {
+        return $this->collectionBuilder()->addCode(function () use ($env) {
             $files = [
                 'src/',
                 'tests/_data/RoboFile.php',
@@ -290,10 +284,9 @@ class RoboFile extends \Robo\Tasks
 
         $tasks['runCodeception'] = $this->taskExec(vsprintf($cmdPattern, $cmdArgs));
 
-        /** @var \Robo\Collection\CollectionBuilder $cb */
-        $cb = $this->collectionBuilder();
-
-        return $cb->addTaskList($tasks);
+        return $this
+            ->collectionBuilder()
+            ->addTaskList($tasks);
     }
 
     /**
