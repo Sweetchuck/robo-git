@@ -1,10 +1,11 @@
 <?php
 
-// @codingStandardsIgnoreStart
+namespace Cheppers\Robo\Git\Tests\Acceptance;
+
+use AcceptanceTester;
+
 class RunRoboTaskCest
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * @var string
      */

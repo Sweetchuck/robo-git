@@ -4,7 +4,6 @@ namespace Cheppers\Robo\Git\Task {
 
     class Helper
     {
-
         /**
          * @var bool[]
          */

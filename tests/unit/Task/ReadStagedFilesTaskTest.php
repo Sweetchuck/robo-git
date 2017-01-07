@@ -1,22 +1,26 @@
 <?php
 
+namespace Cheppers\Robo\Git\Tests\Unit\Task;
+
 use Cheppers\AssetJar\AssetJar;
+use Cheppers\Robo\Git\Task\Helper as TaskHelper;
 use Cheppers\Robo\Git\Task\ReadStagedFilesTask;
+use Codeception\Test\Unit;
 use Codeception\Util\Stub;
+use Helper\Dummy\Process as DummyProcess;
+use Robo\Robo;
+use UnitTester;
 
-// @codingStandardsIgnoreStart
-class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
-// @codingStandardsIgnoreEnd
+class ReadStagedFilesTaskTest extends Unit
 {
-
     /**
      * @param string $name
      *
-     * @return ReflectionMethod
+     * @return \ReflectionMethod
      */
     protected static function getMethod($name)
     {
-        $class = new ReflectionClass(ReadStagedFilesTask::class);
+        $class = new \ReflectionClass(ReadStagedFilesTask::class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 
@@ -24,7 +28,7 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
     }
 
     /**
-     * @var \UnitTester
+     * @var UnitTester
      */
     protected $tester;
 
@@ -35,8 +39,8 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
     {
         parent::setUp();
 
-        \Helper\Dummy\Process::reset();
-        \Cheppers\Robo\Git\Task\Helper::$fileExistsReturnValues = [];
+        DummyProcess::reset();
+        TaskHelper::$fileExistsReturnValues = [];
     }
 
     public function testOptionsGetSet()
@@ -141,8 +145,8 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
     {
         $assetJar = new AssetJar();
 
-        $container = \Robo\Robo::createDefaultContainer();
-        \Robo\Robo::setContainer($container);
+        $container = Robo::createDefaultContainer();
+        Robo::setContainer($container);
 
         /** @var \Cheppers\Robo\Git\Task\ReadStagedFilesTask $task */
         $task = Stub::make(
@@ -153,7 +157,7 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
                     'workingDirectory' => ['wd'],
                     'files' => ['f'],
                 ],
-                'processClass' => \Helper\Dummy\Process::class,
+                'processClass' => DummyProcess::class,
                 'getStagedFileNames' => function () use ($stagedFileNames) {
                     return array_keys($stagedFileNames);
                 },
@@ -161,11 +165,11 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
         );
         $task->setOptions($options);
 
-        \Cheppers\Robo\Git\Task\Helper::$fileExistsReturnValues = $stagedFileNames;
+        TaskHelper::$fileExistsReturnValues = $stagedFileNames;
 
-        $processIndex = count(\Helper\Dummy\Process::$instances);
+        $processIndex = count(DummyProcess::$instances);
         foreach ($expected['files'] as $file) {
-            \Helper\Dummy\Process::$prophecy[$processIndex++] = [
+            DummyProcess::$prophecy[$processIndex++] = [
                 'exitCode' => 0,
                 'stdOutput' => $file['content'],
                 'stdError' => '',
@@ -186,18 +190,18 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
         $task = Stub::make(
             ReadStagedFilesTask::class,
             [
-                'processClass' => \Helper\Dummy\Process::class,
+                'processClass' => DummyProcess::class,
             ]
         );
         $method = static::getMethod('getStagedFileNames');
 
-        $processIndex = count(\Helper\Dummy\Process::$instances);
-        \Helper\Dummy\Process::$prophecy[$processIndex++] = [
+        $processIndex = count(DummyProcess::$instances);
+        DummyProcess::$prophecy[$processIndex] = [
             'exitCode' => 0,
             'stdOutput' => "a.php\nb.php",
             'stdError' => '',
         ];
-        \Helper\Dummy\Process::$prophecy[$processIndex++] = [
+        DummyProcess::$prophecy[++$processIndex] = [
             'exitCode' => 1,
             'stdOutput' => '',
             'stdError' => '',
@@ -215,7 +219,7 @@ class ReadStagedFilesTaskTest extends \Codeception\Test\Unit
 
         $this->tester->assertEquals(
             "git diff --name-only --cached -- *'.php'",
-            \Helper\Dummy\Process::$instances[0]->getCommandLine()
+            DummyProcess::$instances[0]->getCommandLine()
         );
 
         try {
