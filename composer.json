@@ -23,6 +23,12 @@
             "Cheppers\\Robo\\Git\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Cheppers\\Robo\\Git\\Tests\\Acceptance\\": "tests/acceptance",
+            "Cheppers\\Robo\\Git\\Tests\\Unit\\": "tests/unit"
+        }
+    },
     "scripts": {
         "post-install-cmd": [
             "@deploy-git-hooks"

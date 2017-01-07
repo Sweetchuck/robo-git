@@ -1,24 +1,25 @@
 <?php
 
-// @codingStandardsIgnoreStart
+namespace Cheppers\Robo\Git\Tests\Unit\Task;
+
 use Cheppers\AssetJar\AssetJar;
 use Cheppers\Robo\Git\ListFilesItem;
 use Cheppers\Robo\Git\Task\ListFilesTask;
 use Codeception\Util\Stub;
+use Helper\Dummy\Output as DummyOutput;
 use Helper\Dummy\Process as DummyProcess;
+use Robo\Robo;
 
 class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * @param string $name
      *
-     * @return ReflectionMethod
+     * @return \ReflectionMethod
      */
     protected static function getMethod($name)
     {
-        $class = new ReflectionClass(ListFilesTask::class);
+        $class = new \ReflectionClass(ListFilesTask::class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 
@@ -293,7 +294,7 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseStdOutput(array $expected, array $options, $stdOutput)
     {
-        /** @var \Cheppers\Robo\Git\Task\ListFilesTask $task */
+        /** @var ListFilesTask $task */
         $task = Stub::make(
             ListFilesTask::class,
             [
@@ -351,10 +352,10 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
      */
     public function testRun(array $expectedFiles, array $options, $prophecyStdOutput)
     {
-        $container = \Robo\Robo::createDefaultContainer();
-        \Robo\Robo::setContainer($container);
+        $container = Robo::createDefaultContainer();
+        Robo::setContainer($container);
 
-        $mainStdOutput = new \Helper\Dummy\Output();
+        $mainStdOutput = new DummyOutput();
 
         $options += [
             'assetJarMapping' => [
@@ -362,9 +363,9 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        /** @var \Cheppers\Robo\Git\Task\ListFilesTask $task */
+        /** @var ListFilesTask $task */
         $task = Stub::construct(
-            \Cheppers\Robo\Git\Task\ListFilesTask::class,
+            ListFilesTask::class,
             [$options, []],
             [
                 'processClass' => DummyProcess::class,
@@ -406,14 +407,14 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
 
     public function testRunError()
     {
-        $container = \Robo\Robo::createDefaultContainer();
-        \Robo\Robo::setContainer($container);
+        $container = Robo::createDefaultContainer();
+        Robo::setContainer($container);
 
-        $mainStdOutput = new \Helper\Dummy\Output();
+        $mainStdOutput = new DummyOutput();
 
-        /** @var \Cheppers\Robo\Git\Task\ListFilesTask $task */
+        /** @var ListFilesTask $task */
         $task = Stub::construct(
-            \Cheppers\Robo\Git\Task\ListFilesTask::class,
+            ListFilesTask::class,
             [[], []],
             [
                 'processClass' => DummyProcess::class,
@@ -436,14 +437,14 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
 
     public function testRunVisibleStdOutput()
     {
-        $container = \Robo\Robo::createDefaultContainer();
-        \Robo\Robo::setContainer($container);
+        $container = Robo::createDefaultContainer();
+        Robo::setContainer($container);
 
-        $mainStdOutput = new \Helper\Dummy\Output();
+        $mainStdOutput = new DummyOutput();
 
         /** @var \Cheppers\Robo\Git\Task\ListFilesTask $task */
         $task = Stub::construct(
-            \Cheppers\Robo\Git\Task\ListFilesTask::class,
+            ListFilesTask::class,
             [['visibleStdOutput' => true], []],
             [
                 'processClass' => DummyProcess::class,
