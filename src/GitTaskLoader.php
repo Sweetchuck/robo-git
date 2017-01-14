@@ -5,19 +5,12 @@ namespace Cheppers\Robo\Git;
 use League\Container\ContainerAwareInterface;
 use Robo\Contract\OutputAwareInterface;
 
-/**
- * Class GitTaskLoader.
- *
- * @package Cheppers\Robo\Git
- */
 trait GitTaskLoader
 {
     /**
-     * @param array $options
-     *
      * @return \Robo\Collection\CollectionBuilder|\Cheppers\Robo\Git\Task\ReadStagedFilesTask
      */
-    protected function taskGitReadStagedFiles(array $options = null)
+    protected function taskGitReadStagedFiles(array $options = [])
     {
         /** @var \Cheppers\Robo\Git\Task\ReadStagedFilesTask $task */
         $task = $this->task(Task\ReadStagedFilesTask::class, $options);
@@ -33,11 +26,9 @@ trait GitTaskLoader
     }
 
     /**
-     * @param array $options
-     *
      * @return \Robo\Collection\CollectionBuilder|\Cheppers\Robo\Git\Task\ListFilesTask
      */
-    protected function taskGitListFiles(array $options = null)
+    protected function taskGitListFiles(array $options = [])
     {
         /** @var \Cheppers\Robo\Git\Task\ListFilesTask $task */
         $task = $this->task(Task\ListFilesTask::class, $options);

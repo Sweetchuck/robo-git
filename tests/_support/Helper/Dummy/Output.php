@@ -2,11 +2,6 @@
 
 namespace Helper\Dummy;
 
-/**
- * Class Output.
- *
- * @package Helper\Dummy
- */
 class Output extends \Symfony\Component\Console\Output\Output
 {
 

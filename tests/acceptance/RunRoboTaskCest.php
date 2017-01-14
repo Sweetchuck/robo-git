@@ -16,34 +16,34 @@ class RunRoboTaskCest
         $this->expectedDir = codecept_data_dir('expected');
     }
 
-    public function readStagedFilesWithContent(AcceptanceTester $i)
+    public function readStagedFilesWithContent(AcceptanceTester $i): void
     {
         $roboTaskName = 'read:staged-files-with-content';
+
         $i->wantTo("Run Robo task '<comment>$roboTaskName</comment>'.");
-        $i
-            ->runRoboTask($roboTaskName)
-            ->expectTheExitCodeToBe(0)
-            ->seeThisTextInTheStdOutput(file_get_contents("{$this->expectedDir}/contents.txt"));
+        $i->runRoboTask($roboTaskName);
+        $i->expectTheExitCodeToBe(0);
+        $i->seeThisTextInTheStdOutput(file_get_contents("{$this->expectedDir}/contents.txt"));
     }
 
-    public function readStagedFilesWithoutContent(AcceptanceTester $i)
+    public function readStagedFilesWithoutContent(AcceptanceTester $i): void
     {
         $roboTaskName = 'read:staged-files-without-content';
+
         $i->wantTo("Run Robo task '<comment>$roboTaskName</comment>'.");
-        $i
-            ->runRoboTask($roboTaskName)
-            ->expectTheExitCodeToBe(0)
-            ->seeThisTextInTheStdOutput(file_get_contents("{$this->expectedDir}/contents.txt"));
+        $i->runRoboTask($roboTaskName);
+        $i->expectTheExitCodeToBe(0);
+        $i->seeThisTextInTheStdOutput(file_get_contents("{$this->expectedDir}/contents.txt"));
     }
 
-    public function listFilesWithoutContent(AcceptanceTester $i)
+    public function listFilesWithoutContent(AcceptanceTester $i): void
     {
         $roboTaskName = 'list:files';
+
         $i->wantTo("Run Robo task '<comment>$roboTaskName</comment>'.");
-        $i
-            ->runRoboTask($roboTaskName)
-            ->expectTheExitCodeToBe(0)
-            ->seeThisTextInTheStdOutput('a.php')
-            ->seeThisTextInTheStdOutput('b.php');
+        $i->runRoboTask($roboTaskName);
+        $i->expectTheExitCodeToBe(0);
+        $i->seeThisTextInTheStdOutput('a.php');
+        $i->seeThisTextInTheStdOutput('b.php');
     }
 }

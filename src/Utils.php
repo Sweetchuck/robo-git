@@ -2,21 +2,12 @@
 
 namespace Cheppers\Robo\Git;
 
-/**
- * Class Utils.
- *
- * @package Cheppers\Robo\Git
- */
 class Utils
 {
     /**
      * Escapes a shell argument which contains a wildcard (* or ?).
-     *
-     * @param string $arg
-     *
-     * @return string
      */
-    public static function escapeShellArgWithWildcard($arg)
+    public static function escapeShellArgWithWildcard(string $arg): string
     {
         $parts = preg_split('@([\*\?]+)@', $arg, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
         $escaped = '';
@@ -28,12 +19,7 @@ class Utils
         return $escaped ?: "''";
     }
 
-    /**
-     * @param array $items
-     *
-     * @return array
-     */
-    public static function filterEnabled(array $items)
+    public static function filterEnabled(array $items): array
     {
         return gettype(reset($items)) === 'boolean' ? array_keys($items, true, true) : $items;
     }

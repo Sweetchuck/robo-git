@@ -12,12 +12,7 @@ use Robo\Robo;
 
 class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @param string $name
-     *
-     * @return \ReflectionMethod
-     */
-    protected static function getMethod($name)
+    protected static function getMethod(string $name): \ReflectionMethod
     {
         $class = new \ReflectionClass(ListFilesTask::class);
         $method = $class->getMethod($name);
@@ -36,10 +31,7 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
     }
 
-    /**
-     * @return array
-     */
-    public function casesGetCommand()
+    public function casesGetCommand(): array
     {
         return [
             'basic' => [
@@ -184,21 +176,15 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $expected
-     * @param array $options
-     *
      * @dataProvider casesGetCommand
      */
-    public function testGetCommand($expected, array $options)
+    public function testGetCommand(string $expected, array $options): void
     {
         $task = new ListFilesTask($options);
         $this->assertEquals($expected, $task->getCommand());
     }
 
-    /**
-     * @return array
-     */
-    public function casesParseStdOutput()
+    public function casesParseStdOutput(): array
     {
         return [
             'empty' => [
@@ -286,13 +272,9 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param array $expected
-     * @param array $options
-     * @param string $stdOutput
-     *
      * @dataProvider casesParseStdOutput
      */
-    public function testParseStdOutput(array $expected, array $options, $stdOutput)
+    public function testParseStdOutput(array $expected, array $options, string $stdOutput): void
     {
         /** @var ListFilesTask $task */
         $task = Stub::make(
@@ -308,10 +290,7 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $method->invoke($task, $stdOutput));
     }
 
-    /**
-     * @return array
-     */
-    public function casesRun()
+    public function casesRun(): array
     {
         return [
             'basic' => [
@@ -344,13 +323,9 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param array $expectedFiles
-     * @param array $options
-     * @param string $prophecyStdOutput
-     *
      * @dataProvider casesRun
      */
-    public function testRun(array $expectedFiles, array $options, $prophecyStdOutput)
+    public function testRun(array $expectedFiles, array $options, string $prophecyStdOutput): void
     {
         $container = Robo::createDefaultContainer();
         Robo::setContainer($container);
@@ -405,7 +380,7 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testRunError()
+    public function testRunError(): void
     {
         $container = Robo::createDefaultContainer();
         Robo::setContainer($container);
@@ -435,7 +410,7 @@ class ListFilesTaskTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $result->getExitCode());
     }
 
-    public function testRunVisibleStdOutput()
+    public function testRunVisibleStdOutput(): void
     {
         $container = Robo::createDefaultContainer();
         Robo::setContainer($container);

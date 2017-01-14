@@ -13,12 +13,7 @@ use UnitTester;
 
 class ReadStagedFilesTaskTest extends Unit
 {
-    /**
-     * @param string $name
-     *
-     * @return \ReflectionMethod
-     */
-    protected static function getMethod($name)
+    protected static function getMethod(string $name): \ReflectionMethod
     {
         $class = new \ReflectionClass(ReadStagedFilesTask::class);
         $method = $class->getMethod($name);
@@ -43,7 +38,7 @@ class ReadStagedFilesTaskTest extends Unit
         TaskHelper::$fileExistsReturnValues = [];
     }
 
-    public function testOptionsGetSet()
+    public function testOptionsGetSet(): void
     {
         $options = [
             'assetJar' => new AssetJar(),
@@ -69,7 +64,7 @@ class ReadStagedFilesTaskTest extends Unit
         $this->assertEquals($options['paths'], $task->getPaths());
     }
 
-    public function casesRun()
+    public function casesRun(): array
     {
         return [
             'empty' => [
@@ -136,12 +131,8 @@ class ReadStagedFilesTaskTest extends Unit
 
     /**
      * @dataProvider casesRun
-     *
-     * @param array $expected
-     * @param array $stagedFileNames
-     * @param array $options
      */
-    public function testRun(array $expected, array $stagedFileNames, array $options)
+    public function testRun(array $expected, array $stagedFileNames, array $options): void
     {
         $assetJar = new AssetJar();
 
@@ -184,7 +175,7 @@ class ReadStagedFilesTaskTest extends Unit
         $this->assertEquals($expected['files'], $task->getAssetJarValue('files'));
     }
 
-    public function testGetStagedFileNames()
+    public function testGetStagedFileNames(): void
     {
         /** @var \Cheppers\Robo\Git\Task\ReadStagedFilesTask $task */
         $task = Stub::make(
