@@ -237,7 +237,6 @@ class ReadStagedFilesTask extends BaseTask implements
         $cmdPattern = '%s diff --name-only --cached';
         $cmdArgs = [escapeshellcmd($this->getGitExecutable())];
 
-
         $paths = $this->getPaths();
         if ($paths) {
             $cmdPattern .= ' --' . str_repeat(' %s', count($paths));
