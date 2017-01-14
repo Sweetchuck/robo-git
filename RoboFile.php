@@ -1,12 +1,10 @@
 <?php
 
 // @codingStandardsIgnoreStart
+use Robo\Collection\CollectionBuilder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 
-/**
- * Class RoboFile.
- */
 class RoboFile extends \Robo\Tasks
     // @codingStandardsIgnoreEnd
 {
@@ -40,48 +38,48 @@ class RoboFile extends \Robo\Tasks
     /**
      * @var string
      */
-    protected $phpExecutable = 'php';
+    protected $envNamePrefix = '';
 
     /**
      * @var string
      */
-    protected $phpdbgExecutable = 'phpdbg';
+    protected $environment = '';
 
-    //region Property - environment
-    /**
-     * @var string
-     */
-    protected $environment = null;
+    protected function getEnvName(string $name): string
+    {
+        return "{$this->envNamePrefix}_" . strtoupper($name);
+    }
 
-    /**
-     * @return string
-     */
-    protected function getEnvironment()
+    protected function getEnvironment(): string
     {
         if ($this->environment) {
             return $this->environment;
         }
 
-        $packageNameUpper = strtoupper(str_replace('-', '_', $this->packageName));
-
-        return getenv("{$packageNameUpper}_ENVIRONMENT") ?: 'dev';
+        return getenv($this->getEnvName('environment')) ?: 'dev';
     }
-    //endregion
 
-    /**
-     * RoboFile constructor.
-     */
+    protected function getPhpExecutable(): string
+    {
+        return getenv($this->getEnvName('php_executable')) ?: PHP_BINARY;
+    }
+
+    protected function getPhpdbgExecutable(): string
+    {
+        return getenv($this->getEnvName('phpdbg_executable')) ?: PHP_BINDIR . '/phpdbg';
+    }
+
     public function __construct()
     {
-        $this->initComposerInfo();
+        $this
+            ->initComposerInfo()
+            ->initEnvNamePrefix();
     }
 
     /**
      * Git "pre-commit" hook callback.
-     *
-     * @return \Robo\Collection\CollectionBuilder
      */
-    public function githookPreCommit()
+    public function githookPreCommit(): CollectionBuilder
     {
         $this->environment = 'git-hook';
 
@@ -97,7 +95,7 @@ class RoboFile extends \Robo\Tasks
     /**
      * Run the Robo unit tests.
      */
-    public function test()
+    public function test(): CollectionBuilder
     {
         return $this
             ->collectionBuilder()
@@ -108,10 +106,8 @@ class RoboFile extends \Robo\Tasks
 
     /**
      * Run code style checkers.
-     *
-     * @return \Robo\Collection\CollectionBuilder
      */
-    public function lint()
+    public function lint(): CollectionBuilder
     {
         return $this
             ->collectionBuilder()
@@ -163,9 +159,16 @@ class RoboFile extends \Robo\Tasks
     }
 
     /**
-     * @return \Robo\Collection\CollectionBuilder
+     * @return $this
      */
-    protected function getTaskPhpcsLint()
+    protected function initEnvNamePrefix()
+    {
+        $this->envNamePrefix = strtoupper(str_replace('-', '_', $this->packageName));
+
+        return $this;
+    }
+
+    protected function getTaskPhpcsLint(): CollectionBuilder
     {
         $env = $this->getEnvironment();
 
@@ -224,10 +227,7 @@ class RoboFile extends \Robo\Tasks
         });
     }
 
-    /**
-     * @return \Robo\Collection\CollectionBuilder
-     */
-    protected function getTaskCodecept()
+    protected function getTaskCodecept(): CollectionBuilder
     {
         $environment = $this->getEnvironment();
         $withCoverage = $environment !== 'git-hook';
@@ -235,9 +235,9 @@ class RoboFile extends \Robo\Tasks
         $logDir = $this->getLogDir();
 
         $cmdArgs = [];
-        if ($this->isPhpDbgAvailable() && !$this->isPhpExtensionAvailable('xdebug')) {
+        if ($this->isPhpDbgAvailable()) {
             $cmdPattern = '%s -qrr %s';
-            $cmdArgs[] = escapeshellcmd($this->phpdbgExecutable);
+            $cmdArgs[] = escapeshellcmd($this->getPhpdbgExecutable());
             $cmdArgs[] = escapeshellarg("{$this->binDir}/codecept");
         } else {
             $cmdPattern = '%s';
@@ -289,14 +289,9 @@ class RoboFile extends \Robo\Tasks
             ->addTaskList($tasks);
     }
 
-    /**
-     * @param string $extension
-     *
-     * @return bool
-     */
-    protected function isPhpExtensionAvailable($extension)
+    protected function isPhpExtensionAvailable(string $extension): bool
     {
-        $command = sprintf('%s -m', escapeshellcmd($this->phpExecutable));
+        $command = sprintf('%s -m', escapeshellcmd($this->getPhpExecutable()));
 
         $process = new Process($command);
         $exitCode = $process->run();
@@ -307,24 +302,17 @@ class RoboFile extends \Robo\Tasks
         return in_array($extension, explode("\n", $process->getOutput()));
     }
 
-    /**
-     * @return bool
-     */
-    protected function isPhpDbgAvailable()
+    protected function isPhpDbgAvailable(): bool
     {
         $command = sprintf(
-            '%s -i | grep -- %s',
-            escapeshellcmd($this->phpExecutable),
-            escapeshellarg('--enable-phpdbg')
+            "%s -qrr ''",
+            escapeshellcmd($this->getPhpdbgExecutable())
         );
 
         return (new Process($command))->run() === 0;
     }
 
-    /**
-     * @return string
-     */
-    protected function getLogDir()
+    protected function getLogDir(): string
     {
         $this->initCodeceptionInfo();
 

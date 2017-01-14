@@ -14,11 +14,6 @@ use Robo\Task\BaseTask;
 use Robo\TaskAccessor;
 use Symfony\Component\Process\Process;
 
-/**
- * Class ReadFilesTask.
- *
- * @package Cheppers\Robo\Git\Task
- */
 class ReadStagedFilesTask extends BaseTask implements
     AssetJarAwareInterface,
     ContainerAwareInterface,
@@ -42,26 +37,22 @@ class ReadStagedFilesTask extends BaseTask implements
         'files' => [],
     ];
 
+    //region Options.
     //region Option - workingDirectory
     /**
-     * @var string|null
+     * @var string
      */
-    protected $workingDirectory = null;
+    protected $workingDirectory = '';
 
-    /**
-     * @return string|null
-     */
-    public function getWorkingDirectory()
+    public function getWorkingDirectory(): string
     {
         return $this->workingDirectory;
     }
 
     /**
-     * @param string $workingDirectory
-     *
      * @return $this
      */
-    public function setWorkingDirectory($workingDirectory)
+    public function setWorkingDirectory(string $workingDirectory)
     {
         $this->workingDirectory = $workingDirectory;
 
@@ -75,20 +66,15 @@ class ReadStagedFilesTask extends BaseTask implements
      */
     protected $gitExecutable = 'git';
 
-    /**
-     * @return string
-     */
-    public function getGitExecutable()
+    public function getGitExecutable(): string
     {
         return $this->gitExecutable;
     }
 
     /**
-     * @param string $gitExecutable
-     *
      * @return $this
      */
-    public function setGitExecutable($gitExecutable)
+    public function setGitExecutable(string $gitExecutable)
     {
         $this->gitExecutable = $gitExecutable;
 
@@ -102,20 +88,15 @@ class ReadStagedFilesTask extends BaseTask implements
      */
     protected $commandOnly = false;
 
-    /**
-     * @return bool
-     */
-    public function getCommandOnly()
+    public function getCommandOnly(): bool
     {
         return $this->commandOnly;
     }
 
     /**
-     * @param bool $value
-     *
      * @return $this
      */
-    public function setCommandOnly($value)
+    public function setCommandOnly(bool $value)
     {
         $this->commandOnly = $value;
 
@@ -129,17 +110,12 @@ class ReadStagedFilesTask extends BaseTask implements
      */
     protected $paths = [];
 
-    /**
-     * @return string[]
-     */
-    public function getPaths()
+    public function getPaths(): array
     {
         return $this->paths;
     }
 
     /**
-     * @param array $paths
-     *
      * @return $this
      */
     public function setPaths(array $paths)
@@ -149,6 +125,7 @@ class ReadStagedFilesTask extends BaseTask implements
         return $this;
     }
     //endregion
+    //endregion
 
     public function __construct(array $options = null)
     {
@@ -157,6 +134,9 @@ class ReadStagedFilesTask extends BaseTask implements
         }
     }
 
+    /**
+     * @return $this
+     */
     public function setOptions(array $options)
     {
         foreach ($options as $key => $value) {
@@ -186,10 +166,12 @@ class ReadStagedFilesTask extends BaseTask implements
                     break;
             }
         }
+
+        return $this;
     }
 
     /**
-     * @return Result
+     * {@inheritdoc}
      */
     public function run()
     {
@@ -246,11 +228,11 @@ class ReadStagedFilesTask extends BaseTask implements
     /**
      * @todo Move the "git diff" to a separated Robo task.
      *
-     * @return \string[]
+     * @return string[]
      *
      * @throws \Exception
      */
-    protected function getStagedFileNames()
+    protected function getStagedFileNames(): array
     {
         $cmdPattern = '%s diff --name-only --cached';
         $cmdArgs = [escapeshellcmd($this->getGitExecutable())];

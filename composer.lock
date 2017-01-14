@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3a0393883e372380b324b955266fb58d",
-    "content-hash": "369f49c845ddd3a3f781a361933c429b",
+    "hash": "e7ff97c6ad067350d5c477784257449f",
+    "content-hash": "e57f26b0d8c3000963a93ae84de46ff2",
     "packages": [
         {
             "name": "cheppers/asset-jar",
@@ -2844,6 +2844,8 @@
     "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.1"
+    },
     "platform-dev": []
 }

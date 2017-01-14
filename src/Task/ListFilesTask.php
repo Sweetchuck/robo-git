@@ -79,31 +79,26 @@ class ListFilesTask extends BaseTask implements
     /**
      * @var string[]
      */
-    protected $valueOptions = [
+    protected $valueRequiredOptions = [
         'excludePattern' => '--exclude',
         'excludeFile' => '--exclude-file',
     ];
 
     //region Option - workingDirectory
     /**
-     * @var string|null
+     * @var string
      */
-    protected $workingDirectory = null;
+    protected $workingDirectory = '';
 
-    /**
-     * @return string|null
-     */
-    public function getWorkingDirectory()
+    public function getWorkingDirectory(): string
     {
         return $this->workingDirectory;
     }
 
     /**
-     * @param string $workingDirectory
-     *
      * @return $this
      */
-    public function setWorkingDirectory($workingDirectory)
+    public function setWorkingDirectory(string $workingDirectory)
     {
         $this->workingDirectory = $workingDirectory;
 
@@ -117,20 +112,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $gitExecutable = 'git';
 
-    /**
-     * @return string
-     */
-    public function getGitExecutable()
+    public function getGitExecutable(): string
     {
         return $this->gitExecutable;
     }
 
     /**
-     * @param string $gitExecutable
-     *
      * @return $this
      */
-    public function setGitExecutable($gitExecutable)
+    public function setGitExecutable(string $gitExecutable)
     {
         $this->gitExecutable = $gitExecutable;
 
@@ -144,20 +134,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $separatedWithNullChar = false;
 
-    /**
-     * @return bool
-     */
-    public function getSeparatedWithNullChar()
+    public function getSeparatedWithNullChar(): bool
     {
         return $this->separatedWithNullChar;
     }
 
     /**
-     * @param bool $separatedWithNullChar
-     *
      * @return $this
      */
-    public function setSeparatedWithNullChar($separatedWithNullChar)
+    public function setSeparatedWithNullChar(bool $separatedWithNullChar)
     {
         $this->separatedWithNullChar = $separatedWithNullChar;
 
@@ -171,20 +156,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $fileStatusWithTags = false;
 
-    /**
-     * @return bool
-     */
-    public function getFileStatusWithTags()
+    public function getFileStatusWithTags(): bool
     {
         return $this->fileStatusWithTags;
     }
 
     /**
-     * @param bool $fileStatusWithTags
-     *
      * @return $this
      */
-    public function setFileStatusWithTags($fileStatusWithTags)
+    public function setFileStatusWithTags(bool $fileStatusWithTags)
     {
         $this->fileStatusWithTags = $fileStatusWithTags;
 
@@ -198,20 +178,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $lowercaseStatusLetters = false;
 
-    /**
-     * @return bool
-     */
-    public function getLowercaseStatusLetters()
+    public function getLowercaseStatusLetters(): bool
     {
         return $this->lowercaseStatusLetters;
     }
 
     /**
-     * @param bool $lowercaseStatusLetters
-     *
      * @return $this
      */
-    public function setLowercaseStatusLetters($lowercaseStatusLetters)
+    public function setLowercaseStatusLetters(bool $lowercaseStatusLetters)
     {
         $this->lowercaseStatusLetters = $lowercaseStatusLetters;
 
@@ -225,20 +200,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showCached = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowCached()
+    public function getShowCached(): bool
     {
         return $this->showCached;
     }
 
     /**
-     * @param bool $showCached
-     *
      * @return $this
      */
-    public function setShowCached($showCached)
+    public function setShowCached(bool $showCached)
     {
         $this->showCached = $showCached;
 
@@ -252,20 +222,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showDeleted = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowDeleted()
+    public function getShowDeleted(): bool
     {
         return $this->showDeleted;
     }
 
     /**
-     * @param bool $showDeleted
-     *
      * @return $this
      */
-    public function setShowDeleted($showDeleted)
+    public function setShowDeleted(bool $showDeleted)
     {
         $this->showDeleted = $showDeleted;
 
@@ -279,20 +244,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showModified = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowModified()
+    public function getShowModified(): bool
     {
         return $this->showModified;
     }
 
     /**
-     * @param bool $showModified
-     *
      * @return $this
      */
-    public function setShowModified($showModified)
+    public function setShowModified(bool $showModified)
     {
         $this->showModified = $showModified;
 
@@ -306,20 +266,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showOthers = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowOthers()
+    public function getShowOthers(): bool
     {
         return $this->showOthers;
     }
 
     /**
-     * @param bool $showOthers
-     *
      * @return $this
      */
-    public function setShowOthers($showOthers)
+    public function setShowOthers(bool $showOthers)
     {
         $this->showOthers = $showOthers;
 
@@ -333,20 +288,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showIgnored = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowIgnored()
+    public function getShowIgnored(): bool
     {
         return $this->showIgnored;
     }
 
     /**
-     * @param bool $showIgnored
-     *
      * @return $this
      */
-    public function setShowIgnored($showIgnored)
+    public function setShowIgnored(bool $showIgnored)
     {
         $this->showIgnored = $showIgnored;
 
@@ -360,20 +310,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showStaged = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowStaged()
+    public function getShowStaged(): bool
     {
         return $this->showStaged;
     }
 
     /**
-     * @param bool $showStaged
-     *
      * @return $this
      */
-    public function setShowStaged($showStaged)
+    public function setShowStaged(bool $showStaged)
     {
         $this->showStaged = $showStaged;
 
@@ -387,20 +332,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showKilled = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowKilled()
+    public function getShowKilled(): bool
     {
         return $this->showKilled;
     }
 
     /**
-     * @param bool $showKilled
-     *
      * @return $this
      */
-    public function setShowKilled($showKilled)
+    public function setShowKilled(bool $showKilled)
     {
         $this->showKilled = $showKilled;
 
@@ -414,20 +354,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showOtherDirectoriesNamesOnly = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowOtherDirectoriesNamesOnly()
+    public function getShowOtherDirectoriesNamesOnly(): bool
     {
         return $this->showOtherDirectoriesNamesOnly;
     }
 
     /**
-     * @param bool $showOtherDirectoriesNamesOnly
-     *
-     * @return ListFilesTask
+     * @return $this
      */
-    public function setShowOtherDirectoriesNamesOnly($showOtherDirectoriesNamesOnly)
+    public function setShowOtherDirectoriesNamesOnly(bool $showOtherDirectoriesNamesOnly)
     {
         $this->showOtherDirectoriesNamesOnly = $showOtherDirectoriesNamesOnly;
 
@@ -441,20 +376,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showLineEndings = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowLineEndings()
+    public function getShowLineEndings(): bool
     {
         return $this->showLineEndings;
     }
 
     /**
-     * @param bool $showLineEndings
-     *
      * @return $this
      */
-    public function setShowLineEndings($showLineEndings)
+    public function setShowLineEndings(bool $showLineEndings)
     {
         $this->showLineEndings = $showLineEndings;
 
@@ -468,20 +398,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showEmptyDirectories = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowEmptyDirectories()
+    public function getShowEmptyDirectories(): bool
     {
         return $this->showEmptyDirectories;
     }
 
     /**
-     * @param bool $showEmptyDirectories
-     *
-     * @return ListFilesTask
+     * @return $this
      */
-    public function setShowEmptyDirectories($showEmptyDirectories)
+    public function setShowEmptyDirectories(bool $showEmptyDirectories)
     {
         $this->showEmptyDirectories = $showEmptyDirectories;
 
@@ -495,20 +420,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showUnmerged = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowUnmerged()
+    public function getShowUnmerged(): bool
     {
         return $this->showUnmerged;
     }
 
     /**
-     * @param bool $showUnmerged
-     *
-     * @return ListFilesTask
+     * @return $this
      */
-    public function setShowUnmerged($showUnmerged)
+    public function setShowUnmerged(bool $showUnmerged)
     {
         $this->showUnmerged = $showUnmerged;
 
@@ -522,20 +442,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $showResolveUndo = false;
 
-    /**
-     * @return bool
-     */
-    public function getShowResolveUndo()
+    public function getShowResolveUndo(): bool
     {
         return $this->showResolveUndo;
     }
 
     /**
-     * @param bool $showResolveUndo
-     *
-     * @return ListFilesTask
+     * @return $this
      */
-    public function setShowResolveUndo($showResolveUndo)
+    public function setShowResolveUndo(bool $showResolveUndo)
     {
         $this->showResolveUndo = $showResolveUndo;
 
@@ -545,24 +460,19 @@ class ListFilesTask extends BaseTask implements
 
     //region Option - excludePattern
     /**
-     * @var null|string
+     * @var string
      */
-    protected $excludePattern = null;
+    protected $excludePattern = '';
 
-    /**
-     * @return null|string
-     */
-    public function getExcludePattern()
+    public function getExcludePattern(): string
     {
         return $this->excludePattern;
     }
 
     /**
-     * @param null|string $excludePattern
-     *
      * @return $this
      */
-    public function setExcludePattern($excludePattern)
+    public function setExcludePattern(string $excludePattern)
     {
         $this->excludePattern = $excludePattern;
 
@@ -572,24 +482,22 @@ class ListFilesTask extends BaseTask implements
 
     //region Option - excludeFile
     /**
-     * @var null|string
+     * @var string
      */
-    protected $excludeFile = null;
+    protected $excludeFile = '';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getExcludeFile()
+    public function getExcludeFile(): string
     {
         return $this->excludeFile;
     }
 
     /**
-     * @param null|string $excludeFile
-     *
      * @return $this
      */
-    public function setExcludeFile($excludeFile)
+    public function setExcludeFile(string $excludeFile)
     {
         $this->excludeFile = $excludeFile;
 
@@ -603,20 +511,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $fullName = false;
 
-    /**
-     * @return bool
-     */
-    public function getFullName()
+    public function getFullName(): bool
     {
         return $this->fullName;
     }
 
     /**
-     * @param bool $fullName
-     *
      * @return $this
      */
-    public function setFullName($fullName)
+    public function setFullName(bool $fullName)
     {
         $this->fullName = $fullName;
 
@@ -639,8 +542,6 @@ class ListFilesTask extends BaseTask implements
     }
 
     /**
-     * @param array $paths
-     *
      * @return $this
      */
     public function setPaths(array $paths)
@@ -657,20 +558,15 @@ class ListFilesTask extends BaseTask implements
      */
     protected $visibleStdOutput = false;
 
-    /**
-     * @return bool
-     */
-    public function isStdOutputVisible()
+    public function isStdOutputVisible(): bool
     {
         return $this->visibleStdOutput;
     }
 
     /**
-     * @param bool $isStdOutputVisible
-     *
      * @return $this
      */
-    public function setVisibleStdOutput($isStdOutputVisible)
+    public function setVisibleStdOutput(bool $isStdOutputVisible)
     {
         $this->visibleStdOutput = $isStdOutputVisible;
 
@@ -678,16 +574,12 @@ class ListFilesTask extends BaseTask implements
     }
     //endregion
 
-    public function __construct(array $options = null)
+    public function __construct(array $options = [])
     {
-        if ($options) {
-            $this->setOptions($options);
-        }
+        $this->setOptions($options);
     }
 
     /**
-     * @param array $options
-     *
      * @return $this
      */
     public function setOptions(array $options)
@@ -853,8 +745,8 @@ class ListFilesTask extends BaseTask implements
             }
         }
 
-        foreach ($this->valueOptions as $optionName => $optionCli) {
-            if ($options[$optionName] !== null) {
+        foreach ($this->valueRequiredOptions as $optionName => $optionCli) {
+            if ($options[$optionName]) {
                 $cmdPattern .= " $optionCli %s";
                 $cmdArgs[] = escapeshellarg($options[$optionName]);
             }
@@ -871,10 +763,7 @@ class ListFilesTask extends BaseTask implements
         return vsprintf($cmdPattern, $cmdArgs);
     }
 
-    /**
-     * @return array
-     */
-    protected function buildCommandOptions()
+    protected function buildCommandOptions(): array
     {
         return [
             'separatedWithNullChar' => $this->getSeparatedWithNullChar(),
@@ -899,11 +788,9 @@ class ListFilesTask extends BaseTask implements
     }
 
     /**
-     * @param string $stdOutput
-     *
-     * @return \Cheppers\Robo\Git\ListFilesItem[]
+     * @return ListFilesItem[]
      */
-    protected function parseStdOutput($stdOutput)
+    protected function parseStdOutput(string $stdOutput): array
     {
         $lineSeparator = $this->getSeparatedWithNullChar() ? '\0' : '\n';
         $lines = preg_split("/{$lineSeparator}+/u", trim($stdOutput, "\n\0"), -1, PREG_SPLIT_NO_EMPTY);
@@ -920,13 +807,7 @@ class ListFilesTask extends BaseTask implements
         return $items;
     }
 
-    /**
-     * @param $line
-     * @param string $pattern
-     *
-     * @return ListFilesItem
-     */
-    protected function parseStdOutputLine($line, $pattern = '')
+    protected function parseStdOutputLine(string $line, string $pattern = ''): ListFilesItem
     {
         $matches = null;
         preg_match($pattern, $line, $matches);
@@ -934,10 +815,7 @@ class ListFilesTask extends BaseTask implements
         return new ListFilesItem(array_diff_key($matches, range(0, 10)));
     }
 
-    /**
-     * @return string
-     */
-    protected function getStdOutputLineParserPattern()
+    protected function getStdOutputLineParserPattern(): string
     {
         $fragments = [];
 

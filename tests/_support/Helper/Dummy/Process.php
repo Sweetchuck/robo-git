@@ -2,11 +2,6 @@
 
 namespace Helper\Dummy;
 
-/**
- * Class Process.
- *
- * @package Helper
- */
 class Process extends \Symfony\Component\Process\Process
 {
 
