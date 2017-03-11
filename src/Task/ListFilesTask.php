@@ -84,6 +84,7 @@ class ListFilesTask extends BaseTask implements
         'excludeFile' => '--exclude-file',
     ];
 
+    //region Options.
     //region Option - workingDirectory
     /**
      * @var string
@@ -572,6 +573,7 @@ class ListFilesTask extends BaseTask implements
 
         return $this;
     }
+    //endregion
     //endregion
 
     public function __construct(array $options = [])

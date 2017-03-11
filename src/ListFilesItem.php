@@ -61,6 +61,7 @@ class ListFilesItem
 
                 default:
                     $this->$name = $value;
+                    break;
             }
         }
     }

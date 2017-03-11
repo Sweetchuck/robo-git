@@ -11,11 +11,11 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.1",
-        "cheppers/asset-jar": "^0.0.1",
+        "cheppers/asset-jar": "^0.0",
         "consolidation/robo": "^1.0"
     },
     "require-dev": {
-        "cheppers/git-hooks": "^0.0.8",
+        "cheppers/git-hooks": "^0.0",
         "codeception/codeception": "^2.2",
         "squizlabs/php_codesniffer": "^2.7"
     },
