@@ -7,18 +7,20 @@ matrix:
     fast_finish: true
     include:
         -
-            sudo: false
+            dist: trusty
+            sudo: true
             language: 'php'
             php: '7.1'
-            env:
-                - 'COMPOSER_NO_INTERACTION=1 COMPOSER_DISABLE_XDEBUG_WARN=1'
         -
             os: 'osx'
             language: 'generic'
             env:
-                - 'COMPOSER_NO_INTERACTION=1 COMPOSER_DISABLE_XDEBUG_WARN=1 BREW_PHP=php71'
+                - >-
+                    BREW_PHP=php71
 
 before_install:
+    - 'export COMPOSER_NO_INTERACTION=1'
+    - 'export COMPOSER_DISABLE_XDEBUG_WARN=1'
     - 'src-dev/scripts/travis/before_install.sh'
 
 install:

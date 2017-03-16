@@ -1,4 +1,6 @@
 
+namespace: Cheppers\Robo\Git\Test
+
 actor: Tester
 
 paths:

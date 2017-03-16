@@ -1,0 +1,6 @@
+*** BEGIN Output ***
+--- a.php ---
+git show :a.php
+--- b.php ---
+git show :b.php
+*** END Output ***

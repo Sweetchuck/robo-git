@@ -2,35 +2,19 @@
 
 namespace Cheppers\Robo\Git\Task;
 
-use Cheppers\AssetJar\AssetJarAware;
-use Cheppers\AssetJar\AssetJarAwareInterface;
 use Cheppers\Robo\Git\Utils;
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
-use Robo\Common\IO;
-use Robo\Contract\OutputAwareInterface;
 use Robo\Result;
-use Robo\Task\BaseTask;
-use Robo\TaskAccessor;
 use Symfony\Component\Process\Process;
 
-class ReadStagedFilesTask extends BaseTask implements
-    AssetJarAwareInterface,
-    ContainerAwareInterface,
-    OutputAwareInterface
+class GitReadStagedFilesTask extends BaseTask
 {
-    use AssetJarAware;
-    use ContainerAwareTrait;
-    use IO;
-    use TaskAccessor;
-
     /**
-     * @var string
+     * {@inheritdoc}
      */
-    protected $processClass = Process::class;
+    protected $taskName = 'Git read staged files';
 
     /**
-     * @var array
+     * {@inheritdoc}
      */
     protected $assets = [
         'workingDirectory' => '',
@@ -38,50 +22,6 @@ class ReadStagedFilesTask extends BaseTask implements
     ];
 
     //region Options.
-    //region Option - workingDirectory
-    /**
-     * @var string
-     */
-    protected $workingDirectory = '';
-
-    public function getWorkingDirectory(): string
-    {
-        return $this->workingDirectory;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setWorkingDirectory(string $workingDirectory)
-    {
-        $this->workingDirectory = $workingDirectory;
-
-        return $this;
-    }
-    //endregion
-
-    //region Option - gitExecutable
-    /**
-     * @var string
-     */
-    protected $gitExecutable = 'git';
-
-    public function getGitExecutable(): string
-    {
-        return $this->gitExecutable;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setGitExecutable(string $gitExecutable)
-    {
-        $this->gitExecutable = $gitExecutable;
-
-        return $this;
-    }
-    //endregion
-
     //region Option - commandOnly
     /**
      * @var bool
@@ -127,36 +67,14 @@ class ReadStagedFilesTask extends BaseTask implements
     //endregion
     //endregion
 
-    public function __construct(array $options = null)
-    {
-        if ($options) {
-            $this->setOptions($options);
-        }
-    }
-
     /**
-     * @return $this
+     * {@inheritdoc}
      */
     public function setOptions(array $options)
     {
+        parent::setOptions($options);
         foreach ($options as $key => $value) {
             switch ($key) {
-                case 'assetJar':
-                    $this->setAssetJar($value);
-                    break;
-
-                case 'assetJarMapping':
-                    $this->setAssetJarMapping($value);
-                    break;
-
-                case 'workingDirectory':
-                    $this->setWorkingDirectory($value);
-                    break;
-
-                case 'gitExecutable':
-                    $this->setGitExecutable($value);
-                    break;
-
                 case 'commandOnly':
                     $this->setCommandOnly($value);
                     break;
@@ -173,7 +91,7 @@ class ReadStagedFilesTask extends BaseTask implements
     /**
      * {@inheritdoc}
      */
-    public function run()
+    public function run(): Result
     {
         $fileNames = $this->getStagedFileNames();
         $baseDir = $this->getWorkingDirectory() ?: '.';
@@ -186,7 +104,7 @@ class ReadStagedFilesTask extends BaseTask implements
 
         $this->assets['workingDirectory'] = $this->getWorkingDirectory();
         foreach ($fileNames as $fileName) {
-            if (!file_exists("$baseDir/$fileName")) {
+            if (!$this->fileExists("$baseDir/$fileName")) {
                 continue;
             }
 
@@ -237,7 +155,7 @@ class ReadStagedFilesTask extends BaseTask implements
         $cmdPattern = '%s diff --name-only --cached';
         $cmdArgs = [escapeshellcmd($this->getGitExecutable())];
 
-        $paths = $this->getPaths();
+        $paths = Utils::filterEnabled($this->getPaths());
         if ($paths) {
             $cmdPattern .= ' --' . str_repeat(' %s', count($paths));
             foreach ($paths as $path) {
@@ -254,5 +172,10 @@ class ReadStagedFilesTask extends BaseTask implements
         }
 
         return explode("\n", trim($process->getOutput(), "\n"));
+    }
+
+    protected function fileExists(string $fileName): bool
+    {
+        return file_exists($fileName);
     }
 }

@@ -175,7 +175,6 @@ class RoboFile extends \Robo\Tasks
         return $this->collectionBuilder()->addCode(function () use ($env) {
             $files = [
                 'src/',
-                'tests/_data/RoboFile.php',
                 'tests/_support/Helper/',
                 'tests/acceptance/',
                 'tests/unit/',
