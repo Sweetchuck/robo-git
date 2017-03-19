@@ -1,5 +1,7 @@
 <?php
 
+namespace Cheppers\Robo\Git\Test;
+
 /**
  * Inherited Methods
  * @method void wantToTest($text)

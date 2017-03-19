@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+if [[ "${TRAVIS_OS_NAME}" == 'linux' ]]; then
+    git --version
+    sudo add-apt-repository -y ppa:git-core/ppa
+    sudo apt-get update
+    sudo apt-get -y install git
+    git --version
+fi
+
 if [[ "${TRAVIS_OS_NAME}" == 'osx' ]]; then
     echo "Here's the OSX environment:"
     git --version

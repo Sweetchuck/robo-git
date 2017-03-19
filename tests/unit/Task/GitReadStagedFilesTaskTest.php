@@ -3,19 +3,17 @@
 namespace Cheppers\Robo\Git\Tests\Unit\Task;
 
 use Cheppers\AssetJar\AssetJar;
-use Cheppers\Robo\Git\Task\Helper as TaskHelper;
-use Cheppers\Robo\Git\Task\ReadStagedFilesTask;
+use Cheppers\Robo\Git\Task\GitReadStagedFilesTask;
 use Codeception\Test\Unit;
 use Codeception\Util\Stub;
-use Helper\Dummy\Process as DummyProcess;
+use Cheppers\Robo\Git\Test\Helper\Dummy\Process as DummyProcess;
 use Robo\Robo;
-use UnitTester;
 
-class ReadStagedFilesTaskTest extends Unit
+class GitReadStagedFilesTaskTest extends Unit
 {
     protected static function getMethod(string $name): \ReflectionMethod
     {
-        $class = new \ReflectionClass(ReadStagedFilesTask::class);
+        $class = new \ReflectionClass(GitReadStagedFilesTask::class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 
@@ -23,7 +21,7 @@ class ReadStagedFilesTaskTest extends Unit
     }
 
     /**
-     * @var UnitTester
+     * @var \Cheppers\Robo\Git\Test\UnitTester
      */
     protected $tester;
 
@@ -35,7 +33,6 @@ class ReadStagedFilesTaskTest extends Unit
         parent::setUp();
 
         DummyProcess::reset();
-        TaskHelper::$fileExistsReturnValues = [];
     }
 
     public function testOptionsGetSet(): void
@@ -54,7 +51,7 @@ class ReadStagedFilesTaskTest extends Unit
                 '*.j',
             ],
         ];
-        $task = new ReadStagedFilesTask($options);
+        $task = new GitReadStagedFilesTask($options);
 
         $this->assertEquals($options['assetJar'], $task->getAssetJar());
         $this->assertEquals($options['assetJarMapping'], $task->getAssetJarMapping());
@@ -139,9 +136,9 @@ class ReadStagedFilesTaskTest extends Unit
         $container = Robo::createDefaultContainer();
         Robo::setContainer($container);
 
-        /** @var \Cheppers\Robo\Git\Task\ReadStagedFilesTask $task */
+        /** @var \Cheppers\Robo\Git\Task\GitReadStagedFilesTask $task */
         $task = Stub::make(
-            ReadStagedFilesTask::class,
+            GitReadStagedFilesTask::class,
             [
                 'assetJar' => $assetJar,
                 'assetJarMapping' => [
@@ -152,34 +149,57 @@ class ReadStagedFilesTaskTest extends Unit
                 'getStagedFileNames' => function () use ($stagedFileNames) {
                     return array_keys($stagedFileNames);
                 },
+                'fileExists' => function (string $fileName) use ($stagedFileNames, $options) {
+                    $wd = $options['workingDirectory'] ?? '.';
+                    $key = substr($fileName, strlen($wd) + 1);
+
+                    return $stagedFileNames[$key];
+                },
             ]
         );
         $task->setOptions($options);
-
-        TaskHelper::$fileExistsReturnValues = $stagedFileNames;
 
         $processIndex = count(DummyProcess::$instances);
         foreach ($expected['files'] as $file) {
             DummyProcess::$prophecy[$processIndex++] = [
                 'exitCode' => 0,
-                'stdOutput' => $file['content'],
-                'stdError' => '',
+                DummyProcess::OUT => $file['content'],
+                DummyProcess::ERR => '',
             ];
         }
 
         $result = $task->run();
-        $this->assertEquals($expected['workingDirectory'], $result['workingDirectory']);
-        $this->assertEquals($expected['files'], $result['files']);
 
-        $this->assertEquals($expected['workingDirectory'], $task->getAssetJarValue('workingDirectory'));
-        $this->assertEquals($expected['files'], $task->getAssetJarValue('files'));
+        $this->assertEquals(
+            $expected['workingDirectory'],
+            $result['workingDirectory'],
+            'Result "workingDirectory"'
+        );
+
+        $this->assertEquals(
+            $expected['files'],
+            $result['files'],
+            'Result "files"'
+        );
+
+        $this->assertEquals(
+            $expected['workingDirectory'],
+            $task->getAssetJarValue('workingDirectory'),
+            'AssetJar "workingDirectory"'
+        );
+
+        $this->assertEquals(
+            $expected['files'],
+            $task->getAssetJarValue('files'),
+            'AssetJar "files"'
+        );
     }
 
     public function testGetStagedFileNames(): void
     {
-        /** @var \Cheppers\Robo\Git\Task\ReadStagedFilesTask $task */
+        /** @var \Cheppers\Robo\Git\Task\GitReadStagedFilesTask $task */
         $task = Stub::make(
-            ReadStagedFilesTask::class,
+            GitReadStagedFilesTask::class,
             [
                 'processClass' => DummyProcess::class,
             ]
@@ -189,13 +209,13 @@ class ReadStagedFilesTaskTest extends Unit
         $processIndex = count(DummyProcess::$instances);
         DummyProcess::$prophecy[$processIndex] = [
             'exitCode' => 0,
-            'stdOutput' => "a.php\nb.php",
-            'stdError' => '',
+            DummyProcess::OUT => "a.php\nb.php",
+            DummyProcess::ERR => '',
         ];
         DummyProcess::$prophecy[++$processIndex] = [
             'exitCode' => 1,
-            'stdOutput' => '',
-            'stdError' => '',
+            DummyProcess::OUT => '',
+            DummyProcess::ERR => '',
         ];
 
         $task->setPaths(['*.php']);

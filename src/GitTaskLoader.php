@@ -8,12 +8,12 @@ use Robo\Contract\OutputAwareInterface;
 trait GitTaskLoader
 {
     /**
-     * @return \Robo\Collection\CollectionBuilder|\Cheppers\Robo\Git\Task\ReadStagedFilesTask
+     * @return \Cheppers\Robo\Git\Task\GitListFilesTask
      */
-    protected function taskGitReadStagedFiles(array $options = [])
+    protected function taskGitListFiles(array $options = [])
     {
-        /** @var \Cheppers\Robo\Git\Task\ReadStagedFilesTask $task */
-        $task = $this->task(Task\ReadStagedFilesTask::class, $options);
+        /** @var \Cheppers\Robo\Git\Task\GitListFilesTask $task */
+        $task = $this->task(Task\GitListFilesTask::class, $options);
         if ($this instanceof ContainerAwareInterface) {
             $task->setContainer($this->getContainer());
         }
@@ -26,12 +26,30 @@ trait GitTaskLoader
     }
 
     /**
-     * @return \Robo\Collection\CollectionBuilder|\Cheppers\Robo\Git\Task\ListFilesTask
+     * @return \Cheppers\Robo\Git\Task\GitReadStagedFilesTask
      */
-    protected function taskGitListFiles(array $options = [])
+    protected function taskGitReadStagedFiles(array $options = [])
     {
-        /** @var \Cheppers\Robo\Git\Task\ListFilesTask $task */
-        $task = $this->task(Task\ListFilesTask::class, $options);
+        /** @var \Cheppers\Robo\Git\Task\GitReadStagedFilesTask $task */
+        $task = $this->task(Task\GitReadStagedFilesTask::class, $options);
+        if ($this instanceof ContainerAwareInterface) {
+            $task->setContainer($this->getContainer());
+        }
+
+        if ($this instanceof OutputAwareInterface) {
+            $task->setOutput($this->output());
+        }
+
+        return $task;
+    }
+
+    /**
+     * @return \Cheppers\Robo\Git\Task\GitTagListTask
+     */
+    protected function taskGitTagList(array $options = [])
+    {
+        /** @var \Cheppers\Robo\Git\Task\GitTagListTask $task */
+        $task = $this->task(Task\GitTagListTask::class, $options);
         if ($this instanceof ContainerAwareInterface) {
             $task->setContainer($this->getContainer());
         }

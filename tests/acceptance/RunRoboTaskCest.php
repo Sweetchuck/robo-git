@@ -2,14 +2,15 @@
 
 namespace Cheppers\Robo\Git\Tests\Acceptance;
 
-use AcceptanceTester;
+use Cheppers\Robo\Git\Test\AcceptanceTester;
+use Cheppers\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
 
 class RunRoboTaskCest
 {
     /**
      * @var string
      */
-    protected $expectedDir = '_data/expected';
+    protected $expectedDir = 'tests/_data/expected';
 
     public function __construct()
     {
@@ -19,31 +20,60 @@ class RunRoboTaskCest
     public function readStagedFilesWithContent(AcceptanceTester $i): void
     {
         $roboTaskName = 'read:staged-files-with-content';
-
-        $i->wantTo("Run Robo task '<comment>$roboTaskName</comment>'.");
-        $i->runRoboTask($roboTaskName);
-        $i->expectTheExitCodeToBe(0);
-        $i->seeThisTextInTheStdOutput(file_get_contents("{$this->expectedDir}/contents.txt"));
+        $id = $roboTaskName;
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
+        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+        $i->assertEquals(
+            file_get_contents("{$this->expectedDir}/contents.txt"),
+            $i->getRoboTaskStdOutput($id)
+        );
     }
 
     public function readStagedFilesWithoutContent(AcceptanceTester $i): void
     {
         $roboTaskName = 'read:staged-files-without-content';
-
-        $i->wantTo("Run Robo task '<comment>$roboTaskName</comment>'.");
-        $i->runRoboTask($roboTaskName);
-        $i->expectTheExitCodeToBe(0);
-        $i->seeThisTextInTheStdOutput(file_get_contents("{$this->expectedDir}/contents.txt"));
+        $id = $roboTaskName;
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
+        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+        $i->assertEquals(
+            file_get_contents("{$this->expectedDir}/commands.txt"),
+            $i->getRoboTaskStdOutput($id)
+        );
     }
 
-    public function listFilesWithoutContent(AcceptanceTester $i): void
+    public function listFiles(AcceptanceTester $i): void
     {
         $roboTaskName = 'list:files';
+        $id = $roboTaskName;
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
+        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+        $i->assertContains('a.php', $i->getRoboTaskStdOutput($id));
+        $i->assertContains('b.php', $i->getRoboTaskStdOutput($id));
+    }
 
-        $i->wantTo("Run Robo task '<comment>$roboTaskName</comment>'.");
-        $i->runRoboTask($roboTaskName);
-        $i->expectTheExitCodeToBe(0);
-        $i->seeThisTextInTheStdOutput('a.php');
-        $i->seeThisTextInTheStdOutput('b.php');
+    public function tagListHuman(AcceptanceTester $i): void
+    {
+        $roboTaskName = 'tag:list-human';
+        $id = $roboTaskName;
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
+        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+        $i->assertEquals(
+            file_get_contents("{$this->expectedDir}/tag-list-human.txt"),
+            $i->getRoboTaskStdOutput($id)
+        );
+        $i->assertEquals('', $i->getRoboTaskStdError($id));
+    }
+
+    public function tagListMachine(AcceptanceTester $i): void
+    {
+        $roboTaskName = 'tag:list-machine';
+        $id = $roboTaskName;
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
+        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+        $i->assertEquals(
+            file_get_contents("{$this->expectedDir}/tag-list-machine.yml"),
+            $i->getRoboTaskStdOutput($id)
+        );
+        $i->assertEquals('', $i->getRoboTaskStdError($id));
     }
 }

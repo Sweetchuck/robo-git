@@ -1,17 +1,16 @@
 <?php
 
-namespace Helper\Dummy;
+namespace Cheppers\Robo\Git\Test\Helper\Dummy;
 
 class Process extends \Symfony\Component\Process\Process
 {
-
     /**
      * @var array
      */
     public static $prophecy = [];
 
     /**
-     * @var \Helper\Dummy\Process[]
+     * @var static[]
      */
     public static $instances = null;
 
@@ -44,6 +43,14 @@ class Process extends \Symfony\Component\Process\Process
     {
         $index = array_search($this, static::$instances);
 
+        if ($callback) {
+            foreach ([static::OUT, static::ERR] as $type) {
+                if (static::$prophecy[$index][$type]) {
+                    call_user_func($callback, $type, static::$prophecy[$index][$type]);
+                }
+            }
+        }
+
         return static::$prophecy[$index]['exitCode'];
     }
 
@@ -64,7 +71,7 @@ class Process extends \Symfony\Component\Process\Process
     {
         $index = array_search($this, static::$instances);
 
-        return static::$prophecy[$index]['stdOutput'];
+        return static::$prophecy[$index][static::OUT];
     }
 
     /**
@@ -74,6 +81,6 @@ class Process extends \Symfony\Component\Process\Process
     {
         $index = array_search($this, static::$instances);
 
-        return static::$prophecy[$index]['stdError'];
+        return static::$prophecy[$index][static::ERR];
     }
 }

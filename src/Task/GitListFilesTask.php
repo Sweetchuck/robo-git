@@ -2,31 +2,12 @@
 
 namespace Cheppers\Robo\Git\Task;
 
-use Cheppers\AssetJar\AssetJarAware;
-use Cheppers\AssetJar\AssetJarAwareInterface;
 use Cheppers\Robo\Git\ListFilesItem;
-use Cheppers\Robo\Git\Utils;
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
-use Robo\Common\IO;
 use Robo\Contract\CommandInterface;
-use Robo\Contract\OutputAwareInterface;
 use Robo\Result;
-use Robo\Task\BaseTask;
-use Robo\TaskAccessor;
-use Symfony\Component\Process\Process;
 
-class ListFilesTask extends BaseTask implements
-    AssetJarAwareInterface,
-    ContainerAwareInterface,
-    OutputAwareInterface,
-    CommandInterface
+class GitListFilesTask extends BaseTask implements CommandInterface
 {
-    use AssetJarAware;
-    use ContainerAwareTrait;
-    use IO;
-    use TaskAccessor;
-
     const STATUS_CACHED = 'H';
 
     const STATUS_SKIP_WORKTREE = 'S';
@@ -42,92 +23,24 @@ class ListFilesTask extends BaseTask implements
     const STATUS_OTHER = '?';
 
     /**
-     * @var string
+     * {@inheritdoc}
      */
-    protected $processClass = Process::class;
+    protected $taskName = 'Git list files';
 
     /**
-     * @var array
+     * {@inheritdoc}
+     */
+    protected $action = 'ls-files';
+
+    /**
+     * {@inheritdoc}
      */
     protected $assets = [
         'workingDirectory' => '',
         'files' => [],
     ];
 
-    /**
-     * @var string[]
-     */
-    protected $flagOptions = [
-        'separatedWithNullChar' => '-z',
-        'fileStatusWithTags' => '-t',
-        'lowercaseStatusLetters' => '-v',
-        'showCached' => '--cached',
-        'showDeleted' => '--deleted',
-        'showModified' => '--modified',
-        'showOthers' => '--others',
-        'showIgnored' => '--ignored',
-        'showStaged' => '--stage',
-        'showKilled' => '--killed',
-        'showOtherDirectoriesNamesOnly' => '--directory',
-        'showLineEndings' => '--eol',
-        'showEmptyDirectories' => '--empty-directory',
-        'showUnmerged' => '--unmerged',
-        'showResolveUndo' => '--resolve-undo',
-        'fullName' => '--full-name',
-    ];
-
-    /**
-     * @var string[]
-     */
-    protected $valueRequiredOptions = [
-        'excludePattern' => '--exclude',
-        'excludeFile' => '--exclude-file',
-    ];
-
     //region Options.
-    //region Option - workingDirectory
-    /**
-     * @var string
-     */
-    protected $workingDirectory = '';
-
-    public function getWorkingDirectory(): string
-    {
-        return $this->workingDirectory;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setWorkingDirectory(string $workingDirectory)
-    {
-        $this->workingDirectory = $workingDirectory;
-
-        return $this;
-    }
-    //endregion
-
-    //region Option - gitExecutable
-    /**
-     * @var string
-     */
-    protected $gitExecutable = 'git';
-
-    public function getGitExecutable(): string
-    {
-        return $this->gitExecutable;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setGitExecutable(string $gitExecutable)
-    {
-        $this->gitExecutable = $gitExecutable;
-
-        return $this;
-    }
-    //endregion
 
     //region Option - separatedWithNullChar
     /**
@@ -537,7 +450,7 @@ class ListFilesTask extends BaseTask implements
     /**
      * @return string[]
      */
-    public function getPaths()
+    public function getPaths(): array
     {
         return $this->paths;
     }
@@ -553,32 +466,88 @@ class ListFilesTask extends BaseTask implements
     }
     //endregion
 
-    //region Option - visibleStdOutput
-    /**
-     * @var bool
-     */
-    protected $visibleStdOutput = false;
-
-    public function isStdOutputVisible(): bool
-    {
-        return $this->visibleStdOutput;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setVisibleStdOutput(bool $isStdOutputVisible)
-    {
-        $this->visibleStdOutput = $isStdOutputVisible;
-
-        return $this;
-    }
-    //endregion
     //endregion
 
-    public function __construct(array $options = [])
+    protected function getOptions(): array
     {
-        $this->setOptions($options);
+        return [
+            '-z' => [
+                'type' => 'flag',
+                'value' => $this->getSeparatedWithNullChar(),
+            ],
+            '-t' => [
+                'type' => 'flag',
+                'value' => $this->getFileStatusWithTags(),
+            ],
+            '-v' => [
+                'type' => 'flag',
+                'value' => $this->getLowercaseStatusLetters(),
+            ],
+            '--cached' => [
+                'type' => 'flag',
+                'value' => $this->getShowCached(),
+            ],
+            '--deleted' => [
+                'type' => 'flag',
+                'value' => $this->getShowDeleted(),
+            ],
+            '--modified' => [
+                'type' => 'flag',
+                'value' => $this->getShowModified(),
+            ],
+            '--others' => [
+                'type' => 'flag',
+                'value' => $this->getShowOthers(),
+            ],
+            '--ignored' => [
+                'type' => 'flag',
+                'value' => $this->getShowIgnored(),
+            ],
+            '--stage' => [
+                'type' => 'flag',
+                'value' => $this->getShowStaged(),
+            ],
+            '--killed' => [
+                'type' => 'flag',
+                'value' => $this->getShowKilled(),
+            ],
+            '--directory' => [
+                'type' => 'flag',
+                'value' => $this->getShowOtherDirectoriesNamesOnly(),
+            ],
+            '--eol' => [
+                'type' => 'flag',
+                'value' => $this->getShowLineEndings(),
+            ],
+            '--empty-directory' => [
+                'type' => 'flag',
+                'value' => $this->getShowEmptyDirectories(),
+            ],
+            '--unmerged' => [
+                'type' => 'flag',
+                'value' => $this->getShowUnmerged(),
+            ],
+            '--resolve-undo' => [
+                'type' => 'flag',
+                'value' => $this->getShowResolveUndo(),
+            ],
+            '--full-name' => [
+                'type' => 'flag',
+                'value' => $this->getFullName(),
+            ],
+            '--exclude' => [
+                'type' => 'value:required',
+                'value' => $this->getExcludePattern(),
+            ],
+            '--exclude-file' => [
+                'type' => 'value:required',
+                'value' => $this->getExcludeFile(),
+            ],
+            'paths' => [
+                'type' => 'arg:list',
+                'value' => $this->getPaths(),
+            ],
+        ] + parent::getOptions();
     }
 
     /**
@@ -586,24 +555,9 @@ class ListFilesTask extends BaseTask implements
      */
     public function setOptions(array $options)
     {
+        parent::setOptions($options);
         foreach ($options as $key => $value) {
             switch ($key) {
-                case 'assetJar':
-                    $this->setAssetJar($value);
-                    break;
-
-                case 'assetJarMapping':
-                    $this->setAssetJarMapping($value);
-                    break;
-
-                case 'workingDirectory':
-                    $this->setWorkingDirectory($value);
-                    break;
-
-                case 'gitExecutable':
-                    $this->setGitExecutable($value);
-                    break;
-
                 case 'separatedWithNullChar':
                     $this->setSeparatedWithNullChar($value);
                     break;
@@ -692,101 +646,12 @@ class ListFilesTask extends BaseTask implements
     /**
      * {@inheritdoc}
      */
-    public function run()
+    protected function runProcessOutputs()
     {
-        /** @var \Symfony\Component\Process\Process $process */
-        $process = new $this->processClass($this->getCommand());
-        $exitCode = $process->run();
-
-        if ($exitCode !== 0) {
-            return Result::error($this, '@todo Error message', $this->assets);
-        }
-
-        $stdOutput = $process->getOutput();
-        if ($this->isStdOutputVisible()) {
-            $this->output()->write($stdOutput);
-        }
-
         $this->assets['workingDirectory'] = $this->getWorkingDirectory();
-        $this->assets['files'] = $this->parseStdOutput($stdOutput);
+        $this->assets['files'] = $this->parseStdOutput($this->actionStdOutput);
 
-        $assetJar = $this->getAssetJar();
-        if ($assetJar) {
-            foreach ($this->assets as $name => $value) {
-                if ($this->getAssetJarMap($name)) {
-                    $this->setAssetJarValue($name, $value);
-                }
-            }
-        }
-
-        return Result::success($this, '@todo Success message', $this->assets);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCommand()
-    {
-        $options = $this->buildCommandOptions();
-
-        $cmdPattern = '';
-        $cmdArgs = [];
-
-        $workingDir = $this->getWorkingDirectory();
-        if ($workingDir) {
-            $cmdPattern .= 'cd %s && ';
-            $cmdArgs[] = escapeshellarg($workingDir);
-        }
-
-        $cmdPattern .= '%s ls-files';
-        $cmdArgs[] = escapeshellcmd($this->getGitExecutable());
-
-        foreach ($this->flagOptions as $optionName => $optionCli) {
-            if ($options[$optionName]) {
-                $cmdPattern .= " $optionCli";
-            }
-        }
-
-        foreach ($this->valueRequiredOptions as $optionName => $optionCli) {
-            if ($options[$optionName]) {
-                $cmdPattern .= " $optionCli %s";
-                $cmdArgs[] = escapeshellarg($options[$optionName]);
-            }
-        }
-
-        $paths = Utils::filterEnabled($this->getPaths());
-        if ($paths) {
-            $cmdPattern .= ' --' . str_repeat(' %s', count($paths));
-            foreach ($paths as $path) {
-                $cmdArgs[] = escapeshellarg($path);
-            }
-        }
-
-        return vsprintf($cmdPattern, $cmdArgs);
-    }
-
-    protected function buildCommandOptions(): array
-    {
-        return [
-            'separatedWithNullChar' => $this->getSeparatedWithNullChar(),
-            'fileStatusWithTags' => $this->getFileStatusWithTags(),
-            'lowercaseStatusLetters' => $this->getLowercaseStatusLetters(),
-            'showCached' => $this->getShowCached(),
-            'showDeleted' => $this->getShowDeleted(),
-            'showModified' => $this->getShowModified(),
-            'showOthers' => $this->getShowOthers(),
-            'showIgnored' => $this->getShowIgnored(),
-            'showStaged' => $this->getShowStaged(),
-            'showKilled' => $this->getShowKilled(),
-            'showOtherDirectoriesNamesOnly' => $this->getShowOtherDirectoriesNamesOnly(),
-            'showLineEndings' => $this->getShowLineEndings(),
-            'showEmptyDirectories' => $this->getShowEmptyDirectories(),
-            'showUnmerged' => $this->getShowUnmerged(),
-            'showResolveUndo' => $this->getShowResolveUndo(),
-            'excludePattern' => $this->getExcludePattern(),
-            'excludeFile' => $this->getExcludeFile(),
-            'fullName' => $this->getFullName(),
-        ];
+        return $this;
     }
 
     /**

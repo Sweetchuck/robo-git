@@ -26,8 +26,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Cheppers\\Robo\\Git\\Tests\\Acceptance\\": "tests/acceptance",
-            "Cheppers\\Robo\\Git\\Tests\\Unit\\": "tests/unit"
+            "Cheppers\\Robo\\Git\\Test\\Helper\\": "tests/_support/Helper/",
+            "Cheppers\\Robo\\Git\\Tests\\Acceptance\\": "tests/acceptance/",
+            "Cheppers\\Robo\\Git\\Tests\\Unit\\": "tests/unit/"
         }
     },
     "scripts": {
