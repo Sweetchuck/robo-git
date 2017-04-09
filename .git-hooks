@@ -4,7 +4,7 @@ echo "BEGIN Git hook: ${cghHookName}"
 
 function myExit ()
 {
-    echo "End Git hook: ${cghHookName}"
+    echo "End   Git hook: ${cghHookName}"
 
     exit $1
 }

@@ -79,12 +79,12 @@ class GitReadStagedFilesTaskTest extends Unit
                     'files' => [
                         'a.php' => [
                             'fileName' => 'a.php',
-                            'command' => 'git show :a.php',
+                            'command' => "git show :'a.php'",
                             'content' => 'Content of a.php',
                         ],
                         'c.php' => [
                             'fileName' => 'c.php',
-                            'command' => 'git show :c.php',
+                            'command' => "git show :'c.php'",
                             'content' => 'Content of c.php',
                         ],
                     ],
@@ -103,12 +103,12 @@ class GitReadStagedFilesTaskTest extends Unit
                     'files' => [
                         'a.php' => [
                             'fileName' => 'a.php',
-                            'command' => 'git show :a.php',
+                            'command' => "git show :'a.php'",
                             'content' => null,
                         ],
                         'c.php' => [
                             'fileName' => 'c.php',
-                            'command' => 'git show :c.php',
+                            'command' => "git show :'c.php'",
                             'content' => null,
                         ],
                     ],
