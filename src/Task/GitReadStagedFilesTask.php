@@ -108,7 +108,7 @@ class GitReadStagedFilesTask extends BaseTask
                 continue;
             }
 
-            $cmdArgs['fileName'] = $fileName;
+            $cmdArgs['fileName'] = escapeshellarg($fileName);
 
             $file = [
                 'fileName' => $fileName,
