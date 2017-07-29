@@ -1,10 +1,10 @@
 <?php
 
-namespace Cheppers\Robo\Git\Task;
+namespace Sweetchuck\Robo\Git\Task;
 
-use Cheppers\AssetJar\AssetJarAware;
-use Cheppers\AssetJar\AssetJarAwareInterface;
-use Cheppers\Robo\Git\Utils;
+use Sweetchuck\AssetJar\AssetJarAware;
+use Sweetchuck\AssetJar\AssetJarAwareInterface;
+use Sweetchuck\Robo\Git\Utils;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Common\IO;

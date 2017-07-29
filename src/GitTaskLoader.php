@@ -1,6 +1,6 @@
 <?php
 
-namespace Cheppers\Robo\Git;
+namespace Sweetchuck\Robo\Git;
 
 use League\Container\ContainerAwareInterface;
 use Robo\Contract\OutputAwareInterface;
@@ -8,11 +8,11 @@ use Robo\Contract\OutputAwareInterface;
 trait GitTaskLoader
 {
     /**
-     * @return \Cheppers\Robo\Git\Task\GitListFilesTask
+     * @return \sweetchuck\Robo\Git\Task\GitListFilesTask
      */
     protected function taskGitListFiles(array $options = [])
     {
-        /** @var \Cheppers\Robo\Git\Task\GitListFilesTask $task */
+        /** @var \sweetchuck\Robo\Git\Task\GitListFilesTask $task */
         $task = $this->task(Task\GitListFilesTask::class, $options);
         if ($this instanceof ContainerAwareInterface) {
             $task->setContainer($this->getContainer());
@@ -26,11 +26,11 @@ trait GitTaskLoader
     }
 
     /**
-     * @return \Cheppers\Robo\Git\Task\GitReadStagedFilesTask
+     * @return \sweetchuck\Robo\Git\Task\GitReadStagedFilesTask
      */
     protected function taskGitReadStagedFiles(array $options = [])
     {
-        /** @var \Cheppers\Robo\Git\Task\GitReadStagedFilesTask $task */
+        /** @var \sweetchuck\Robo\Git\Task\GitReadStagedFilesTask $task */
         $task = $this->task(Task\GitReadStagedFilesTask::class, $options);
         if ($this instanceof ContainerAwareInterface) {
             $task->setContainer($this->getContainer());
@@ -44,11 +44,11 @@ trait GitTaskLoader
     }
 
     /**
-     * @return \Cheppers\Robo\Git\Task\GitTagListTask
+     * @return \sweetchuck\Robo\Git\Task\GitTagListTask
      */
     protected function taskGitTagList(array $options = [])
     {
-        /** @var \Cheppers\Robo\Git\Task\GitTagListTask $task */
+        /** @var \sweetchuck\Robo\Git\Task\GitTagListTask $task */
         $task = $this->task(Task\GitTagListTask::class, $options);
         if ($this instanceof ContainerAwareInterface) {
             $task->setContainer($this->getContainer());

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="RoboGit">
+    <file>src/</file>
+    <file>tests/_support/Helper/</file>
+    <file>tests/acceptance/</file>
+    <file>tests/unit/</file>
+    <file>RoboFile.php</file>
+
+    <rule ref="PSR2" />
+
+</ruleset>

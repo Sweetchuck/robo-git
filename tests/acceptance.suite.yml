@@ -3,5 +3,5 @@ class_name: AcceptanceTester
 modules:
     enabled:
         - Asserts
-        - \Cheppers\Robo\Git\Test\Helper\Acceptance
-        - \Cheppers\Robo\Git\Test\Helper\Module\RoboTaskRunner
+        - \Sweetchuck\Robo\Git\Test\Helper\Acceptance
+        - \Sweetchuck\Robo\Git\Test\Helper\Module\RoboTaskRunner

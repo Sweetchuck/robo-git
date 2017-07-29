@@ -1,12 +1,12 @@
 <?php
 
-namespace Cheppers\Robo\Git\Tests\Unit\Task;
+namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Cheppers\AssetJar\AssetJar;
-use Cheppers\Robo\Git\Task\GitReadStagedFilesTask;
+use Sweetchuck\AssetJar\AssetJar;
+use Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask;
 use Codeception\Test\Unit;
 use Codeception\Util\Stub;
-use Cheppers\Robo\Git\Test\Helper\Dummy\Process as DummyProcess;
+use Sweetchuck\Robo\Git\Test\Helper\Dummy\Process as DummyProcess;
 use Robo\Robo;
 
 class GitReadStagedFilesTaskTest extends Unit
@@ -21,7 +21,7 @@ class GitReadStagedFilesTaskTest extends Unit
     }
 
     /**
-     * @var \Cheppers\Robo\Git\Test\UnitTester
+     * @var \Sweetchuck\Robo\Git\Test\UnitTester
      */
     protected $tester;
 
@@ -136,7 +136,7 @@ class GitReadStagedFilesTaskTest extends Unit
         $container = Robo::createDefaultContainer();
         Robo::setContainer($container);
 
-        /** @var \Cheppers\Robo\Git\Task\GitReadStagedFilesTask $task */
+        /** @var \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask $task */
         $task = Stub::make(
             GitReadStagedFilesTask::class,
             [
@@ -197,7 +197,7 @@ class GitReadStagedFilesTaskTest extends Unit
 
     public function testGetStagedFileNames(): void
     {
-        /** @var \Cheppers\Robo\Git\Task\GitReadStagedFilesTask $task */
+        /** @var \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask $task */
         $task = Stub::make(
             GitReadStagedFilesTask::class,
             [
