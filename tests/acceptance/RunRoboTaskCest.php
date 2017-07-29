@@ -1,9 +1,9 @@
 <?php
 
-namespace Cheppers\Robo\Git\Tests\Acceptance;
+namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
-use Cheppers\Robo\Git\Test\AcceptanceTester;
-use Cheppers\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
+use Sweetchuck\Robo\Git\Test\AcceptanceTester;
+use Sweetchuck\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
 
 class RunRoboTaskCest
 {

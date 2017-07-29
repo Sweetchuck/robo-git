@@ -1,6 +1,6 @@
 <?php
 
-namespace Cheppers\Robo\Git\Test\Helper\Dummy;
+namespace Sweetchuck\Robo\Git\Test\Helper\Dummy;
 
 use Codeception\Lib\Console\Output as ConsoleOutput;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace Cheppers\Robo\Git\Test\Helper\RoboFiles;
+namespace Sweetchuck\Robo\Git\Test\Helper\RoboFiles;
 
-use Cheppers\AssetJar\AssetJar;
-use Cheppers\Robo\Git\GitTaskLoader;
-use Cheppers\Robo\Git\Utils;
+use Sweetchuck\AssetJar\AssetJar;
+use Sweetchuck\Robo\Git\GitTaskLoader;
+use Sweetchuck\Robo\Git\Utils;
 use Robo\Collection\CollectionBuilder;
 use Robo\Tasks as BaseRoboFile;
 use Symfony\Component\Yaml\Yaml;

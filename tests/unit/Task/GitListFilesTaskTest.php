@@ -1,20 +1,20 @@
 <?php
 
-namespace Cheppers\Robo\Git\Tests\Unit\Task;
+namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Cheppers\AssetJar\AssetJar;
-use Cheppers\Robo\Git\ListFilesItem;
-use Cheppers\Robo\Git\Task\GitListFilesTask;
+use Sweetchuck\AssetJar\AssetJar;
+use Sweetchuck\Robo\Git\ListFilesItem;
+use Sweetchuck\Robo\Git\Task\GitListFilesTask;
 use Codeception\Test\Unit;
 use Codeception\Util\Stub;
-use Cheppers\Robo\Git\Test\Helper\Dummy\Output as DummyOutput;
-use Cheppers\Robo\Git\Test\Helper\Dummy\Process as DummyProcess;
+use Sweetchuck\Robo\Git\Test\Helper\Dummy\Output as DummyOutput;
+use Sweetchuck\Robo\Git\Test\Helper\Dummy\Process as DummyProcess;
 use Robo\Robo;
 
 class GitListFilesTaskTest extends Unit
 {
     /**
-     * @var \Cheppers\Robo\Git\Test\UnitTester
+     * @var \Sweetchuck\Robo\Git\Test\UnitTester
      */
     protected $tester;
 
@@ -377,7 +377,7 @@ class GitListFilesTaskTest extends Unit
             static::assertEquals($file, $result['files'][$fileName]);
         }
 
-        /** @var \Cheppers\AssetJar\AssetJarInterface $assetJar */
+        /** @var \Sweetchuck\AssetJar\AssetJarInterface $assetJar */
         $assetJar = !empty($options['assetJar']) ? $options['assetJar'] : null;
         if ($assetJar) {
             static::assertEquals(
@@ -425,7 +425,7 @@ class GitListFilesTaskTest extends Unit
 
         $mainStdOutput = new DummyOutput([]);
 
-        /** @var \Cheppers\Robo\Git\Task\GitListFilesTask $task */
+        /** @var \Sweetchuck\Robo\Git\Task\GitListFilesTask $task */
         $task = Stub::construct(
             GitListFilesTask::class,
             [['visibleStdOutput' => true], []],

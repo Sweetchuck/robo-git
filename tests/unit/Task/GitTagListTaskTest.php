@@ -1,14 +1,14 @@
 <?php
 
-namespace Cheppers\Robo\Git\Tests\Unit\Task;
+namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Cheppers\Robo\Git\Task\GitTagListTask;
+use Sweetchuck\Robo\Git\Task\GitTagListTask;
 use Codeception\Test\Unit;
 
 class GitTagListTaskTest extends Unit
 {
     /**
-     * @var \Cheppers\Robo\Git\Test\UnitTester
+     * @var \Sweetchuck\Robo\Git\Test\UnitTester
      */
     protected $tester;
 

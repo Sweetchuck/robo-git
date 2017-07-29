@@ -1,6 +1,6 @@
 <?php
 
-namespace Cheppers\Robo\Git\Test;
+namespace Sweetchuck\Robo\Git\Test;
 
 /**
  * Inherited Methods

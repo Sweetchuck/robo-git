@@ -1,14 +1,14 @@
 <?php
 
-namespace Cheppers\Robo\Git\Tests\Unit;
+namespace Sweetchuck\Robo\Git\Tests\Unit;
 
-use Cheppers\Robo\Git\Utils;
+use Sweetchuck\Robo\Git\Utils;
 use Codeception\Test\Unit;
 
 class UtilsTest extends Unit
 {
     /**
-     * @var \Cheppers\Robo\Git\Test\UnitTester
+     * @var \Sweetchuck\Robo\Git\Test\UnitTester
      */
     protected $tester;
 

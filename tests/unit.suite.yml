@@ -3,4 +3,4 @@ class_name: UnitTester
 modules:
     enabled:
         - Asserts
-        - \Cheppers\Robo\Git\Test\Helper\Unit
+        - \Sweetchuck\Robo\Git\Test\Helper\Unit

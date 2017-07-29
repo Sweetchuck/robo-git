@@ -1,6 +1,6 @@
 <?php
 
-namespace Cheppers\Robo\Git;
+namespace Sweetchuck\Robo\Git;
 
 class ListFilesItem
 {

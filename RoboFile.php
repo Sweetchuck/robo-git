@@ -8,7 +8,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends \Robo\Tasks
     // @codingStandardsIgnoreEnd
 {
-    use \Cheppers\Robo\Git\GitTaskLoader;
+    use \Sweetchuck\Robo\Git\GitTaskLoader;
 
     /**
      * @var array
@@ -173,15 +173,6 @@ class RoboFile extends \Robo\Tasks
         $env = $this->getEnvironment();
 
         return $this->collectionBuilder()->addCode(function () use ($env) {
-            $files = [
-                'src/',
-                'tests/_support/Helper/',
-                'tests/acceptance/',
-                'tests/unit/',
-                'RoboFile.php',
-            ];
-
-            /** @var \Robo\Task\Base\ExecStack $execStack */
             $execStack = $this->taskExecStack();
             $numOfCommands = 0;
 
@@ -190,13 +181,18 @@ class RoboFile extends \Robo\Tasks
 
             $cmdPattern .= ' --colors';
 
-            $cmdPattern .= ' --standard=%s';
-            $cmdArgs[] = 'PSR2';
-
             $cmdPattern .= ' --report=%s';
             $cmdArgs[] = 'full';
 
             if ($env === 'git-hook') {
+                $files = [
+                    'src/',
+                    'tests/_support/Helper/',
+                    'tests/acceptance/',
+                    'tests/unit/',
+                    'RoboFile.php',
+                ];
+
                 $gitReadStagedFiles = $this->taskGitReadStagedFiles();
                 $gitReadStagedFiles->setPaths($files);
                 $result = $gitReadStagedFiles->run();
@@ -213,11 +209,6 @@ class RoboFile extends \Robo\Tasks
                     }
                 }
             } else {
-                $cmdPattern .= str_repeat(' %s', count($files));
-                foreach ($files as $file) {
-                    $cmdArgs[] = escapeshellarg($file);
-                }
-
                 $numOfCommands++;
                 $execStack->exec(vsprintf($cmdPattern, $cmdArgs));
             }

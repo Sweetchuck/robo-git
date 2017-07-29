@@ -1,8 +1,8 @@
 <?php
 
-namespace Cheppers\Robo\Git\Task;
+namespace Sweetchuck\Robo\Git\Task;
 
-use Cheppers\Robo\Git\Utils;
+use Sweetchuck\Robo\Git\Utils;
 use Robo\Result;
 use Symfony\Component\Process\Process;
 

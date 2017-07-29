@@ -1,10 +1,9 @@
 <?php
 
-namespace Cheppers\Robo\Git\Task;
+namespace Sweetchuck\Robo\Git\Task;
 
-use Cheppers\Robo\Git\ListFilesItem;
+use Sweetchuck\Robo\Git\ListFilesItem;
 use Robo\Contract\CommandInterface;
-use Robo\Result;
 
 class GitListFilesTask extends BaseTask implements CommandInterface
 {
