@@ -8,11 +8,11 @@ use Robo\Contract\OutputAwareInterface;
 trait GitTaskLoader
 {
     /**
-     * @return \sweetchuck\Robo\Git\Task\GitListFilesTask
+     * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitListFilesTask
      */
     protected function taskGitListFiles(array $options = [])
     {
-        /** @var \sweetchuck\Robo\Git\Task\GitListFilesTask $task */
+        /** @var \Sweetchuck\Robo\Git\Task\GitListFilesTask $task */
         $task = $this->task(Task\GitListFilesTask::class, $options);
         if ($this instanceof ContainerAwareInterface) {
             $task->setContainer($this->getContainer());
@@ -26,11 +26,11 @@ trait GitTaskLoader
     }
 
     /**
-     * @return \sweetchuck\Robo\Git\Task\GitReadStagedFilesTask
+     * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask
      */
     protected function taskGitReadStagedFiles(array $options = [])
     {
-        /** @var \sweetchuck\Robo\Git\Task\GitReadStagedFilesTask $task */
+        /** @var \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask $task */
         $task = $this->task(Task\GitReadStagedFilesTask::class, $options);
         if ($this instanceof ContainerAwareInterface) {
             $task->setContainer($this->getContainer());
@@ -44,11 +44,11 @@ trait GitTaskLoader
     }
 
     /**
-     * @return \sweetchuck\Robo\Git\Task\GitTagListTask
+     * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitTagListTask
      */
     protected function taskGitTagList(array $options = [])
     {
-        /** @var \sweetchuck\Robo\Git\Task\GitTagListTask $task */
+        /** @var \Sweetchuck\Robo\Git\Task\GitTagListTask $task */
         $task = $this->task(Task\GitTagListTask::class, $options);
         if ($this instanceof ContainerAwareInterface) {
             $task->setContainer($this->getContainer());

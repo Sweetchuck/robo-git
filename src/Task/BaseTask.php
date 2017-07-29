@@ -16,11 +16,9 @@ use Robo\TaskInfo;
 use Symfony\Component\Process\Process;
 
 abstract class BaseTask extends RoboBaseTask implements
-    AssetJarAwareInterface,
     ContainerAwareInterface,
     OutputAwareInterface
 {
-    use AssetJarAware;
     use ContainerAwareTrait;
     use IO;
     use TaskAccessor;
@@ -36,6 +34,28 @@ abstract class BaseTask extends RoboBaseTask implements
     protected $assets = [];
 
     //region Options.
+
+    // region Option - assetNamePrefix.
+    /**
+     * @var string
+     */
+    protected $assetNamePrefix = '';
+
+    public function getAssetNamePrefix(): string
+    {
+        return $this->assetNamePrefix;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setAssetNamePrefix(string $value)
+    {
+        $this->assetNamePrefix = $value;
+
+        return $this;
+    }
+    // endregion
 
     //region Option - workingDirectory
     /**
@@ -157,12 +177,8 @@ abstract class BaseTask extends RoboBaseTask implements
     {
         foreach ($options as $name => $value) {
             switch ($name) {
-                case 'assetJar':
-                    $this->setAssetJar($value);
-                    break;
-
-                case 'assetJarMapping':
-                    $this->setAssetJarMapping($value);
+                case 'assetNamePrefix':
+                    $this->setAssetNamePrefix($value);
                     break;
 
                 case 'workingDirectory':
@@ -287,7 +303,6 @@ abstract class BaseTask extends RoboBaseTask implements
             ->runHeader()
             ->runAction()
             ->runProcessOutputs()
-            ->runReleaseAssets()
             ->runReturn();
     }
 
@@ -336,31 +351,23 @@ abstract class BaseTask extends RoboBaseTask implements
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function runReleaseAssets()
+    protected function runReturn(): Result
     {
-        if ($this->hasAssetJar()) {
-            $assetJar = $this->getAssetJar();
-            foreach ($this->assets as $name => $value) {
-                $mapping = $this->getAssetJarMap($name);
-                if ($mapping) {
-                    $assetJar->setValue($mapping, $value);
-                }
+        $assetNamePrefix = $this->getAssetNamePrefix();
+        if ($assetNamePrefix === '') {
+            $data = $this->assets;
+        } else {
+            $data = [];
+            foreach ($this->assets as $key => $value) {
+                $data["{$assetNamePrefix}{$key}"] = $value;
             }
         }
 
-        return $this;
-    }
-
-    protected function runReturn(): Result
-    {
         return new Result(
             $this,
             $this->actionExitCode,
             $this->actionStdError,
-            $this->assets
+            $data
         );
     }
 

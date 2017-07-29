@@ -2,7 +2,6 @@
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Sweetchuck\AssetJar\AssetJar;
 use Sweetchuck\Robo\Git\ListFilesItem;
 use Sweetchuck\Robo\Git\Task\GitListFilesTask;
 use Codeception\Test\Unit;
@@ -305,20 +304,8 @@ class GitListFilesTaskTest extends Unit
                         'fileName' => 'a.php',
                     ]),
                 ],
-                [],
-                implode("\n", [
-                    'a.php',
-                    '',
-                ]),
-            ],
-            'asset jar' => [
                 [
-                    'a.php' => new ListFilesItem([
-                        'fileName' => 'a.php',
-                    ]),
-                ],
-                [
-                    'assetJar' => new AssetJar(),
+                    'assetNamePrefix' => 'b.c.'
                 ],
                 implode("\n", [
                     'a.php',
@@ -337,12 +324,6 @@ class GitListFilesTaskTest extends Unit
         Robo::setContainer($container);
 
         $mainStdOutput = new DummyOutput([]);
-
-        $options += [
-            'assetJarMapping' => [
-                'files' => ['myTask01', 'files'],
-            ],
-        ];
 
         /** @var GitListFilesTask $task */
         $task = Stub::construct(
@@ -372,18 +353,22 @@ class GitListFilesTaskTest extends Unit
             'Exit code is different than the expected.'
         );
 
-        static::assertEquals(count($expectedFiles), count($result['files']));
-        foreach ($expectedFiles as $fileName => $file) {
-            static::assertEquals($file, $result['files'][$fileName]);
-        }
+        $assetNamePrefix = $options['assetNamePrefix'] ?? '';
 
-        /** @var \Sweetchuck\AssetJar\AssetJarInterface $assetJar */
-        $assetJar = !empty($options['assetJar']) ? $options['assetJar'] : null;
-        if ($assetJar) {
-            static::assertEquals(
-                $result['files'],
-                $assetJar->getValue($options['assetJarMapping']['files'])
-            );
+        static::assertArrayHasKey(
+            "{$assetNamePrefix}workingDirectory",
+            $result,
+            "Asset exists: 'workingDirectory'"
+        );
+        static::assertArrayHasKey(
+            "{$assetNamePrefix}files",
+            $result,
+            "Asset exists: 'files'"
+        );
+
+        static::assertEquals(count($expectedFiles), count($result["{$assetNamePrefix}files"]));
+        foreach ($expectedFiles as $fileName => $file) {
+            static::assertEquals($file, $result["{$assetNamePrefix}files"][$fileName]);
         }
     }
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "070bd56a7ab8e7bd6b340a9cec0048c0",
+    "content-hash": "33db678fc7198510ce38a2302b8be217",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -726,41 +726,6 @@
                 "psr-3"
             ],
             "time": "2016-10-10T12:19:37+00:00"
-        },
-        {
-            "name": "sweetchuck/asset-jar",
-            "version": "v0.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Sweetchuck/asset-jar.git",
-                "reference": "a6d4d67db8eef018aa10779b3906fb109bcb6508"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Sweetchuck/asset-jar/zipball/a6d4d67db8eef018aa10779b3906fb109bcb6508",
-                "reference": "a6d4d67db8eef018aa10779b3906fb109bcb6508",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "require-dev": {
-                "phpunit/php-code-coverage": "^4.0",
-                "phpunit/phpunit": "^5.4",
-                "squizlabs/php_codesniffer": "^2.6"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Sweetchuck\\AssetJar\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "description": "Provides a very simple, shared, in-memory data storage.",
-            "time": "2017-07-29T07:37:14+00:00"
         },
         {
             "name": "symfony/console",

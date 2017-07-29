@@ -2,7 +2,6 @@
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Sweetchuck\AssetJar\AssetJar;
 use Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask;
 use Codeception\Test\Unit;
 use Codeception\Util\Stub;
@@ -38,11 +37,6 @@ class GitReadStagedFilesTaskTest extends Unit
     public function testOptionsGetSet(): void
     {
         $options = [
-            'assetJar' => new AssetJar(),
-            'assetJarMapping' => [
-                'a' => ['b', 'c'],
-                'd' => ['e', 'f'],
-            ],
             'workingDirectory' => 'g',
             'gitExecutable' => 'h',
             'commandOnly' => true,
@@ -53,8 +47,6 @@ class GitReadStagedFilesTaskTest extends Unit
         ];
         $task = new GitReadStagedFilesTask($options);
 
-        $this->assertEquals($options['assetJar'], $task->getAssetJar());
-        $this->assertEquals($options['assetJarMapping'], $task->getAssetJarMapping());
         $this->assertEquals($options['workingDirectory'], $task->getWorkingDirectory());
         $this->assertEquals($options['gitExecutable'], $task->getGitExecutable());
         $this->assertEquals($options['commandOnly'], $task->getCommandOnly());
@@ -131,8 +123,6 @@ class GitReadStagedFilesTaskTest extends Unit
      */
     public function testRun(array $expected, array $stagedFileNames, array $options): void
     {
-        $assetJar = new AssetJar();
-
         $container = Robo::createDefaultContainer();
         Robo::setContainer($container);
 
@@ -140,11 +130,6 @@ class GitReadStagedFilesTaskTest extends Unit
         $task = Stub::make(
             GitReadStagedFilesTask::class,
             [
-                'assetJar' => $assetJar,
-                'assetJarMapping' => [
-                    'workingDirectory' => ['wd'],
-                    'files' => ['f'],
-                ],
                 'processClass' => DummyProcess::class,
                 'getStagedFileNames' => function () use ($stagedFileNames) {
                     return array_keys($stagedFileNames);
@@ -180,18 +165,6 @@ class GitReadStagedFilesTaskTest extends Unit
             $expected['files'],
             $result['files'],
             'Result "files"'
-        );
-
-        $this->assertEquals(
-            $expected['workingDirectory'],
-            $task->getAssetJarValue('workingDirectory'),
-            'AssetJar "workingDirectory"'
-        );
-
-        $this->assertEquals(
-            $expected['files'],
-            $task->getAssetJarValue('files'),
-            'AssetJar "files"'
         );
     }
 
