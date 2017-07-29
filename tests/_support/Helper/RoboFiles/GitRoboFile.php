@@ -2,7 +2,6 @@
 
 namespace Sweetchuck\Robo\Git\Test\Helper\RoboFiles;
 
-use Sweetchuck\AssetJar\AssetJar;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Sweetchuck\Robo\Git\Utils;
 use Robo\Collection\CollectionBuilder;
@@ -96,22 +95,18 @@ class GitRoboFile extends BaseRoboFile
             $tmpDir = $this->_tmpDir();
             $this->tagListPrepareGitRepo($tmpDir);
 
-            $assetJar = new AssetJar();
-
             $result = $this
                 ->taskGitTagList()
-                ->setAssetJar($assetJar)
-                ->setAssetJarMapping(['tags' => ['tags']])
                 ->setWorkingDirectory($tmpDir)
                 ->setVisibleStdOutput(false)
                 ->setFormat(Utils::$tagListFormats[Utils::$defaultTagListFormat])
                 ->run()
                 ->stopOnFail();
 
-            $tags = $assetJar->getValue(['tags']);
-            $sha_counter = 1;
+            $tags = $result['tags'];
+            $shaCounter = 1;
             foreach (array_keys($tags) as $tag) {
-                $tags[$tag]['objectName'] = 'SHA-' . $sha_counter++;
+                $tags[$tag]['objectName'] = 'SHA-' . $shaCounter++;
             }
 
             $this->output()->write(Yaml::dump($tags));
@@ -140,7 +135,7 @@ class GitRoboFile extends BaseRoboFile
         // Add two of them to the stage.
         $this
             ->taskGitStack()
-            ->printed(false)
+            ->printOutput(false)
             ->dir($tmpDir)
             ->exec('init')
             ->add('a.php')
@@ -178,7 +173,7 @@ class GitRoboFile extends BaseRoboFile
         // Add two of them to the stage.
         $this
             ->taskGitStack()
-            ->printed(false)
+            ->printOutput(false)
             ->dir($tmpDir)
             ->exec('init')
             ->add('a.php')
@@ -209,7 +204,7 @@ class GitRoboFile extends BaseRoboFile
 
         $this
             ->taskGitStack()
-            ->printed(false)
+            ->printOutput(false)
             ->dir($tmpDir)
             ->exec('init')
             ->add($readMeFileName)
@@ -222,7 +217,7 @@ class GitRoboFile extends BaseRoboFile
         file_put_contents($readMeFileName, $readMeContent);
         $this
             ->taskGitStack()
-            ->printed(false)
+            ->printOutput(false)
             ->dir($tmpDir)
             ->add($readMeFileName)
             ->commit('Add line 1')
@@ -234,7 +229,7 @@ class GitRoboFile extends BaseRoboFile
         file_put_contents($readMeFileName, $readMeContent);
         $this
             ->taskGitStack()
-            ->printed(false)
+            ->printOutput(false)
             ->dir($tmpDir)
             ->add($readMeFileName)
             ->commit('Add line 2')

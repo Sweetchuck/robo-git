@@ -65,4 +65,9 @@ class ListFilesItem
             }
         }
     }
+
+    public function __toString()
+    {
+        return (string) $this->fileName;
+    }
 }

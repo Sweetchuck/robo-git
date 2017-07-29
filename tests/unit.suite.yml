@@ -1,6 +1,6 @@
 
-class_name: UnitTester
+class_name: 'UnitTester'
 modules:
     enabled:
-        - Asserts
-        - \Sweetchuck\Robo\Git\Test\Helper\Unit
+        - 'Asserts'
+        - '\Sweetchuck\Robo\Git\Test\Helper\Unit'

@@ -21,11 +21,17 @@ class RunRoboTaskCest
     {
         $roboTaskName = 'read:staged-files-with-content';
         $id = $roboTaskName;
+
         $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
-        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+
+        $exitCode = $i->getRoboTaskExitCode($id);
+        $stdOutput = $i->getRoboTaskStdOutput($id);
+
+        $i->assertEquals(0, $exitCode, 'Robo task exit code');
         $i->assertEquals(
             file_get_contents("{$this->expectedDir}/contents.txt"),
-            $i->getRoboTaskStdOutput($id)
+            $stdOutput,
+            'Robo task stdOutput'
         );
     }
 
@@ -34,10 +40,15 @@ class RunRoboTaskCest
         $roboTaskName = 'read:staged-files-without-content';
         $id = $roboTaskName;
         $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
-        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+
+        $exitCode = $i->getRoboTaskExitCode($id);
+        $stdOutput = $i->getRoboTaskStdOutput($id);
+
+        $i->assertEquals(0, $exitCode, 'Robo task exit code');
         $i->assertEquals(
             file_get_contents("{$this->expectedDir}/commands.txt"),
-            $i->getRoboTaskStdOutput($id)
+            $stdOutput,
+            'Robo task stdOutput'
         );
     }
 
@@ -46,9 +57,13 @@ class RunRoboTaskCest
         $roboTaskName = 'list:files';
         $id = $roboTaskName;
         $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
-        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
-        $i->assertContains('a.php', $i->getRoboTaskStdOutput($id));
-        $i->assertContains('b.php', $i->getRoboTaskStdOutput($id));
+
+        $exitCode = $i->getRoboTaskExitCode($id);
+        $stdOutput = $i->getRoboTaskStdOutput($id);
+
+        $i->assertEquals(0, $exitCode, 'Robo task exit code');
+        $i->assertContains('a.php', $stdOutput, 'Robo task stdOutput a.php');
+        $i->assertContains('b.php', $stdOutput, 'Robo task stdOutput b.php');
     }
 
     public function tagListHuman(AcceptanceTester $i): void
@@ -56,12 +71,18 @@ class RunRoboTaskCest
         $roboTaskName = 'tag:list-human';
         $id = $roboTaskName;
         $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
-        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+
+        $exitCode = $i->getRoboTaskExitCode($id);
+        $stdOutput = $i->getRoboTaskStdOutput($id);
+        $stdError = $i->getRoboTaskStdError($id);
+
+        $i->assertEquals(0, $exitCode, 'Robo task exit code');
         $i->assertEquals(
             file_get_contents("{$this->expectedDir}/tag-list-human.txt"),
-            $i->getRoboTaskStdOutput($id)
+            $stdOutput,
+            'Robo task stdOutput'
         );
-        $i->assertEquals('', $i->getRoboTaskStdError($id));
+        $i->assertEquals('', $stdError, 'Robo task stdError');
     }
 
     public function tagListMachine(AcceptanceTester $i): void
@@ -69,11 +90,14 @@ class RunRoboTaskCest
         $roboTaskName = 'tag:list-machine';
         $id = $roboTaskName;
         $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
-        $i->assertEquals(0, $i->getRoboTaskExitCode($id));
+        $exitCode = $i->getRoboTaskExitCode($id);
+        $stdOutput = $i->getRoboTaskStdOutput($id);
+
+        $i->assertEquals(0, $exitCode, 'Robo task exit code');
         $i->assertEquals(
             file_get_contents("{$this->expectedDir}/tag-list-machine.yml"),
-            $i->getRoboTaskStdOutput($id)
+            $stdOutput,
+            'Robo task stdOutput'
         );
-        $i->assertEquals('', $i->getRoboTaskStdError($id));
     }
 }

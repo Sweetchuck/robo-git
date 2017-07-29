@@ -132,14 +132,6 @@ class GitReadStagedFilesTask extends BaseTask
             }
         }
 
-        if ($this->hasAssetJar()) {
-            foreach ($this->assets as $key => $value) {
-                if ($this->getAssetJarMap($key)) {
-                    $this->setAssetJarValue($key, $value);
-                }
-            }
-        }
-
         return Result::success($this, '@todo', $this->assets);
     }
 
