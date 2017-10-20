@@ -2,16 +2,14 @@
 
 namespace Sweetchuck\Robo\Git\Task;
 
-use Sweetchuck\AssetJar\AssetJarAware;
-use Sweetchuck\AssetJar\AssetJarAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Robo\TaskAccessor;
 use Sweetchuck\Robo\Git\Utils;
 use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Robo\Common\IO;
 use Robo\Contract\OutputAwareInterface;
 use Robo\Result;
 use Robo\Task\BaseTask as RoboBaseTask;
-use Robo\TaskAccessor;
 use Robo\TaskInfo;
 use Symfony\Component\Process\Process;
 
