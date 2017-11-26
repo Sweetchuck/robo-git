@@ -543,7 +543,7 @@ class GitListFilesTask extends BaseTask implements CommandInterface
                 'value' => $this->getExcludeFile(),
             ],
             'paths' => [
-                'type' => 'arg:list',
+                'type' => 'arg-extra:list',
                 'value' => $this->getPaths(),
             ],
         ] + parent::getOptions();
