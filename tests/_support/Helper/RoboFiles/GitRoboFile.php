@@ -12,6 +12,69 @@ class GitRoboFile extends BaseRoboFile
 {
     use GitTaskLoader;
 
+    /**
+     * @command current-branch:success
+     */
+    public function currentBranchSuccess(string $branchName)
+    {
+        return $this->collectionBuilder()->addCode(function () use ($branchName) {
+            $tmpDir = $this->_tmpDir();
+
+            $this
+                ->currentBranchPrepareTheGitRepo($tmpDir)
+                ->taskGitStack()
+                ->dir($tmpDir)
+                ->checkout($branchName)
+                ->printOutput(false)
+                ->run()
+                ->stopOnFail();
+
+            $result = $this
+                ->taskGitCurrentBranch()
+                ->setWorkingDirectory($tmpDir)
+                ->run()
+                ->stopOnFail();
+
+            $this->output()->writeln('long: ' . $result['gitCurrentBranch.long']);
+            $this->output()->writeln('short: ' . $result['gitCurrentBranch.short']);
+
+            return 0;
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    protected function currentBranchPrepareTheGitRepo(string $tmpDir)
+    {
+        $readMeContent = "# Foo\n";
+        $readMeFileName = "$tmpDir/README.md";
+
+        $this
+            ->taskWriteToFile($readMeFileName)
+            ->text($readMeContent)
+            ->run()
+            ->stopOnFail();
+
+        $this
+            ->taskGitStack()
+            ->printOutput(false)
+            ->dir($tmpDir)
+            ->exec('init')
+            ->exec('checkout -b 1.0.x')
+            ->add($readMeFileName)
+            ->commit('Initial commit')
+            ->tag('1.0.0')
+            ->exec('branch 1.1.x')
+            ->exec('branch personal/a')
+            ->exec('branch personal/b/c')
+            ->exec('branch personal/b/d')
+            ->run()
+            ->stopOnFail();
+
+        return $this;
+    }
+
     public function readStagedFilesWithContent()
     {
         return $this->collectionBuilder()->addCode(function () {

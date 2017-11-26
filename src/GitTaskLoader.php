@@ -8,6 +8,18 @@ use Robo\Contract\OutputAwareInterface;
 trait GitTaskLoader
 {
     /**
+     * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitCurrentBranchTask
+     */
+    protected function taskGitCurrentBranch(array $options = [])
+    {
+        /** @var \Sweetchuck\Robo\Git\Task\GitCurrentBranchTask $task */
+        $task = $this->task(Task\GitCurrentBranchTask::class);
+        $task->setOptions($options);
+
+        return $task;
+    }
+
+    /**
      * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitListFilesTask
      */
     protected function taskGitListFiles(array $options = [])
