@@ -208,8 +208,11 @@ abstract class BaseTask extends RoboBaseTask implements
         $cmdOptionsPattern = [];
         $cmdOptionsArgs = [];
 
-        $cmdArgsPattern = [];
-        $cmdArgsArgs = [];
+        $cmdArgsNormalPattern = [];
+        $cmdArgsNormalArgs = [];
+
+        $cmdArgsExtraPattern = [];
+        $cmdArgsExtraArgs = [];
 
         $workingDir = $this->getWorkingDirectory();
         if ($workingDir) {
@@ -269,13 +272,20 @@ abstract class BaseTask extends RoboBaseTask implements
                     }
                     break;
 
-                case 'arg:list':
+                case 'arg-extra:list':
                     $args = Utils::filterEnabled($option['value']);
                     if ($args) {
-                        $cmdArgsPattern[] = trim(str_repeat(' %s', count($args)));
+                        $cmdArgsExtraPattern[] = trim(str_repeat(' %s', count($args)));
                         foreach ($args as $arg) {
-                            $cmdArgsArgs[] = escapeshellarg($arg);
+                            $cmdArgsExtraArgs[] = escapeshellarg($arg);
                         }
+                    }
+                    break;
+
+                case 'arg-normal':
+                    if ($option['value'] !== null) {
+                        $cmdArgsNormalPattern[] = '%s';
+                        $cmdArgsNormalArgs[] = escapeshellarg($option['value']);
                     }
                     break;
             }
@@ -283,9 +293,13 @@ abstract class BaseTask extends RoboBaseTask implements
 
         $cmdFragments[] = vsprintf(implode(' ', $cmdOptionsPattern), $cmdOptionsArgs);
 
-        if ($cmdArgsPattern) {
+        if ($cmdArgsNormalPattern) {
+            $cmdFragments[] = vsprintf(implode(' ', $cmdArgsNormalPattern), $cmdArgsNormalArgs);
+        }
+
+        if ($cmdArgsExtraPattern) {
             $cmdFragments[] = '--';
-            $cmdFragments[] = vsprintf(implode(' ', $cmdArgsPattern), $cmdArgsArgs);
+            $cmdFragments[] = vsprintf(implode(' ', $cmdArgsExtraPattern), $cmdArgsExtraArgs);
         }
 
         return implode(' ', array_filter($cmdFragments));
@@ -297,11 +311,20 @@ abstract class BaseTask extends RoboBaseTask implements
     public function run(): Result
     {
         return $this
+            ->runValidate()
             ->runPrepare()
             ->runHeader()
             ->runAction()
             ->runProcessOutputs()
             ->runReturn();
+    }
+
+    /**
+     * @return $this
+     */
+    protected function runValidate()
+    {
+        return $this;
     }
 
     /**

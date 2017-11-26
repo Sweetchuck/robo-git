@@ -116,6 +116,90 @@ class GitRoboFile extends BaseRoboFile
     }
 
     /**
+     * @command num-of-commits-between:basic
+     */
+    public function numOfCommitsBetweenBasic(string $fromRevName, string $toRevName): CollectionBuilder
+    {
+        return $this->collectionBuilder()->addCode(function () use ($fromRevName, $toRevName) {
+            $tmpDir = $this->_tmpDir();
+
+            $result = $this
+                ->numOfCommitsBetweenPrepareGitRepo($tmpDir)
+                ->taskGitNumOfCommitsBetween()
+                ->setWorkingDirectory($tmpDir)
+                ->setOutput($this->output())
+                ->setVisibleStdOutput(false)
+                ->setFromRevName($fromRevName)
+                ->setToRevName($toRevName)
+                ->run()
+                ->stopOnFail();
+
+            $this
+                ->output()
+                ->writeln($result['numOfCommits']);
+
+            return $result;
+        });
+    }
+
+    protected function numOfCommitsBetweenPrepareGitRepo(string $tmpDir)
+    {
+        $readMeContent = "# Foo\n";
+        $readMeFileName = "$tmpDir/README.md";
+
+        $this
+            ->taskWriteToFile($readMeFileName)
+            ->text($readMeContent)
+            ->run()
+            ->stopOnFail();
+
+        $this
+            ->taskGitStack()
+            ->printOutput(false)
+            ->dir($tmpDir)
+            ->exec('init')
+            ->add($readMeFileName)
+            ->commit('Initial commit')
+            ->tag('1.0.0')
+            ->run()
+            ->stopOnFail();
+
+        $this
+            ->taskWriteToFile($readMeFileName)
+            ->append()
+            ->line('New line 1')
+            ->run()
+            ->stopOnFail();
+        $this
+            ->taskGitStack()
+            ->printOutput(false)
+            ->dir($tmpDir)
+            ->add($readMeFileName)
+            ->commit('Add new line 1 to README.md')
+            ->tag('1.0.1')
+            ->run()
+            ->stopOnFail();
+
+        $this
+            ->taskWriteToFile($readMeFileName)
+            ->append()
+            ->line('New line 2')
+            ->run()
+            ->stopOnFail();
+        $this
+            ->taskGitStack()
+            ->printOutput(false)
+            ->dir($tmpDir)
+            ->add($readMeFileName)
+            ->commit('Add new line 2 to README.md')
+            ->tag('1.0.3')
+            ->run()
+            ->stopOnFail();
+
+        return $this;
+    }
+
+    /**
      * @param string $tmpDir
      */
     protected function readStagedFilesPrepareTheGitRepo($tmpDir)

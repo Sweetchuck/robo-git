@@ -60,4 +60,23 @@ trait GitTaskLoader
 
         return $task;
     }
+
+    /**
+     * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitNumOfCommitsBetweenTask
+     */
+    protected function taskGitNumOfCommitsBetween(array $options = [])
+    {
+        /** @var \Sweetchuck\Robo\Git\Task\GitNumOfCommitsBetweenTask $task */
+        $task = $this->task(Task\GitNumOfCommitsBetweenTask::class);
+        $task->setOptions($options);
+        if ($this instanceof ContainerAwareInterface) {
+            $task->setContainer($this->getContainer());
+        }
+
+        if ($this instanceof OutputAwareInterface) {
+            $task->setOutput($this->output());
+        }
+
+        return $task;
+    }
 }

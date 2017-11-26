@@ -6,7 +6,7 @@ use Sweetchuck\Robo\Git\ListFilesItem;
 use Sweetchuck\Robo\Git\Task\GitListFilesTask;
 use Codeception\Test\Unit;
 use Codeception\Util\Stub;
-use Sweetchuck\Robo\Git\Test\Helper\Dummy\Output as DummyOutput;
+use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyOutput;
 use Sweetchuck\Robo\Git\Test\Helper\Dummy\Process as DummyProcess;
 use Robo\Robo;
 
