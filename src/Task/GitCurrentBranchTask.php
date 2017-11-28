@@ -2,12 +2,17 @@
 
 namespace Sweetchuck\Robo\Git\Task;
 
-class GitCurrentBranchTask extends GitSymbolicRefTask
+class GitCurrentBranchTask extends BaseTask
 {
     /**
      * {@inheritdoc}
      */
     protected $taskName = 'Git current branch';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $action = 'symbolic-ref';
 
     /**
      * @var array
