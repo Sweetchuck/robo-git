@@ -8,7 +8,7 @@ matrix:
     include:
         -
             dist: trusty
-            sudo: true
+            sudo: false
             language: 'php'
             php: '7.1'
 #        -

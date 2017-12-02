@@ -185,7 +185,8 @@ class GitListFilesTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitListFilesTask($options);
+        $task = new GitListFilesTask();
+        $task->setOptions($options);
         $this->assertEquals($expected, $task->getCommand());
     }
 
@@ -328,11 +329,12 @@ class GitListFilesTaskTest extends Unit
         /** @var GitListFilesTask $task */
         $task = Stub::construct(
             GitListFilesTask::class,
-            [$options, []],
+            [],
             [
                 'processClass' => DummyProcess::class,
             ]
         );
+        $task->setOptions($options);
 
         $processIndex = count(DummyProcess::$instances);
 
@@ -382,7 +384,7 @@ class GitListFilesTaskTest extends Unit
         /** @var GitListFilesTask $task */
         $task = Stub::construct(
             GitListFilesTask::class,
-            [[], []],
+            [],
             [
                 'processClass' => DummyProcess::class,
             ]
@@ -413,11 +415,12 @@ class GitListFilesTaskTest extends Unit
         /** @var \Sweetchuck\Robo\Git\Task\GitListFilesTask $task */
         $task = Stub::construct(
             GitListFilesTask::class,
-            [['visibleStdOutput' => true], []],
+            [],
             [
                 'processClass' => DummyProcess::class,
             ]
         );
+        $task->setOptions(['visibleStdOutput' => true]);
 
         $processIndex = count(DummyProcess::$instances);
 

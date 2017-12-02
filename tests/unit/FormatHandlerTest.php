@@ -2,17 +2,17 @@
 
 namespace Sweetchuck\Robo\Git\Tests\Unit;
 
-use Sweetchuck\Robo\Git\Utils;
 use Codeception\Test\Unit;
+use Sweetchuck\Robo\Git\FormatHandler;
 
-class UtilsTest extends Unit
+class FormatHandlerTest extends Unit
 {
     /**
      * @var \Sweetchuck\Robo\Git\Test\UnitTester
      */
     protected $tester;
 
-    public function casesParseTagListStdOutput(): array
+    public function casesParseStdOutput(): array
     {
         return [
             'basic' => [
@@ -35,19 +35,27 @@ class UtilsTest extends Unit
                 ]),
                 [
                     'key' => 'a',
-                    'tagSeparator' => '!',
+                    'refSeparator' => '!',
                     'propertySeparator' => '|',
                     'keyValueSeparator' => ' ',
+                    'properties' => [
+                        'a' => '_',
+                        'b' => '_',
+                        'c' => '_',
+                    ],
                 ],
             ],
         ];
     }
 
     /**
-     * @dataProvider casesParseTagListStdOutput
+     * @dataProvider casesParseStdOutput
      */
-    public function testParseTagListStdOutput(array $expected, string $stdOutput, array  $definition): void
+    public function testParseStdOutput(array $expected, string $stdOutput, array  $definition): void
     {
-        $this->tester->assertEquals($expected, Utils::parseTagListStdOutput($stdOutput, $definition));
+        $this->tester->assertEquals(
+            $expected,
+            (new FormatHandler())->parseStdOutput($stdOutput, $definition)
+        );
     }
 }
