@@ -2,10 +2,10 @@
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Sweetchuck\Robo\Git\Task\GitTagListTask;
+use Sweetchuck\Robo\Git\Task\GitBranchListTask;
 use Codeception\Test\Unit;
 
-class GitTagListTaskTest extends Unit
+class GitBranchListTaskTest extends Unit
 {
     /**
      * @var \Sweetchuck\Robo\Git\Test\UnitTester
@@ -16,34 +16,34 @@ class GitTagListTaskTest extends Unit
     {
         return [
             'basic' => [
-                "git tag --format 'none'",
+                "git branch --format 'none'",
                 [
                     'format' => 'none',
                 ],
             ],
             'workingDirectory' => [
-                "cd 'foo' && git tag --format 'none'",
+                "cd 'foo' && git branch --format 'none'",
                 [
                     'workingDirectory' => 'foo',
                     'format' => 'none',
                 ],
             ],
             'gitExecutable' => [
-                "my-git tag --format 'none'",
+                "my-git branch --format 'none'",
                 [
                     'gitExecutable' => 'my-git',
                     'format' => 'none',
                 ],
             ],
             'merged true empty' => [
-                "git tag --format 'none' --merged",
+                "git branch --format 'none' --merged",
                 [
                     'format' => 'none',
                     'mergedState' => true,
                 ],
             ],
             'merged true foo' => [
-                "git tag --format 'none' --merged 'foo'",
+                "git branch --format 'none' --merged 'foo'",
                 [
                     'format' => 'none',
                     'mergedState' => true,
@@ -51,14 +51,14 @@ class GitTagListTaskTest extends Unit
                 ],
             ],
             'merged false empty' => [
-                "git tag --format 'none' --no-merged",
+                "git branch --format 'none' --no-merged",
                 [
                     'format' => 'none',
                     'mergedState' => false,
                 ],
             ],
             'merged false foo' => [
-                "git tag --format 'none' --no-merged 'foo'",
+                "git branch --format 'none' --no-merged 'foo'",
                 [
                     'format' => 'none',
                     'mergedState' => false,
@@ -66,50 +66,52 @@ class GitTagListTaskTest extends Unit
                 ],
             ],
             'sort' => [
-                "git tag --format 'none' --sort 'foo'",
+                "git branch --format 'none' --sort 'foo'",
                 [
                     'format' => 'none',
                     'sort' => 'foo',
                 ],
             ],
             'list vector' => [
-                "git tag --format 'none' --list 'a' 'b'",
+                "git branch --format 'none' --list 'a' 'b'",
                 [
                     'format' => 'none',
                     'listPatterns' => ['a', 'b'],
                 ],
             ],
             'list assoc' => [
-                "git tag --format 'none' --list 'a' 'c'",
+                "git branch --format 'none' --list 'a' 'c'",
                 [
                     'format' => 'none',
                     'listPatterns' => ['a' => true, 'b' => false, 'c' => true],
                 ],
             ],
             'contains true empty' => [
-                "git tag --contains --format 'none'",
+                "git branch --contains --format 'none'",
                 [
                     'containsState' => true,
+                    'containsValue' => '',
+                    'format' => 'none',
+                ],
+            ],
+            'contains false empty' => [
+                "git branch --no-contains --format 'none'",
+                [
+                    'containsState' => false,
+                    'containsValue' => '',
                     'format' => 'none',
                 ],
             ],
             'contains true foo' => [
-                "git tag --contains 'foo' --format 'none'",
+                "git branch --contains 'foo' --format 'none'",
                 [
                     'containsState' => true,
                     'containsValue' => 'foo',
                     'format' => 'none',
                 ],
             ],
-            'contains false empty' => [
-                "git tag --no-contains --format 'none'",
-                [
-                    'containsState' => false,
-                    'format' => 'none',
-                ],
-            ],
             'contains false foo' => [
-                "git tag --no-contains 'foo' --format 'none'",
+                "git branch --no-contains 'foo' --format 'none'",
                 [
                     'containsState' => false,
                     'containsValue' => 'foo',
@@ -117,7 +119,7 @@ class GitTagListTaskTest extends Unit
                 ],
             ],
             'pointsAt foo' => [
-                "git tag --format 'none' --points-at 'foo'",
+                "git branch --format 'none' --points-at 'foo'",
                 [
                     'format' => 'none',
                     'pointsAt' => 'foo',
@@ -131,7 +133,7 @@ class GitTagListTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitTagListTask();
+        $task = new GitBranchListTask();
         $task->setOptions($options);
         $this->assertEquals($expected, $task->getCommand());
     }
@@ -141,7 +143,7 @@ class GitTagListTaskTest extends Unit
         $options = [
             'listPatterns' => [],
         ];
-        $task = new GitTagListTask();
+        $task = new GitBranchListTask();
         $task->setOptions($options);
         $task->addListPatterns(['a']);
         $task->addListPatterns(['b' => true]);

@@ -35,7 +35,8 @@ class GitCurrentBranchTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitCurrentBranchTask($options);
+        $task = new GitCurrentBranchTask();
+        $task->setOptions($options);
         $this->assertEquals($expected, $task->getCommand());
     }
 }

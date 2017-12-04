@@ -1,0 +1,103 @@
+
+version: 2
+
+_custom:
+    run_upgrade_git: &run_upgrade_git
+        name: 'Upgrade Git'
+        command: |
+            sudo bash -c 'echo "deb http://ftp.us.debian.org/debian testing main contrib non-free" >> /etc/apt/sources.list'
+            sudo apt-get update
+            sudo apt-get install -y git
+            sudo apt-get clean all
+            git --version
+    run_install_php_extensions: &run_install_php_extensions
+        name: 'Install PHP extensions'
+        command: |
+            sudo apt-get -y install zlib1g-dev
+            sudo docker-php-ext-install zip
+
+    run_install_composer: &run_install_composer
+        name: 'Install composer'
+        command: |
+            cd /tmp
+            EXPECTED_SIGNATURE=$(curl -q https://composer.github.io/installer.sig)
+            php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+            ACTUAL_SIGNATURE=$(php -r "echo hash_file('SHA384', 'composer-setup.php');")
+
+            if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]
+            then
+                >&2 echo 'ERROR: Invalid installer signature'
+                rm composer-setup.php
+
+                exit 1
+            fi
+
+            sudo php composer-setup.php --quiet --install-dir /usr/local/bin --filename composer
+            RESULT=$?
+            rm composer-setup.php
+
+            exit $RESULT
+
+    job_defaults: &job_defaults
+        docker:
+            - image: 'circleci/php:7.1'
+        working_directory: '~/repo'
+
+    job_lint_and_test: &job_lint_and_test
+        <<: *job_defaults
+        steps:
+            - 'checkout'
+            -
+                run:
+                    <<: *run_upgrade_git
+            -
+                run:
+                    <<: *run_install_php_extensions
+            -
+                run:
+                    <<: *run_install_composer
+            -
+                restore_cache:
+                    name: 'Cache restore - "./vendor"'
+                    keys:
+                        - 'v1-dependencies-{{ checksum "composer.lock" }}'
+                        - 'v1-dependencies-'
+            -
+                run:
+                    name: 'Build'
+                    command: 'composer install --no-interaction'
+            -
+                save_cache:
+                    name: 'Cache save - "./vendor"'
+                    paths:
+                        - './vendor'
+                    key: 'v1-dependencies-{{ checksum "composer.lock" }}'
+            -
+                run:
+                    name: 'Run linters'
+                    command: 'bin/robo lint'
+            -
+                run:
+                    name: 'Run tests'
+                    command: 'bin/robo test'
+            -
+                run:
+                    name: 'Publish the code coverage report on Codecov.io'
+                    when: 'always'
+                    command: >
+                        [ ! -s 'tests/_output/machine/coverage/all/coverage.xml' ]
+                        || bash <(curl -s https://codecov.io/bash)
+                        || true
+            -
+                store_test_results:
+                    path: 'tests/_output/machine/junit'
+
+jobs:
+    lint_and_test:
+        <<: *job_lint_and_test
+
+workflows:
+    version: 2
+    lint_and_test:
+        jobs:
+            - 'lint_and_test'

@@ -153,11 +153,6 @@ abstract class BaseTask extends RoboBaseTask implements
      */
     protected $command = '';
 
-    public function __construct(array $options = [])
-    {
-        $this->setOptions($options);
-    }
-
     public function getTaskName(): string
     {
         return $this->taskName ?: TaskInfo::formatTaskName($this);
@@ -233,6 +228,17 @@ abstract class BaseTask extends RoboBaseTask implements
                     }
                     break;
 
+                case 'flag:true-value':
+                    if ($option['value'] !== null) {
+                        $pattern = '--' . ($option['value'] === false ? 'no-' : '') . $optionName;
+                        if ($option['value'] && $option['value'] !== true) {
+                            $pattern .= ' %s';
+                            $cmdOptionsArgs[] = escapeshellarg($option['value']);
+                        }
+                        $cmdOptionsPattern[] = $pattern;
+                    }
+                    break;
+
                 case 'value:optional':
                     if ($option['value'] !== null) {
                         if ($option['value'] === '') {
@@ -261,7 +267,14 @@ abstract class BaseTask extends RoboBaseTask implements
                     }
                     break;
 
-                case 'value:state':
+                case 'state:value-required':
+                    if ($option['value']) {
+                        $cmdOptionsPattern[] = '--' . ($option['state'] ? '' : 'no-') . "$optionName %s";
+                        $cmdOptionsArgs[] = escapeshellarg($option['value']);
+                    }
+                    break;
+
+                case 'state:value-optional':
                     if ($option['state'] !== null) {
                         $pattern = '--' . ($option['state'] ? '' : 'no-') . $optionName;
                         if ($option['value']) {

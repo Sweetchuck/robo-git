@@ -2,17 +2,20 @@
 
 namespace Sweetchuck\Robo\Git\Task;
 
+use Sweetchuck\Robo\Git\Option\OptionAllTrait;
+use Sweetchuck\Robo\Git\Option\OptionColorTrait;
 use Sweetchuck\Robo\Git\Option\OptionContainsTrait;
 use Sweetchuck\Robo\Git\Option\OptionFormatTrait;
 use Sweetchuck\Robo\Git\Option\OptionListPatternsTrait;
 use Sweetchuck\Robo\Git\Option\OptionMergedTrait;
 use Sweetchuck\Robo\Git\Option\OptionPointsAtTrait;
 use Sweetchuck\Robo\Git\Option\OptionSortTrait;
-use Sweetchuck\Robo\Git\Utils;
 use Robo\Contract\CommandInterface;
 
-class GitTagListTask extends BaseTask implements CommandInterface
+class GitBranchListTask extends BaseTask implements CommandInterface
 {
+    use OptionAllTrait;
+    use OptionColorTrait;
     use OptionContainsTrait;
     use OptionFormatTrait;
     use OptionListPatternsTrait;
@@ -23,18 +26,18 @@ class GitTagListTask extends BaseTask implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    protected $taskName = 'Git tag list';
+    protected $taskName = 'Git branch list';
 
     /**
      * {@inheritdoc}
      */
-    protected $action = 'tag';
+    protected $action = 'branch';
 
     /**
      * @var array
      */
     protected $assets = [
-        'gitTags' => [],
+        'gitBranches' => [],
     ];
 
     /**
@@ -42,7 +45,7 @@ class GitTagListTask extends BaseTask implements CommandInterface
      */
     protected function getDefaultFormat(): string
     {
-        return 'tag-list.default';
+        return 'branch-list.default';
     }
 
     /**
@@ -50,7 +53,9 @@ class GitTagListTask extends BaseTask implements CommandInterface
      */
     protected function getOptions(): array
     {
-        return $this->getOptionsContains()
+        return $this->getOptionsAll()
+            + $this->getOptionsColor()
+            + $this->getOptionsContains()
             + $this->getOptionsFormat()
             + $this->getOptionsListPatterns()
             + $this->getOptionsMerged()
@@ -67,20 +72,12 @@ class GitTagListTask extends BaseTask implements CommandInterface
         parent::setOptions($options);
         foreach ($options as $key => $value) {
             switch ($key) {
-                case 'mergedState':
-                    $this->setMergedState($value);
+                case 'all':
+                    $this->setAll($value);
                     break;
 
-                case 'mergedValue':
-                    $this->setMergedValue($value);
-                    break;
-
-                case 'sort':
-                    $this->setSort($value);
-                    break;
-
-                case 'listPatterns':
-                    $this->setListPatterns($value);
+                case 'color':
+                    $this->setColor($value);
                     break;
 
                 case 'containsState':
@@ -91,12 +88,28 @@ class GitTagListTask extends BaseTask implements CommandInterface
                     $this->setContainsValue($value);
                     break;
 
+                case 'format':
+                    $this->setFormat($value);
+                    break;
+
+                case 'listPatterns':
+                    $this->setListPatterns($value);
+                    break;
+
+                case 'mergedState':
+                    $this->setMergedState($value);
+                    break;
+
+                case 'mergedValue':
+                    $this->setMergedValue($value);
+                    break;
+
                 case 'pointsAt':
                     $this->setPointsAt($value);
                     break;
 
-                case 'format':
-                    $this->setFormat($value);
+                case 'sort':
+                    $this->setSort($value);
                     break;
             }
         }
@@ -110,7 +123,7 @@ class GitTagListTask extends BaseTask implements CommandInterface
     protected function runProcessOutputs()
     {
         if ($this->formatMachineReadableDefinition) {
-            $this->assets['gitTags'] = $this
+            $this->assets['gitBranches'] = $this
                 ->getFormatHandler()
                 ->parseStdOutput($this->actionStdOutput, $this->formatMachineReadableDefinition);
         }

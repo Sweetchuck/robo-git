@@ -45,7 +45,8 @@ class GitReadStagedFilesTaskTest extends Unit
                 '*.j',
             ],
         ];
-        $task = new GitReadStagedFilesTask($options);
+        $task = new GitReadStagedFilesTask();
+        $task->setOptions($options);
 
         $this->assertEquals($options['workingDirectory'], $task->getWorkingDirectory());
         $this->assertEquals($options['gitExecutable'], $task->getGitExecutable());

@@ -43,7 +43,8 @@ class GitNumOfCommitsBetweenTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitNumOfCommitsBetweenTask($options);
+        $task = new GitNumOfCommitsBetweenTask();
+        $task->setOptions($options);
         $this->assertEquals($expected, $task->getCommand());
     }
 }
