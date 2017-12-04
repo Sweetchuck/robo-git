@@ -78,19 +78,23 @@ _custom:
                     command: 'bin/robo lint'
             -
                 run:
-                    name: 'Run tests'
-                    command: 'bin/robo test'
+                    name: 'Codeception - unit'
+                    command: 'bin/robo test unit'
+            -
+                run:
+                    name: 'Codeception - acceptance'
+                    command: 'bin/robo test acceptance'
+            -
+                store_test_results:
+                    path: 'tests/_output/machine/junit'
             -
                 run:
                     name: 'Publish the code coverage report on Codecov.io'
                     when: 'always'
                     command: >
-                        [ ! -s 'tests/_output/machine/coverage/all/coverage.xml' ]
+                        [ ! -s tests/_output/machine/coverage/*/coverage.xml ]
                         || bash <(curl -s https://codecov.io/bash)
                         || true
-            -
-                store_test_results:
-                    path: 'tests/_output/machine/junit'
 
 jobs:
     lint_and_test:

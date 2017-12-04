@@ -261,9 +261,6 @@ class RoboFile extends Tasks
     {
         $this->initCodeceptionInfo();
 
-        $this->environmentType = 'ci';
-        $this->environmentName = 'circleci';
-
         $withCoverageHtml = in_array($this->environmentType, ['dev']);
         $withCoverageXml = in_array($this->environmentType, ['ci']);
 
@@ -330,13 +327,16 @@ class RoboFile extends Tasks
         }
 
         if ($withUnitReportXml) {
+            $jUnitFilePath = "machine/junit/$suite/junit.$suite.xml";
+            $dirToCreate = Path::getDirectory("$logDir/$jUnitFilePath");
+
             $cmdPattern .= ' --xml=%s';
-            $cmdArgs[] = escapeshellarg("machine/junit/junit.$suite.xml");
+            $cmdArgs[] = escapeshellarg($jUnitFilePath);
 
             $cb->addTask(
                 $this
                     ->taskFilesystemStack()
-                    ->mkdir("$logDir/machine/junit")
+                    ->mkdir($dirToCreate)
             );
         }
 
