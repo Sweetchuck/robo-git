@@ -2,16 +2,19 @@
 
 namespace Sweetchuck\Robo\Git\Task;
 
+use Sweetchuck\Robo\Git\Argument\ArgumentPathsTrait;
 use Sweetchuck\Robo\Git\Utils;
 use Robo\Result;
 use Symfony\Component\Process\Process;
 
 class GitReadStagedFilesTask extends BaseTask
 {
+    use ArgumentPathsTrait;
+
     /**
      * {@inheritdoc}
      */
-    protected $taskName = 'Git read staged files';
+    protected $taskName = 'Git - Read staged files';
 
     /**
      * {@inheritdoc}
@@ -43,28 +46,6 @@ class GitReadStagedFilesTask extends BaseTask
         return $this;
     }
     //endregion
-
-    //region Option - paths
-    /**
-     * @var string[]
-     */
-    protected $paths = [];
-
-    public function getPaths(): array
-    {
-        return $this->paths;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setPaths(array $paths)
-    {
-        $this->paths = $paths;
-
-        return $this;
-    }
-    //endregion
     //endregion
 
     /**
@@ -73,16 +54,13 @@ class GitReadStagedFilesTask extends BaseTask
     public function setOptions(array $options)
     {
         parent::setOptions($options);
-        foreach ($options as $key => $value) {
-            switch ($key) {
-                case 'commandOnly':
-                    $this->setCommandOnly($value);
-                    break;
 
-                case 'paths':
-                    $this->setPaths($value);
-                    break;
-            }
+        if (isset($options['commandOnly'])) {
+            $this->setCommandOnly($options['commandOnly']);
+        }
+
+        if (isset($options['paths'])) {
+            $this->setPaths($options['paths']);
         }
 
         return $this;

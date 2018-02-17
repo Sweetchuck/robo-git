@@ -2,9 +2,6 @@
 
 namespace Sweetchuck\Robo\Git;
 
-use League\Container\ContainerAwareInterface;
-use Robo\Contract\OutputAwareInterface;
-
 trait GitTaskLoader
 {
     /**
@@ -56,6 +53,18 @@ trait GitTaskLoader
     }
 
     /**
+     * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitListStagedFilesTask
+     */
+    protected function taskGitListStagedFiles(array $options = [])
+    {
+        /** @var \Sweetchuck\Robo\Git\Task\GitListStagedFilesTask $task */
+        $task = $this->task(Task\GitListStagedFilesTask::class);
+        $task->setOptions($options);
+
+        return $task;
+    }
+
+    /**
      * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitNumOfCommitsBetweenTask
      */
     protected function taskGitNumOfCommitsBetween(array $options = [])
@@ -74,6 +83,18 @@ trait GitTaskLoader
     {
         /** @var \Sweetchuck\Robo\Git\Task\GitTagListTask $task */
         $task = $this->task(Task\GitTagListTask::class);
+        $task->setOptions($options);
+
+        return $task;
+    }
+
+    /**
+     * @return \Robo\Collection\CollectionBuilder|Task\GitTopLevelTask
+     */
+    protected function taskGitTopLevel(array $options = [])
+    {
+        /** @var \Sweetchuck\Robo\Git\Task\GitTopLevelTask $task */
+        $task = $this->task(Task\GitTopLevelTask::class);
         $task->setOptions($options);
 
         return $task;

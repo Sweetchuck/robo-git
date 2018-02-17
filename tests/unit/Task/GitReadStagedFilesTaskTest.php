@@ -41,8 +41,8 @@ class GitReadStagedFilesTaskTest extends Unit
             'gitExecutable' => 'h',
             'commandOnly' => true,
             'paths' => [
-                'i',
-                '*.j',
+                'i' => true,
+                '*.j' => true,
             ],
         ];
         $task = new GitReadStagedFilesTask();
