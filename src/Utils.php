@@ -44,4 +44,14 @@ class Utils
     {
         return md5(uniqid(rand()));
     }
+
+    /**
+     * @return string[]
+     */
+    public static function splitLines(string $text): array
+    {
+        $text = trim($text, "\r\n");
+
+        return $text ? preg_split('/[\r\n]+/', $text) : [];
+    }
 }

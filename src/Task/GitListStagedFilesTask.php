@@ -5,6 +5,7 @@ namespace Sweetchuck\Robo\Git\Task;
 use Robo\Contract\BuilderAwareInterface;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Sweetchuck\Robo\Git\Argument\ArgumentPathsTrait;
+use Sweetchuck\Robo\Git\Utils;
 use Webmozart\PathUtil\Path;
 
 class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
@@ -70,6 +71,10 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
             $this->setPaths($options['paths']);
         }
 
+        if (isset($options['filePathStyle'])) {
+            $this->setFilePathStyle($options['filePathStyle']);
+        }
+
         return $this;
     }
 
@@ -106,10 +111,18 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
             return $this;
         }
 
-        $this->assets['files'] = preg_split('/[\r\n]+/', trim($this->actionStdOutput, "\r\n"));
+        $this->assets['files'] = Utils::splitLines($this->actionStdOutput);
 
         $filePathStyle = $this->getFilePathStyle();
-        if ($filePathStyle === 'relativeToTopLevel' || $filePathStyle === 'relativeToWorkingDirectory') {
+        if ($filePathStyle === 'relativeToTopLevel') {
+            return $this;
+        }
+
+        if ($filePathStyle === 'relativeToWorkingDirectory') {
+            foreach ($this->assets['files'] as $key => $file) {
+                $this->assets['files'][$key] = "./$file";
+            }
+
             return $this;
         }
 
