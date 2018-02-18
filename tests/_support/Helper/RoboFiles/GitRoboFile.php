@@ -301,12 +301,13 @@ class GitRoboFile extends BaseRoboFile
             ->readStagedFilesPrepareTheGitRepo()
             ->addTask($this->taskGitReadStagedFiles())
             ->addCode(function (RoboStateData $data) {
-                $this->output()->writeln('*** BEGIN Output ***');
+                $output = $this->output();
+                $output->writeln('*** BEGIN Output ***');
                 foreach ($data['files'] as $file) {
-                    $this->output()->writeln("--- {$file['fileName']} ---");
-                    $this->output()->write($file['content']);
+                    $output->writeln("--- {$file['fileName']} ---");
+                    $output->write($file['content']);
                 }
-                $this->output()->writeln('*** END Output ***');
+                $output->writeln('*** END Output ***');
 
                 return 0;
             });

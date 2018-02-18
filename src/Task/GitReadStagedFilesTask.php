@@ -2,16 +2,19 @@
 
 namespace Sweetchuck\Robo\Git\Task;
 
-use Sweetchuck\Robo\Git\Utils;
-use Robo\Result;
-use Symfony\Component\Process\Process;
+use Robo\Contract\BuilderAwareInterface;
+use Sweetchuck\Robo\Git\Argument\ArgumentPathsTrait;
+use Sweetchuck\Robo\Git\GitTaskLoader;
 
-class GitReadStagedFilesTask extends BaseTask
+class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface
 {
+    use ArgumentPathsTrait;
+    use GitTaskLoader;
+
     /**
      * {@inheritdoc}
      */
-    protected $taskName = 'Git read staged files';
+    protected $taskName = 'Git - Read staged files';
 
     /**
      * {@inheritdoc}
@@ -20,6 +23,11 @@ class GitReadStagedFilesTask extends BaseTask
         'workingDirectory' => '',
         'files' => [],
     ];
+
+    /**
+     * @var string[]
+     */
+    protected $stagedFileNames = [];
 
     //region Options.
     //region Option - commandOnly
@@ -43,28 +51,6 @@ class GitReadStagedFilesTask extends BaseTask
         return $this;
     }
     //endregion
-
-    //region Option - paths
-    /**
-     * @var string[]
-     */
-    protected $paths = [];
-
-    public function getPaths(): array
-    {
-        return $this->paths;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setPaths(array $paths)
-    {
-        $this->paths = $paths;
-
-        return $this;
-    }
-    //endregion
     //endregion
 
     /**
@@ -73,27 +59,43 @@ class GitReadStagedFilesTask extends BaseTask
     public function setOptions(array $options)
     {
         parent::setOptions($options);
-        foreach ($options as $key => $value) {
-            switch ($key) {
-                case 'commandOnly':
-                    $this->setCommandOnly($value);
-                    break;
 
-                case 'paths':
-                    $this->setPaths($value);
-                    break;
-            }
+        if (isset($options['commandOnly'])) {
+            $this->setCommandOnly($options['commandOnly']);
+        }
+
+        if (isset($options['paths'])) {
+            $this->setPaths($options['paths']);
         }
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function run(): Result
+    protected function runPrepare()
     {
-        $fileNames = $this->getStagedFileNames();
+        $this->runPrepareStagedFileNames();
+
+        return $this;
+    }
+
+    protected function runHeader()
+    {
+        $this->printTaskDebug(
+            'Read staged file contents from <info>{count}</info> files in directory <info>{workingDirectory}</info>',
+            [
+                'count' => count($this->stagedFileNames),
+                'workingDirectory' => $this->getWorkingDirectory() ?: '.',
+            ]
+        );
+
+        return $this;
+    }
+
+    protected function runAction()
+    {
+        $this->actionExitCode = 0;
+        $this->actionStdError = '';
+
         $baseDir = $this->getWorkingDirectory() ?: '.';
 
         $cmdPattern = '%s show :%s';
@@ -103,67 +105,53 @@ class GitReadStagedFilesTask extends BaseTask
         ];
 
         $this->assets['workingDirectory'] = $this->getWorkingDirectory();
-        foreach ($fileNames as $fileName) {
+        foreach ($this->stagedFileNames as $fileName) {
             if (!$this->fileExists("$baseDir/$fileName")) {
                 continue;
             }
 
             $cmdArgs['fileName'] = escapeshellarg($fileName);
 
-            $file = [
+            $this->assets['files'][$fileName] = [
                 'fileName' => $fileName,
                 'content' => null,
                 'command' => vsprintf($cmdPattern, $cmdArgs),
             ];
 
-            if ($this->getCommandOnly()) {
-                $this->assets['files'][$fileName] = $file;
-            } else {
-                /** @var Process $process */
-                $process = new $this->processClass($file['command'], $this->getWorkingDirectory());
+            if (!$this->getCommandOnly()) {
+                /** @var \Symfony\Component\Process\Process $process */
+                $process = new $this->processClass(
+                    $this->assets['files'][$fileName]['command'],
+                    $this->getWorkingDirectory()
+                );
 
                 $exitCode = $process->run();
+                // @todo Error handler.
                 if ($exitCode === 0) {
-                    $file['content'] = $process->getOutput();
-                    $this->assets['files'][$fileName] = $file;
-                } else {
-                    // @todo Error handler.
+                    $this->assets['files'][$fileName]['content'] = $process->getOutput();
                 }
             }
         }
 
-        return Result::success($this, '@todo', $this->assets);
+        return $this;
     }
 
     /**
-     * @todo Move the "git diff" to a separated Robo task.
-     *
-     * @return string[]
-     *
-     * @throws \Exception
+     * @return $this
      */
-    protected function getStagedFileNames(): array
+    protected function runPrepareStagedFileNames()
     {
-        $cmdPattern = '%s diff --name-only --cached';
-        $cmdArgs = [escapeshellcmd($this->getGitExecutable())];
+        $result = $this
+            ->taskGitListStagedFiles()
+            ->setWorkingDirectory($this->getWorkingDirectory())
+            ->setPaths($this->getPaths())
+            ->setFilePathStyle('relativeToWorkingDirectory')
+            ->run()
+            ->stopOnFail();
 
-        $paths = Utils::filterEnabled($this->getPaths());
-        if ($paths) {
-            $cmdPattern .= ' --' . str_repeat(' %s', count($paths));
-            foreach ($paths as $path) {
-                $cmdArgs[] = Utils::escapeShellArgWithWildcard($path);
-            }
-        }
-        $command = vsprintf($cmdPattern, $cmdArgs);
+        $this->stagedFileNames = $result['files'];
 
-        /** @var Process $process */
-        $process = new $this->processClass($command, $this->getWorkingDirectory());
-        $exitCode = $process->run();
-        if ($exitCode !== 0) {
-            throw new \Exception("Failed to run the following command `{$command}`", 42);
-        }
-
-        return explode("\n", trim($process->getOutput(), "\n"));
+        return $this;
     }
 
     protected function fileExists(string $fileName): bool

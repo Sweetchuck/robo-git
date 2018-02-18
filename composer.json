@@ -1,7 +1,7 @@
 {
     "name": "sweetchuck/robo-git",
     "description": "Robo task to read the content of the staged files",
-    "license": "GPL-2.0",
+    "license": "GPL-2.0-or-later",
     "config": {
         "bin-dir": "bin",
         "sort-packages": true,

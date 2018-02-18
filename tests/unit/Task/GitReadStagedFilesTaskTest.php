@@ -41,8 +41,8 @@ class GitReadStagedFilesTaskTest extends Unit
             'gitExecutable' => 'h',
             'commandOnly' => true,
             'paths' => [
-                'i',
-                '*.j',
+                'i' => true,
+                '*.j' => true,
             ],
         ];
         $task = new GitReadStagedFilesTask();
@@ -132,8 +132,9 @@ class GitReadStagedFilesTaskTest extends Unit
             GitReadStagedFilesTask::class,
             [
                 'processClass' => DummyProcess::class,
-                'getStagedFileNames' => function () use ($stagedFileNames) {
-                    return array_keys($stagedFileNames);
+                'stagedFileNames' => array_keys($stagedFileNames),
+                'runPrepareStagedFileNames' => function () {
+                    return;
                 },
                 'fileExists' => function (string $fileName) use ($stagedFileNames, $options) {
                     $wd = $options['workingDirectory'] ?? '.';
@@ -167,51 +168,5 @@ class GitReadStagedFilesTaskTest extends Unit
             $result['files'],
             'Result "files"'
         );
-    }
-
-    public function testGetStagedFileNames(): void
-    {
-        /** @var \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask $task */
-        $task = Stub::make(
-            GitReadStagedFilesTask::class,
-            [
-                'processClass' => DummyProcess::class,
-            ]
-        );
-        $method = static::getMethod('getStagedFileNames');
-
-        $processIndex = count(DummyProcess::$instances);
-        DummyProcess::$prophecy[$processIndex] = [
-            'exitCode' => 0,
-            DummyProcess::OUT => "a.php\nb.php",
-            DummyProcess::ERR => '',
-        ];
-        DummyProcess::$prophecy[++$processIndex] = [
-            'exitCode' => 1,
-            DummyProcess::OUT => '',
-            DummyProcess::ERR => '',
-        ];
-
-        $task->setPaths(['*.php']);
-
-        $this->tester->assertEquals(
-            [
-                'a.php',
-                'b.php',
-            ],
-            $method->invokeArgs($task, [])
-        );
-
-        $this->tester->assertEquals(
-            "git diff --name-only --cached -- *'.php'",
-            DummyProcess::$instances[0]->getCommandLine()
-        );
-
-        try {
-            $method->invokeArgs($task, []);
-            $this->tester->fail('Non-zero exit code was not handled.');
-        } catch (\Exception $e) {
-            $this->tester->assertTrue(true, 'OK');
-        }
     }
 }
