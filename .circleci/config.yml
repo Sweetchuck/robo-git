@@ -2,6 +2,17 @@
 version: 2
 
 _custom:
+    step__run__upgrade_git: &step__run__upgrade_git
+        name: 'Upgrade Git'
+        command: |
+            sudo apt install make libssl-dev libghc-zlib-dev libcurl4-gnutls-dev libexpat1-dev gettext unzip
+            cd /usr/src/
+            sudo wget https://github.com/git/git/archive/v2.19.1.tar.gz -O git.tar.gz
+            sudo tar -xf git.tar.gz
+            cd git-*
+            sudo make prefix=/usr/local all
+            sudo make prefix=/usr/local install
+            git --version
     step__run__install_php_extensions: &step__run__install_php_extensions
         name: 'Install PHP extensions'
         command: |
@@ -64,6 +75,9 @@ _custom:
         working_directory: '~/repo'
         steps:
             - 'checkout'
+            -
+                run:
+                    <<: *step__run__upgrade_git
             -
                 run:
                     <<: *step__run__install_php_extensions
