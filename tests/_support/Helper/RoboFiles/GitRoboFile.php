@@ -2,16 +2,20 @@
 
 namespace Sweetchuck\Robo\Git\Test\Helper\RoboFiles;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Robo\State\Data as RoboStateData;
 use Sweetchuck\Robo\Git\GitTaskLoader;
+use Sweetchuck\Robo\Git\ListStagedFilesItem;
 use Sweetchuck\Robo\Git\Utils;
 use Robo\Collection\CollectionBuilder;
 use Robo\Tasks as BaseRoboFile;
 use Symfony\Component\Yaml\Yaml;
 
-class GitRoboFile extends BaseRoboFile
+class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
 {
     use GitTaskLoader;
+    use LoggerAwareTrait;
 
     /**
      * @var string
@@ -62,38 +66,48 @@ class GitRoboFile extends BaseRoboFile
             ->collectionBuilder()
             ->addTask(
                 $this
-                    ->taskTmpDir('robo-git.', 'tests/_data/tmp')
+                    ->taskTmpDir('robo-git.', $this->tmpDirBase)
                     ->cwd(true)
             )
             ->addTask(
                 $this
                     ->taskFilesystemStack()
+                    ->stopOnFail(true)
                     ->mkdir('local')
                     ->mkdir('remote')
             )
+            ->addCode(function (RoboStateData $data): int {
+                $data['localDir'] = getcwd() . '/local';
+                $data['remoteDir'] = getcwd() . '/remote';
+
+                $data['local/a.txt'] = "{$data['localDir']}/a.txt";
+
+                return 0;
+            })
             ->addTask(
                 $this
                     ->taskGitStack()
                     ->stopOnFail(true)
                     ->printOutput(false)
-                    ->dir('remote')
                     ->exec('init --bare')
+                    ->deferTaskConfiguration('dir', 'remoteDir')
             )
             ->addTask(
                 $this
-                    ->taskWriteToFile('local/README.md')
-                    ->text("# Foo\n")
+                    ->taskWriteToFile('')
+                    ->text("# Step 01\n")
+                    ->deferTaskConfiguration('filename', 'local/a.txt')
             )
             ->addTask(
                 $this
                     ->getTaskGitStackInitWorkingCopy()
-                    ->dir('local')
                     ->exec("remote add 'origin' '../remote'")
-                    ->add('README.md')
+                    ->add('a.txt')
                     ->commit('Initial commit')
                     ->tag('1.0.0')
                     ->exec('branch "8.x-1.x"')
                     ->exec('push origin 8.x-1.x:8.x-1.x --set-upstream')
+                    ->deferTaskConfiguration('dir', 'localDir')
             );
     }
     // endregion
@@ -105,7 +119,7 @@ class GitRoboFile extends BaseRoboFile
     public function currentBranchSuccess(string $branchName): CollectionBuilder
     {
         return $this
-            ->currentBranchPrepareTheGitRepo()
+            ->currentBranchPrepareGitRepo()
             ->addTask(
                 $this
                     ->taskGitStack()
@@ -122,7 +136,7 @@ class GitRoboFile extends BaseRoboFile
     /**
      * @return $this
      */
-    protected function currentBranchPrepareTheGitRepo(): CollectionBuilder
+    protected function currentBranchPrepareGitRepo(): CollectionBuilder
     {
         return $this
             ->collectionBuilder()
@@ -158,21 +172,21 @@ class GitRoboFile extends BaseRoboFile
     public function listFiles(): CollectionBuilder
     {
         return $this
-            ->listFilesPrepareTheGitRepo()
+            ->listFilesPrepareGitRepo()
             ->addTask(
                 $this
                     ->taskGitListFiles()
-                    ->setOutput($this->output())
                     ->setVisibleStdOutput(true)
                     ->setShowStaged(true)
                     ->setFileStatusWithTags(true)
+                    ->setOutput($this->output())
             );
     }
 
     /**
      * @param string $tmpDir
      */
-    protected function listFilesPrepareTheGitRepo(): CollectionBuilder
+    protected function listFilesPrepareGitRepo(): CollectionBuilder
     {
 
         $cb = $this
@@ -213,6 +227,31 @@ class GitRoboFile extends BaseRoboFile
     }
     // endregion
 
+    // region GitListStagedFilesTask
+    /**
+     * @command list-staged-files
+     */
+    public function listStagedFiles()
+    {
+        return $this
+            ->listStagedFilesPrepareGitRepo()
+            ->addTask($this->taskGitListStagedFiles())
+            ->addCode(function (RoboStateData $data): int {
+                /** @var ListStagedFilesItem $file */
+                foreach ($data['files'] as $file) {
+                    $this->output()->writeln(sprintf('%s - %s', $file->status, $file->fileName));
+                }
+
+                return 0;
+            });
+    }
+
+    protected function listStagedFilesPrepareGitRepo(): CollectionBuilder
+    {
+        return $this->readStagedFilesPrepareGitRepo();
+    }
+    // endregion
+
     // region Task - GitNumOfCommitsBetweenTask
     /**
      * @command num-of-commits-between:basic
@@ -224,10 +263,10 @@ class GitRoboFile extends BaseRoboFile
             ->addTask(
                 $this
                     ->taskGitNumOfCommitsBetween()
-                    ->setOutput($this->output())
                     ->setVisibleStdOutput(false)
                     ->setFromRevName($fromRevName)
                     ->setToRevName($toRevName)
+                    ->setOutput($this->output())
             )
             ->addCode(function (RoboStateData $data) {
                 $this->output()->writeln($data['numOfCommits']);
@@ -298,8 +337,17 @@ class GitRoboFile extends BaseRoboFile
     public function readStagedFilesWithContent()
     {
         return $this
-            ->readStagedFilesPrepareTheGitRepo()
-            ->addTask($this->taskGitReadStagedFiles())
+            ->readStagedFilesPrepareGitRepo()
+            ->addTask(
+                $this
+                    ->taskGitListStagedFiles()
+                    ->setPaths(['*.php' => true])
+            )
+            ->addTask(
+                $this
+                    ->taskGitReadStagedFiles()
+                    ->deferTaskConfiguration('setPaths', 'fileNames')
+            )
             ->addCode(function (RoboStateData $data) {
                 $output = $this->output();
                 $output->writeln('*** BEGIN Output ***');
@@ -319,11 +367,17 @@ class GitRoboFile extends BaseRoboFile
     public function readStagedFilesWithoutContent()
     {
         return  $this
-            ->readStagedFilesPrepareTheGitRepo()
+            ->readStagedFilesPrepareGitRepo()
+            ->addTask(
+                $this
+                    ->taskGitListStagedFiles()
+                    ->setPaths(['*.php' => true])
+            )
             ->addTask(
                 $this
                     ->taskGitReadStagedFiles()
                     ->setCommandOnly(true)
+                    ->deferTaskConfiguration('setPaths', 'fileNames')
             )
             ->addCode(function (RoboStateData $data) {
                 $this->output()->writeln('*** BEGIN Output ***');
@@ -340,7 +394,7 @@ class GitRoboFile extends BaseRoboFile
     /**
      * @param string $tmpDir
      */
-    protected function readStagedFilesPrepareTheGitRepo(): CollectionBuilder
+    protected function readStagedFilesPrepareGitRepo(): CollectionBuilder
     {
         $cb = $this
             ->collectionBuilder()
@@ -350,7 +404,7 @@ class GitRoboFile extends BaseRoboFile
                     ->cwd(true)
             );
 
-        // Created 3 files with the same content.
+        // Creates 3 files with the same content.
         foreach (['a', 'b', 'c'] as $fileName) {
             $cb->addTask(
                 $this

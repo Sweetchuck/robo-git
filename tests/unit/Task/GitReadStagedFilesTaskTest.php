@@ -3,12 +3,10 @@
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask;
-use Codeception\Test\Unit;
-use Codeception\Util\Stub;
-use Sweetchuck\Robo\Git\Test\Helper\Dummy\Process as DummyProcess;
+use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 use Robo\Robo;
 
-class GitReadStagedFilesTaskTest extends Unit
+class GitReadStagedFilesTaskTest extends TaskTestBase
 {
     protected static function getMethod(string $name): \ReflectionMethod
     {
@@ -72,23 +70,24 @@ class GitReadStagedFilesTaskTest extends Unit
                     'files' => [
                         'a.php' => [
                             'fileName' => 'a.php',
-                            'command' => "git show :'a.php'",
                             'content' => 'Content of a.php',
+                            'command' => "git --no-pager show :'a.php'",
                         ],
                         'c.php' => [
                             'fileName' => 'c.php',
-                            'command' => "git show :'c.php'",
                             'content' => 'Content of c.php',
+                            'command' => "git --no-pager show :'c.php'",
                         ],
                     ],
                     'exitCode' => 0,
                 ],
                 [
-                    'a.php' => true,
-                    'b.php' => false,
-                    'c.php' => true,
+                    'paths' => [
+                        'a.php' => true,
+                        'b.php' => false,
+                        'c.php' => true,
+                    ],
                 ],
-                [],
             ],
             'without content' => [
                 [
@@ -96,23 +95,23 @@ class GitReadStagedFilesTaskTest extends Unit
                     'files' => [
                         'a.php' => [
                             'fileName' => 'a.php',
-                            'command' => "git show :'a.php'",
                             'content' => null,
+                            'command' => "git --no-pager show :'a.php'",
                         ],
                         'c.php' => [
                             'fileName' => 'c.php',
-                            'command' => "git show :'c.php'",
                             'content' => null,
+                            'command' => "git --no-pager show :'c.php'",
                         ],
                     ],
                     'exitCode' => 0,
                 ],
                 [
-                    'a.php' => true,
-                    'b.php' => false,
-                    'c.php' => true,
-                ],
-                [
+                    'paths' => [
+                        'a.php' => true,
+                        'b.php' => false,
+                        'c.php' => true,
+                    ],
                     'commandOnly' => true,
                 ],
             ],
@@ -122,48 +121,39 @@ class GitReadStagedFilesTaskTest extends Unit
     /**
      * @dataProvider casesRun
      */
-    public function testRun(array $expected, array $stagedFileNames, array $options): void
+    public function testRun(array $expected, array $options): void
     {
-        $container = Robo::createDefaultContainer();
-        Robo::setContainer($container);
-
-        /** @var \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask $task */
-        $task = Stub::make(
-            GitReadStagedFilesTask::class,
-            [
-                'processClass' => DummyProcess::class,
-                'stagedFileNames' => array_keys($stagedFileNames),
-                'runPrepareStagedFileNames' => function () {
-                    return;
-                },
-                'fileExists' => function (string $fileName) use ($stagedFileNames, $options) {
-                    $wd = $options['workingDirectory'] ?? '.';
-                    $key = substr($fileName, strlen($wd) + 1);
-
-                    return $stagedFileNames[$key];
-                },
-            ]
-        );
+        $task = $this->taskBuilder->taskGitReadStagedFiles($options);
+        $task->setContainer($this->container);
         $task->setOptions($options);
 
-        $processIndex = count(DummyProcess::$instances);
         foreach ($expected['files'] as $file) {
-            DummyProcess::$prophecy[$processIndex++] = [
+            if ($file['content'] === null) {
+                continue;
+            }
+
+            DummyProcess::$prophecy[] = [
                 'exitCode' => 0,
-                DummyProcess::OUT => $file['content'],
-                DummyProcess::ERR => '',
+                'stdOutput' => $file['content'],
+                'stdError' => '',
             ];
         }
 
         $result = $task->run();
 
-        $this->assertEquals(
+        static::assertSameSize(
+            DummyProcess::$instances,
+            DummyProcess::$prophecy,
+            'Amount of process'
+        );
+
+        static::assertSame(
             $expected['workingDirectory'],
             $result['workingDirectory'],
             'Result "workingDirectory"'
         );
 
-        $this->assertEquals(
+        static::assertSame(
             $expected['files'],
             $result['files'],
             'Result "files"'

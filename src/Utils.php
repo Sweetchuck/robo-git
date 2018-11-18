@@ -35,6 +35,9 @@ class Utils
         return $escaped ?: "''";
     }
 
+    /**
+     * @deprecated Use \Sweetchuck\Utils\Filter\ArrayFilterEnabled instead.
+     */
     public static function filterEnabled(array $items): array
     {
         return gettype(reset($items)) === 'boolean' ? array_keys($items, true, true) : $items;
@@ -52,6 +55,21 @@ class Utils
     {
         $text = trim($text, "\r\n");
 
-        return $text ? preg_split('/[\r\n]+/', $text) : [];
+        return $text ? preg_split('/[\r\n]+/u', $text) : [];
+    }
+
+    public static function parseDiffFilter(array $diffFilter): string
+    {
+        $statuses = [];
+        foreach ($diffFilter as $statusName => $status) {
+            if ($status === null) {
+                continue;
+            }
+
+            $statusName = mb_strtoupper($statusName);
+            $statuses[$statusName] = $status ? $statusName : mb_strtolower($statusName);
+        }
+
+        return implode('', $statuses);
     }
 }

@@ -5,7 +5,7 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 use Sweetchuck\Robo\Git\Task\GitBranchListTask;
 use Codeception\Test\Unit;
 
-class GitBranchListTaskTest extends Unit
+class GitBranchListTaskTest extends TaskTestBase
 {
     /**
      * @var \Sweetchuck\Robo\Git\Test\UnitTester

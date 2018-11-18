@@ -8,7 +8,6 @@ use Sweetchuck\Robo\Git\Option\OptionListPatternsTrait;
 use Sweetchuck\Robo\Git\Option\OptionMergedTrait;
 use Sweetchuck\Robo\Git\Option\OptionPointsAtTrait;
 use Sweetchuck\Robo\Git\Option\OptionSortTrait;
-use Sweetchuck\Robo\Git\Utils;
 use Robo\Contract\CommandInterface;
 
 class GitTagListTask extends BaseTask implements CommandInterface

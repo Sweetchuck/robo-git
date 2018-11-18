@@ -1,6 +1,6 @@
 *** BEGIN Output ***
---- ./a.php ---
-git show :'./a.php'
---- ./b.php ---
-git show :'./b.php'
+--- a.php ---
+git --no-pager show :'a.php'
+--- b.php ---
+git --no-pager show :'b.php'
 *** END Output ***

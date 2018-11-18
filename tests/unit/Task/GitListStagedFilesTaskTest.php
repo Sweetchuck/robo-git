@@ -14,13 +14,15 @@ class GitListStagedFilesTaskTest extends Unit
 
     public function casesGetCommand(): array
     {
+        $cmd = 'git --no-pager diff --no-color --name-status --cached -z';
+
         return [
             'basic' => [
-                'git diff --name-only --cached',
+                $cmd,
                 [],
             ],
             'paths' => [
-                "git diff --name-only --cached -- '*.php'",
+                "$cmd -- '*.php'",
                 [
                     'paths' => [
                         '*.php' => true,
@@ -29,15 +31,21 @@ class GitListStagedFilesTaskTest extends Unit
                 ],
             ],
             'filePathStyle:relativeToWorkingDirectory' => [
-                "git diff --name-only --cached --relative",
+                "$cmd --relative",
                 [
                     'filePathStyle' => 'relativeToWorkingDirectory',
                 ],
             ],
             'filePathStyle:absolute' => [
-                "git diff --name-only --cached",
+                $cmd,
                 [
                     'filePathStyle' => 'absolute',
+                ],
+            ],
+            'diffFilter' => [
+                "$cmd --diff-filter 'AMd'",
+                [
+                    'diffFilter' => ['A' => false, 'a' => true, 'm' => true, 'd' => false, 'C' => null],
                 ],
             ],
         ];

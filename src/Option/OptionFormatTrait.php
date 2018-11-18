@@ -48,9 +48,7 @@ trait OptionFormatTrait
     public function getOptionsFormat(): array
     {
         $format = $this->getFormat() ?: $this->getDefaultFormat();
-        if (is_string($format)
-            && isset(Utils::$predefinedRefFormats[$format])
-        ) {
+        if (is_string($format) && isset(Utils::$predefinedRefFormats[$format])) {
             $format = Utils::$predefinedRefFormats[$format];
         }
 

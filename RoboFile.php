@@ -1,8 +1,9 @@
 <?php
 
 use Consolidation\AnnotatedCommand\CommandData;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Robo\Tasks;
-use League\Container\ContainerInterface;
 use Robo\Collection\CollectionBuilder;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
@@ -12,9 +13,10 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use Webmozart\PathUtil\Path;
 
-class RoboFile extends Tasks
+class RoboFile extends Tasks implements LoggerAwareInterface
 {
     use GitTaskLoader;
+    use LoggerAwareTrait;
 
     /**
      * @var array
@@ -395,34 +397,40 @@ class RoboFile extends Tasks
                 $cmdArgs[] = 'full';
 
                 if ($this->gitHook === 'pre-commit') {
-                    $files = [
-                        'src/',
-                        'tests/_support/Helper/',
-                        'tests/acceptance/',
-                        'tests/unit/',
-                        'RoboFile.php',
-                    ];
-
-                    $result = $this
-                        ->taskGitReadStagedFiles()
-                        ->setPaths($files)
+                     $result = $this
+                        ->collectionBuilder()
+                        ->addTask(
+                            $this
+                                ->taskGitListStagedFiles()
+                                ->setPaths(['*.php' => true])
+                                ->setDiffFilter(['d' => false])
+                                ->setAssetNamePrefix('staged.')
+                        )
+                        ->addTask(
+                            $this
+                                ->taskGitReadStagedFiles()
+                                ->setCommandOnly(true)
+                                ->deferTaskConfiguration('setPaths', 'staged.fileNames')
+                        )
                         ->run();
 
-                    if (!empty($result['files'])) {
-                        $cmdPattern = 'echo -n %s | ' . $cmdPattern . ' --stdin-path=%s';
-                        $cmdArgs = ['fileContent' => ''] + $cmdArgs + ['fileName' => ''];
+                    if (empty($result['files'])) {
+                        $this->logger->info('There is no PHP file added to the Git stage');
 
-                        foreach ($result['files'] as $file) {
-                            $cmdArgs['fileContent'] = escapeshellarg($file['content']);
-                            $cmdArgs['fileName'] = escapeshellarg($file['fileName']);
-
-                            $execStack->exec(vsprintf($cmdPattern, $cmdArgs));
-                        }
-
-                        return $execStack->run();
-                    } else {
                         return 0;
                     }
+
+                    $cmdPattern = '%s | ' . $cmdPattern . ' --stdin-path=%s';
+                    $cmdArgs = ['fileContentCmd' => ''] + $cmdArgs + ['fileName' => ''];
+
+                    foreach ($result['files'] as $file) {
+                        $cmdArgs['fileContentCmd'] = $file['command'];
+                        $cmdArgs['fileName'] = escapeshellarg($file['fileName']);
+
+                        $execStack->exec(vsprintf($cmdPattern, $cmdArgs));
+                    }
+
+                    return $execStack->run();
                 }
 
                 if ($this->environmentType === 'ci') {
