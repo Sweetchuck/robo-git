@@ -2,21 +2,12 @@
 version: 2
 
 _custom:
-    run_upgrade_git: &run_upgrade_git
-        name: 'Upgrade Git'
-        command: |
-            sudo bash -c 'echo "deb http://ftp.us.debian.org/debian testing main contrib non-free" >> /etc/apt/sources.list'
-            sudo apt-get update
-            sudo apt-get install -y git
-            sudo apt-get clean all
-            git --version
-    run_install_php_extensions: &run_install_php_extensions
+    step__run__install_php_extensions: &step__run__install_php_extensions
         name: 'Install PHP extensions'
         command: |
             sudo apt-get -y install zlib1g-dev
             sudo docker-php-ext-install zip
-
-    run_install_composer: &run_install_composer
+    step__run__install_composer: &step__run__install_composer
         name: 'Install composer'
         command: |
             cd /tmp
@@ -37,71 +28,90 @@ _custom:
             rm composer-setup.php
 
             exit $RESULT
+    step__restore_cache: &step__restore_cache
+        name: 'Cache restore - "./vendor"'
+        keys:
+            - 'v1-dependencies-{{ checksum "composer.lock" }}'
+            - 'v1-dependencies-'
+    step__run__composer_install: &step__run__composer_install
+        name: 'Build'
+        command: 'composer install --no-interaction'
+    step__save_cache: &step__save_cache
+        name: 'Cache save - "./vendor"'
+        paths:
+            - './vendor'
+        key: 'v1-dependencies-{{ checksum "composer.lock" }}'
+    step__run__linters: &step__run__linters
+        name: 'Run linters'
+        command: 'bin/robo lint'
+    step__run__codeception_unit: &step__run__codeception_unit
+        name: 'Codeception - unit'
+        command: 'bin/robo test unit'
+    step__run__codeception_acceptance: &step__run__codeception_acceptance
+        name: 'Codeception - acceptance'
+        command: 'bin/robo test acceptance'
+    step__store_test_results: &step__store_test_results
+        path: 'tests/_output/machine/junit'
+    step__run__codecov: &step__run__codecov
+        name: 'Publish the code coverage report on Codecov.io'
+        when: 'always'
+        command: >
+            [ ! -s tests/_output/machine/coverage/*/coverage.xml ]
+            || bash <(curl -s https://codecov.io/bash)
+            || true
 
-    job_defaults: &job_defaults
-        docker:
-            - image: 'circleci/php:7.1'
+    job__lint_and_test: &job__lint_and_test
         working_directory: '~/repo'
-
-    job_lint_and_test: &job_lint_and_test
-        <<: *job_defaults
         steps:
             - 'checkout'
             -
                 run:
-                    <<: *run_upgrade_git
+                    <<: *step__run__install_php_extensions
             -
                 run:
-                    <<: *run_install_php_extensions
-            -
-                run:
-                    <<: *run_install_composer
+                    <<: *step__run__install_composer
             -
                 restore_cache:
-                    name: 'Cache restore - "./vendor"'
-                    keys:
-                        - 'v1-dependencies-{{ checksum "composer.lock" }}'
-                        - 'v1-dependencies-'
+                    <<: *step__restore_cache
             -
                 run:
-                    name: 'Build'
-                    command: 'composer install --no-interaction'
+                    <<: *step__run__composer_install
             -
                 save_cache:
-                    name: 'Cache save - "./vendor"'
-                    paths:
-                        - './vendor'
-                    key: 'v1-dependencies-{{ checksum "composer.lock" }}'
+                    <<: *step__save_cache
             -
                 run:
-                    name: 'Run linters'
-                    command: 'bin/robo lint'
+                    <<: *step__run__linters
             -
                 run:
-                    name: 'Codeception - unit'
-                    command: 'bin/robo test unit'
+                    <<: *step__run__codeception_unit
             -
                 run:
-                    name: 'Codeception - acceptance'
-                    command: 'bin/robo test acceptance'
+                    <<: *step__run__codeception_acceptance
             -
                 store_test_results:
-                    path: 'tests/_output/machine/junit'
+                    <<: *step__store_test_results
             -
                 run:
-                    name: 'Publish the code coverage report on Codecov.io'
-                    when: 'always'
-                    command: >
-                        [ ! -s tests/_output/machine/coverage/*/coverage.xml ]
-                        || bash <(curl -s https://codecov.io/bash)
-                        || true
+                    <<: *step__run__codecov
 
 jobs:
-    lint_and_test:
-        <<: *job_lint_and_test
+    php701__lint_and_test:
+        <<: *job__lint_and_test
+        docker:
+            -
+                image: 'circleci/php:7.1'
+    php702__lint_and_test:
+        <<: *job__lint_and_test
+        docker:
+            -
+                image: 'circleci/php:7.2'
 
 workflows:
     version: 2
-    lint_and_test:
+    php701__lint_and_test:
         jobs:
-            - 'lint_and_test'
+            - 'php701__lint_and_test'
+    php702__lint_and_test:
+        jobs:
+            - 'php702__lint_and_test'

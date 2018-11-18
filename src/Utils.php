@@ -23,21 +23,6 @@ class Utils
     ];
 
     /**
-     * Escapes a shell argument which contains a wildcard (* or ?).
-     */
-    public static function escapeShellArgWithWildcard(string $arg): string
-    {
-        $parts = preg_split('@([\*\?]+)@', $arg, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $escaped = '';
-        foreach ($parts as $part) {
-            $isWildcard = (strpos($part, '*') !== false || strpos($part, '?') !== false);
-            $escaped .= $isWildcard ? $part : escapeshellarg($part);
-        }
-
-        return $escaped ?: "''";
-    }
-
-    /**
      * @deprecated Use \Sweetchuck\Utils\Filter\ArrayFilterEnabled instead.
      */
     public static function filterEnabled(array $items): array

@@ -70,9 +70,6 @@ class GitTopLevelTaskTest extends TaskTestBase
      */
     public function testRunSuccess(array $expected, array $options = []): void
     {
-        $task = $this->taskBuilder->taskGitTopLevel($options);
-        $task->setContainer($this->container);
-        $task->setOptions($options);
 
         $assetNamePrefix = $options['assetNamePrefix'] ?? '';
 
@@ -82,7 +79,11 @@ class GitTopLevelTaskTest extends TaskTestBase
             'stdError' => '',
         ];
 
-        $result = $task->run();
+        $result = $this
+            ->taskBuilder
+            ->taskGitTopLevel($options)
+            ->setContainer($this->container)
+            ->run();
 
         $this->tester->assertSameSize(
             DummyProcess::$instances,
