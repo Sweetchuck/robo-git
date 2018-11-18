@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Codeception\Test\Unit;
@@ -14,6 +16,11 @@ use Symfony\Component\Debug\BufferingLogger;
 
 class TaskTestBase extends Unit
 {
+    /**
+     * @var \Sweetchuck\Robo\Git\Test\UnitTester
+     */
+    protected $tester;
+
     /**
      * @var \League\Container\ContainerInterface
      */

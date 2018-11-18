@@ -1,17 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Sweetchuck\Robo\Git\Task\GitCurrentBranchTask;
-use Codeception\Test\Unit;
-
-class GitCurrentBranchTaskTest extends Unit
+class GitCurrentBranchTaskTest extends TaskTestBase
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
-
     public function casesGetCommand(): array
     {
         return [
@@ -35,8 +29,8 @@ class GitCurrentBranchTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitCurrentBranchTask();
-        $task->setOptions($options);
-        $this->assertEquals($expected, $task->getCommand());
+        $task = $this->taskBuilder->taskGitCurrentBranch($options);
+
+        $this->tester->assertEquals($expected, $task->getCommand());
     }
 }

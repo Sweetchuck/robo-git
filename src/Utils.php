@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git;
 
 class Utils
@@ -45,17 +47,7 @@ class Utils
 
     public static function getUniqueHash(): string
     {
-        return md5(uniqid(rand()));
-    }
-
-    /**
-     * @return string[]
-     */
-    public static function splitLines(string $text): array
-    {
-        $text = trim($text, "\r\n");
-
-        return $text ? preg_split('/[\r\n]+/u', $text) : [];
+        return md5(uniqid('', true));
     }
 
     public static function parseDiffFilter(array $diffFilter): string

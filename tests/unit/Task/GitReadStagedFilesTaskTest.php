@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
-use Robo\Robo;
 
 class GitReadStagedFilesTaskTest extends TaskTestBase
 {
@@ -16,11 +17,6 @@ class GitReadStagedFilesTaskTest extends TaskTestBase
 
         return $method;
     }
-
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
 
     /**
      * {@inheritdoc}
@@ -46,10 +42,10 @@ class GitReadStagedFilesTaskTest extends TaskTestBase
         $task = new GitReadStagedFilesTask();
         $task->setOptions($options);
 
-        $this->assertEquals($options['workingDirectory'], $task->getWorkingDirectory());
-        $this->assertEquals($options['gitExecutable'], $task->getGitExecutable());
-        $this->assertEquals($options['commandOnly'], $task->getCommandOnly());
-        $this->assertEquals($options['paths'], $task->getPaths());
+        $this->tester->assertEquals($options['workingDirectory'], $task->getWorkingDirectory());
+        $this->tester->assertEquals($options['gitExecutable'], $task->getGitExecutable());
+        $this->tester->assertEquals($options['commandOnly'], $task->getCommandOnly());
+        $this->tester->assertEquals($options['paths'], $task->getPaths());
     }
 
     public function casesRun(): array
@@ -141,19 +137,19 @@ class GitReadStagedFilesTaskTest extends TaskTestBase
 
         $result = $task->run();
 
-        static::assertSameSize(
+        $this->tester->assertSameSize(
             DummyProcess::$instances,
             DummyProcess::$prophecy,
             'Amount of process'
         );
 
-        static::assertSame(
+        $this->tester->assertSame(
             $expected['workingDirectory'],
             $result['workingDirectory'],
             'Result "workingDirectory"'
         );
 
-        static::assertSame(
+        $this->tester->assertSame(
             $expected['files'],
             $result['files'],
             'Result "files"'

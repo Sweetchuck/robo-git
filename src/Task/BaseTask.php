@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Task;
 
 use League\Container\ContainerAwareTrait;
-use Psr\Log\LoggerAwareInterface;
 use Robo\Contract\InflectionInterface;
 use Robo\TaskAccessor;
 use Sweetchuck\Robo\Git\Utils;

@@ -448,19 +448,14 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     {
         return $this
             ->tagListPrepareGitRepo()
-            ->addTask(
-                $this
-                    ->taskGitTagList()
-                    ->setVisibleStdOutput(false)
-                    ->setFormat(Utils::$predefinedRefFormats['tag-list.default'])
-            )
+            ->addTask($this->taskGitTagList())
             ->addCode(function (RoboStateData $data) {
-                $tags = $data['gitTags'];
+                $tags = $data['git.tags'];
                 $shaCounter = 1;
                 foreach (array_keys($tags) as $tag) {
                     $tags[$tag]['objectName'] = 'SHA-' . $shaCounter++;
                 }
-                $this->output()->write(Yaml::dump($tags));
+                $this->output()->write(Yaml::dump($tags), true);
 
                 return 0;
             });

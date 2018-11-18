@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Robo\Git\ListFilesItem;
@@ -9,11 +11,6 @@ use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
 class GitListFilesTaskTest extends TaskTestBase
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
-
     protected static function getMethod(string $name): \ReflectionMethod
     {
         $class = new \ReflectionClass(GitListFilesTask::class);
@@ -184,7 +181,7 @@ class GitListFilesTaskTest extends TaskTestBase
     {
         $task = $this->taskBuilder->taskGitListFiles($options);
 
-        static::assertSame($expected, $task->getCommand());
+        $this->tester->assertSame($expected, $task->getCommand());
     }
 
     public function casesParseStdOutput(): array
@@ -285,7 +282,7 @@ class GitListFilesTaskTest extends TaskTestBase
 
         $task->setOptions($options);
 
-        static::assertEquals($expected, $method->invoke($task, $stdOutput));
+        $this->tester->assertEquals($expected, $method->invoke($task, $stdOutput));
     }
 
     public function casesRunSuccess(): array
@@ -325,13 +322,13 @@ class GitListFilesTaskTest extends TaskTestBase
             ->taskGitListFiles($options)
             ->run();
 
-        static::assertSameSize(
+        $this->tester->assertSameSize(
             DummyProcess::$instances,
             DummyProcess::$prophecy,
             'Amount of process'
         );
 
-        static::assertSame(
+        $this->tester->assertSame(
             0,
             $result->getExitCode(),
             'Exit code is different than the expected.'
@@ -339,20 +336,20 @@ class GitListFilesTaskTest extends TaskTestBase
 
         $assetNamePrefix = $options['assetNamePrefix'] ?? '';
 
-        static::assertArrayHasKey(
+        $this->tester->assertArrayHasKey(
             "{$assetNamePrefix}workingDirectory",
             $result,
             "Asset exists: 'workingDirectory'"
         );
-        static::assertArrayHasKey(
+        $this->tester->assertArrayHasKey(
             "{$assetNamePrefix}files",
             $result,
             "Asset exists: 'files'"
         );
 
-        static::assertSameSize($expectedFiles, $result["{$assetNamePrefix}files"]);
+        $this->tester->assertSameSize($expectedFiles, $result["{$assetNamePrefix}files"]);
         foreach ($expectedFiles as $fileName => $file) {
-            static::assertEquals($file, $result["{$assetNamePrefix}files"][$fileName]);
+            $this->tester->assertEquals($file, $result["{$assetNamePrefix}files"][$fileName]);
         }
     }
 
@@ -370,13 +367,13 @@ class GitListFilesTaskTest extends TaskTestBase
             ->taskGitListFiles()
             ->run();
 
-        static::assertSameSize(
+        $this->tester->assertSameSize(
             DummyProcess::$instances,
             DummyProcess::$prophecy,
             'Amount of process'
         );
 
-        static::assertSame(1, $result->getExitCode());
+        $this->tester->assertSame(1, $result->getExitCode());
     }
 
     public function testRunVisibleStdOutput(): void
@@ -397,12 +394,12 @@ class GitListFilesTaskTest extends TaskTestBase
             ->setOutput($output)
             ->run();
 
-        static::assertSameSize(
+        $this->tester->assertSameSize(
             DummyProcess::$instances,
             DummyProcess::$prophecy,
             'Amount of process'
         );
 
-        static::assertSame('My custom std-output.', $output->output);
+        $this->tester->assertSame('My custom std-output.', $output->output);
     }
 }

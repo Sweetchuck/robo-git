@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Task;
 
 use Robo\Contract\BuilderAwareInterface;
+use Robo\Contract\CommandInterface;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Sweetchuck\Robo\Git\Argument\ArgumentPathsTrait;
 use Sweetchuck\Robo\Git\OutputParser\DiffNameStatusParser;
 use Sweetchuck\Robo\Git\Utils;
 
-class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
+class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, CommandInterface
 {
     use ArgumentPathsTrait;
     use GitTaskLoader;
