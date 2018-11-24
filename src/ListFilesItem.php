@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git;
 
 class ListFilesItem
@@ -49,7 +51,7 @@ class ListFilesItem
     {
         foreach ($properties as $name => $value) {
             if (!property_exists($this, $name)) {
-                trigger_error(sprintf('Unknown property %s::%s', __CLASS__, $name));
+                trigger_error(sprintf('Unknown property %s::%s', get_called_class(), $name));
 
                 continue;
             }

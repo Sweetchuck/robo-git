@@ -1,17 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Sweetchuck\Robo\Git\Task\GitCurrentBranchTask;
-use Codeception\Test\Unit;
+use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
-class GitCurrentBranchTaskTest extends Unit
+class GitCurrentBranchTaskTest extends TaskTestBase
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
-
     public function casesGetCommand(): array
     {
         return [
@@ -35,8 +31,64 @@ class GitCurrentBranchTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitCurrentBranchTask();
-        $task->setOptions($options);
-        $this->assertEquals($expected, $task->getCommand());
+        $task = $this->taskBuilder->taskGitCurrentBranch($options);
+
+        $this->tester->assertEquals($expected, $task->getCommand());
+    }
+
+    public function casesRunSuccess(): array
+    {
+        return [
+            'empty' => [
+                [
+                    'assets' => [
+                        'gitCurrentBranch.long' => '',
+                        'gitCurrentBranch.short' => '',
+                    ],
+                ],
+                [],
+            ],
+            'basic' => [
+                [
+                    'assets' => [
+                        'gitCurrentBranch.long' => 'refs/heads/issue/42',
+                        'gitCurrentBranch.short' => 'issue/42',
+                    ],
+                ],
+                [
+                    'stdOutput' => 'refs/heads/issue/42' . PHP_EOL,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider casesRunSuccess
+     */
+    public function testRunSuccess($expected, array $prophecy, array $options = []): void
+    {
+        $prophecy += [
+            'exitCode' => 0,
+            'stdOutput' => '',
+            'stdError' => '',
+        ];
+
+        DummyProcess::$prophecy[] = $prophecy;
+
+        $result = $this
+            ->taskBuilder
+            ->taskGitCurrentBranch($options)
+            ->setContainer($this->container)
+            ->run();
+
+        $this->tester->assertSameSize(
+            DummyProcess::$instances,
+            DummyProcess::$prophecy,
+            'Amount of process'
+        );
+
+        foreach ($expected['assets'] as $key => $value) {
+            $this->tester->assertEquals($value, $result[$key], "Result '$key'");
+        }
     }
 }

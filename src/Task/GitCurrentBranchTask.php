@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Task;
 
-class GitCurrentBranchTask extends BaseTask
+use Robo\Contract\CommandInterface;
+
+class GitCurrentBranchTask extends BaseTask implements CommandInterface
 {
     /**
      * {@inheritdoc}

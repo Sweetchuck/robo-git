@@ -1,26 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Sweetchuck\Robo\Git\Task\GitListStagedFilesTask;
-use Codeception\Test\Unit;
-
-class GitListStagedFilesTaskTest extends Unit
+class GitListStagedFilesTaskTest extends TaskTestBase
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
-
     public function casesGetCommand(): array
     {
+        $cmd = 'git --no-pager diff --no-color --name-status --cached -z';
+
         return [
             'basic' => [
-                'git diff --name-only --cached',
+                $cmd,
                 [],
             ],
             'paths' => [
-                "git diff --name-only --cached -- '*.php'",
+                "$cmd -- '*.php'",
                 [
                     'paths' => [
                         '*.php' => true,
@@ -29,15 +25,21 @@ class GitListStagedFilesTaskTest extends Unit
                 ],
             ],
             'filePathStyle:relativeToWorkingDirectory' => [
-                "git diff --name-only --cached --relative",
+                "$cmd --relative",
                 [
                     'filePathStyle' => 'relativeToWorkingDirectory',
                 ],
             ],
             'filePathStyle:absolute' => [
-                "git diff --name-only --cached",
+                $cmd,
                 [
                     'filePathStyle' => 'absolute',
+                ],
+            ],
+            'diffFilter' => [
+                "$cmd --diff-filter 'AMd'",
+                [
+                    'diffFilter' => ['A' => false, 'a' => true, 'm' => true, 'd' => false, 'C' => null],
                 ],
             ],
         ];
@@ -48,8 +50,8 @@ class GitListStagedFilesTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitListStagedFilesTask();
-        $task->setOptions($options);
-        $this->assertEquals($expected, $task->getCommand());
+        $task = $this->taskBuilder->taskGitListStagedFiles($options);
+
+        $this->tester->assertEquals($expected, $task->getCommand());
     }
 }

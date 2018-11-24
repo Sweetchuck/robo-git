@@ -1,9 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git;
 
 class FormatHandler implements FormatHandlerInterface
 {
+    /**
+     * @var callable
+     */
+    protected $uniqueHash;
+
+    public function __construct(?callable $uniqueHash = null)
+    {
+        $this->uniqueHash = $uniqueHash ?: [Utils::class, 'getUniqueHash'];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -15,8 +27,8 @@ class FormatHandler implements FormatHandlerInterface
 
         $definition = [
             'key' => 'refName',
-            'refSeparator' => Utils::getUniqueHash(),
-            'propertySeparator' => Utils::getUniqueHash(),
+            'refSeparator' => ($this->uniqueHash)(),
+            'propertySeparator' => ($this->uniqueHash)(),
             'keyValueSeparator' => ' ',
             'properties' => $properties,
             'format' => [],

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Task;
 
 use League\Container\ContainerAwareTrait;
+use Robo\Contract\InflectionInterface;
 use Robo\TaskAccessor;
 use Sweetchuck\Robo\Git\Utils;
 use League\Container\ContainerAwareInterface;
@@ -11,11 +14,13 @@ use Robo\Contract\OutputAwareInterface;
 use Robo\Result;
 use Robo\Task\BaseTask as RoboBaseTask;
 use Robo\TaskInfo;
+use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Process\Process;
 
 abstract class BaseTask extends RoboBaseTask implements
     ContainerAwareInterface,
-    OutputAwareInterface
+    OutputAwareInterface,
+    InflectionInterface
 {
     use ContainerAwareTrait;
     use IO;
@@ -146,12 +151,12 @@ abstract class BaseTask extends RoboBaseTask implements
     /**
      * @var string
      */
-    protected $processClass = Process::class;
+    protected $command = '';
 
     /**
-     * @var string
+     * @var null|\Closure
      */
-    protected $command = '';
+    protected $processRunCallbackWrapper = null;
 
     public function getTaskName(): string
     {
@@ -168,24 +173,20 @@ abstract class BaseTask extends RoboBaseTask implements
      */
     public function setOptions(array $options)
     {
-        foreach ($options as $name => $value) {
-            switch ($name) {
-                case 'assetNamePrefix':
-                    $this->setAssetNamePrefix($value);
-                    break;
+        if (isset($options['assetNamePrefix'])) {
+            $this->setAssetNamePrefix($options['assetNamePrefix']);
+        }
 
-                case 'workingDirectory':
-                    $this->setWorkingDirectory($value);
-                    break;
+        if (isset($options['workingDirectory'])) {
+            $this->setWorkingDirectory($options['workingDirectory']);
+        }
 
-                case 'gitExecutable':
-                    $this->setGitExecutable($value);
-                    break;
+        if (isset($options['gitExecutable'])) {
+            $this->setGitExecutable($options['gitExecutable']);
+        }
 
-                case 'stdOutputVisible':
-                    $this->setVisibleStdOutput($value);
-                    break;
-            }
+        if (isset($options['stdOutputVisible'])) {
+            $this->setVisibleStdOutput($options['stdOutputVisible']);
         }
 
         return $this;
@@ -345,7 +346,17 @@ abstract class BaseTask extends RoboBaseTask implements
      */
     protected function runPrepare()
     {
+        $this->runPrepareProcessRunCallbackWrapper();
         $this->command = $this->getCommand();
+
+        return $this;
+    }
+
+    protected function runPrepareProcessRunCallbackWrapper()
+    {
+        $this->processRunCallbackWrapper = function (string $type, string $data): void {
+            $this->processRunCallback($type, $data);
+        };
 
         return $this;
     }
@@ -365,12 +376,11 @@ abstract class BaseTask extends RoboBaseTask implements
      */
     protected function runAction()
     {
-        /** @var \Symfony\Component\Process\Process $process */
-        $process = new $this->processClass($this->command);
+        $process = $this
+            ->getProcessHelper()
+            ->run($this->output(), $this->command, null, $this->processRunCallbackWrapper);
 
-        $this->actionExitCode = $process->run(function ($type, $data) {
-            $this->runCallback($type, $data);
-        });
+        $this->actionExitCode = $process->getExitCode();
         $this->actionStdOutput = $process->getOutput();
         $this->actionStdError = $process->getErrorOutput();
 
@@ -405,7 +415,7 @@ abstract class BaseTask extends RoboBaseTask implements
         );
     }
 
-    protected function runCallback(string $type, string $data): void
+    protected function processRunCallback(string $type, string $data): void
     {
         switch ($type) {
             case Process::OUT:
@@ -418,6 +428,15 @@ abstract class BaseTask extends RoboBaseTask implements
                 $this->printTaskError($data);
                 break;
         }
+    }
+
+    protected function getProcessHelper(): ProcessHelper
+    {
+        return $this
+            ->getContainer()
+            ->get('application')
+            ->getHelperSet()
+            ->get('process');
     }
 
     /**

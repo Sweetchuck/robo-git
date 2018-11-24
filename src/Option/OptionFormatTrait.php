@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Option;
 
 use Sweetchuck\Robo\Git\FormatHandler;
@@ -48,9 +50,7 @@ trait OptionFormatTrait
     public function getOptionsFormat(): array
     {
         $format = $this->getFormat() ?: $this->getDefaultFormat();
-        if (is_string($format)
-            && isset(Utils::$predefinedRefFormats[$format])
-        ) {
+        if (is_string($format) && isset(Utils::$predefinedRefFormats[$format])) {
             $format = Utils::$predefinedRefFormats[$format];
         }
 

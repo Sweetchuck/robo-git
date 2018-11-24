@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Task;
 
 use Sweetchuck\Robo\Git\Option\OptionAllTrait;

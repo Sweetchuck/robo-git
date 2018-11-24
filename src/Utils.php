@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git;
 
 class Utils
@@ -21,20 +23,8 @@ class Utils
     ];
 
     /**
-     * Escapes a shell argument which contains a wildcard (* or ?).
+     * @deprecated Use \Sweetchuck\Utils\Filter\ArrayFilterEnabled instead.
      */
-    public static function escapeShellArgWithWildcard(string $arg): string
-    {
-        $parts = preg_split('@([\*\?]+)@', $arg, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $escaped = '';
-        foreach ($parts as $part) {
-            $isWildcard = (strpos($part, '*') !== false || strpos($part, '?') !== false);
-            $escaped .= $isWildcard ? $part : escapeshellarg($part);
-        }
-
-        return $escaped ?: "''";
-    }
-
     public static function filterEnabled(array $items): array
     {
         return gettype(reset($items)) === 'boolean' ? array_keys($items, true, true) : $items;
@@ -42,16 +32,21 @@ class Utils
 
     public static function getUniqueHash(): string
     {
-        return md5(uniqid(rand()));
+        return md5(uniqid('', true));
     }
 
-    /**
-     * @return string[]
-     */
-    public static function splitLines(string $text): array
+    public static function parseDiffFilter(array $diffFilter): string
     {
-        $text = trim($text, "\r\n");
+        $statuses = [];
+        foreach ($diffFilter as $statusName => $status) {
+            if ($status === null) {
+                continue;
+            }
 
-        return $text ? preg_split('/[\r\n]+/', $text) : [];
+            $statusName = mb_strtoupper($statusName);
+            $statuses[$statusName] = $status ? $statusName : mb_strtolower($statusName);
+        }
+
+        return implode('', $statuses);
     }
 }

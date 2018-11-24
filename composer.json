@@ -16,9 +16,10 @@
     "require-dev": {
         "codeception/codeception": "^2.2",
         "squizlabs/php_codesniffer": "^3.0",
-        "sweetchuck/codeception-module-robo-task-runner": "^0.0",
+        "sweetchuck/codeception-module-robo-task-runner": "^0.5",
         "sweetchuck/git-hooks": "^0.0",
-        "symfony/finder": "^3.3",
+        "symfony/debug": "^4.1",
+        "symfony/finder": "^4.0",
         "webmozart/path-util": "^2.3"
     },
     "autoload": {

@@ -1,17 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-use Sweetchuck\Robo\Git\Task\GitTagListTask;
-use Codeception\Test\Unit;
-
-class GitTagListTaskTest extends Unit
+class GitTagListTaskTest extends TaskTestBase
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
-
     public function casesGetCommand(): array
     {
         return [
@@ -131,9 +125,9 @@ class GitTagListTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitTagListTask();
-        $task->setOptions($options);
-        $this->assertEquals($expected, $task->getCommand());
+        $task = $this->taskBuilder->taskGitTagList($options);
+
+        $this->tester->assertSame($expected, $task->getCommand());
     }
 
     public function testGetSetListPatterns(): void
@@ -141,19 +135,19 @@ class GitTagListTaskTest extends Unit
         $options = [
             'listPatterns' => [],
         ];
-        $task = new GitTagListTask();
-        $task->setOptions($options);
+        $task = $this->taskBuilder->taskGitTagList($options);
+
         $task->addListPatterns(['a']);
         $task->addListPatterns(['b' => true]);
-        $this->assertEquals(['a' => true, 'b' => true], $task->getListPatterns());
+        $this->tester->assertEquals(['a' => true, 'b' => true], $task->getListPatterns());
 
         $task->addListPattern('c');
-        $this->assertEquals(['a' => true, 'b' => true, 'c' => true], $task->getListPatterns());
+        $this->tester->assertEquals(['a' => true, 'b' => true, 'c' => true], $task->getListPatterns());
 
         $task->removeListPatterns(['a', 'c']);
-        $this->assertEquals(['a' => false, 'b' => true, 'c' => false], $task->getListPatterns());
+        $this->tester->assertEquals(['a' => false, 'b' => true, 'c' => false], $task->getListPatterns());
 
         $task->removeListPattern('b');
-        $this->assertEquals(['a' => false, 'b' => false, 'c' => false], $task->getListPatterns());
+        $this->tester->assertEquals(['a' => false, 'b' => false, 'c' => false], $task->getListPatterns());
     }
 }

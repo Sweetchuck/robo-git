@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Task;
 
 use Sweetchuck\Robo\Git\Option\OptionContainsTrait;
@@ -8,7 +10,6 @@ use Sweetchuck\Robo\Git\Option\OptionListPatternsTrait;
 use Sweetchuck\Robo\Git\Option\OptionMergedTrait;
 use Sweetchuck\Robo\Git\Option\OptionPointsAtTrait;
 use Sweetchuck\Robo\Git\Option\OptionSortTrait;
-use Sweetchuck\Robo\Git\Utils;
 use Robo\Contract\CommandInterface;
 
 class GitTagListTask extends BaseTask implements CommandInterface
@@ -110,7 +111,7 @@ class GitTagListTask extends BaseTask implements CommandInterface
     protected function runProcessOutputs()
     {
         if ($this->formatMachineReadableDefinition) {
-            $this->assets['gitTags'] = $this
+            $this->assets['git.tags'] = $this
                 ->getFormatHandler()
                 ->parseStdOutput($this->actionStdOutput, $this->formatMachineReadableDefinition);
         }

@@ -1,22 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Robo\Git\ListFilesItem;
 use Sweetchuck\Robo\Git\Task\GitListFilesTask;
-use Codeception\Test\Unit;
 use Codeception\Util\Stub;
-use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyOutput;
-use Sweetchuck\Robo\Git\Test\Helper\Dummy\Process as DummyProcess;
-use Robo\Robo;
+use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
-class GitListFilesTaskTest extends Unit
+class GitListFilesTaskTest extends TaskTestBase
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
-
     protected static function getMethod(string $name): \ReflectionMethod
     {
         $class = new \ReflectionClass(GitListFilesTask::class);
@@ -185,9 +179,9 @@ class GitListFilesTaskTest extends Unit
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = new GitListFilesTask();
-        $task->setOptions($options);
-        $this->assertEquals($expected, $task->getCommand());
+        $task = $this->taskBuilder->taskGitListFiles($options);
+
+        $this->tester->assertSame($expected, $task->getCommand());
     }
 
     public function casesParseStdOutput(): array
@@ -283,17 +277,12 @@ class GitListFilesTaskTest extends Unit
     public function testParseStdOutput(array $expected, array $options, string $stdOutput): void
     {
         /** @var GitListFilesTask $task */
-        $task = Stub::make(
-            GitListFilesTask::class,
-            [
-                'processClass' => DummyProcess::class,
-            ]
-        );
+        $task = Stub::make(GitListFilesTask::class);
         $method = static::getMethod('parseStdOutput');
 
         $task->setOptions($options);
 
-        $this->assertEquals($expected, $method->invoke($task, $stdOutput));
+        $this->tester->assertEquals($expected, $method->invoke($task, $stdOutput));
     }
 
     public function casesRunSuccess(): array
@@ -321,35 +310,25 @@ class GitListFilesTaskTest extends Unit
      */
     public function testRunSuccess(array $expectedFiles, array $options, string $prophecyStdOutput): void
     {
-        $container = Robo::createDefaultContainer();
-        Robo::setContainer($container);
-
-        $mainStdOutput = new DummyOutput([]);
-
-        /** @var GitListFilesTask $task */
-        $task = Stub::construct(
-            GitListFilesTask::class,
-            [],
-            [
-                'processClass' => DummyProcess::class,
-            ]
-        );
-        $task->setOptions($options);
-
         $processIndex = count(DummyProcess::$instances);
-
         DummyProcess::$prophecy[$processIndex] = [
             'exitCode' => 0,
-            DummyProcess::OUT => $prophecyStdOutput,
-            DummyProcess::ERR => '',
+            'stdOutput' => $prophecyStdOutput,
+            'stdError' => '',
         ];
 
-        $task->setLogger($container->get('logger'));
-        $task->setOutput($mainStdOutput);
+        $result = $this
+            ->taskBuilder
+            ->taskGitListFiles($options)
+            ->run();
 
-        $result = $task->run();
+        $this->tester->assertSameSize(
+            DummyProcess::$instances,
+            DummyProcess::$prophecy,
+            'Amount of process'
+        );
 
-        static::assertEquals(
+        $this->tester->assertSame(
             0,
             $result->getExitCode(),
             'Exit code is different than the expected.'
@@ -357,83 +336,70 @@ class GitListFilesTaskTest extends Unit
 
         $assetNamePrefix = $options['assetNamePrefix'] ?? '';
 
-        static::assertArrayHasKey(
+        $this->tester->assertArrayHasKey(
             "{$assetNamePrefix}workingDirectory",
             $result,
             "Asset exists: 'workingDirectory'"
         );
-        static::assertArrayHasKey(
+        $this->tester->assertArrayHasKey(
             "{$assetNamePrefix}files",
             $result,
             "Asset exists: 'files'"
         );
 
-        static::assertEquals(count($expectedFiles), count($result["{$assetNamePrefix}files"]));
+        $this->tester->assertSameSize($expectedFiles, $result["{$assetNamePrefix}files"]);
         foreach ($expectedFiles as $fileName => $file) {
-            static::assertEquals($file, $result["{$assetNamePrefix}files"][$fileName]);
+            $this->tester->assertEquals($file, $result["{$assetNamePrefix}files"][$fileName]);
         }
     }
 
     public function testRunError(): void
     {
-        $container = Robo::createDefaultContainer();
-        Robo::setContainer($container);
-
-        $mainStdOutput = new DummyOutput([]);
-
-        /** @var GitListFilesTask $task */
-        $task = Stub::construct(
-            GitListFilesTask::class,
-            [],
-            [
-                'processClass' => DummyProcess::class,
-            ]
-        );
-
         $processIndex = count(DummyProcess::$instances);
-
         DummyProcess::$prophecy[$processIndex] = [
             'exitCode' => 1,
-            DummyProcess::OUT => 'My custom std-output.',
-            DummyProcess::ERR => '',
+            'stdOutput' => 'My custom std-output.',
+            'stdError' => '',
         ];
 
-        $task->setLogger($container->get('logger'));
-        $task->setOutput($mainStdOutput);
+        $result = $this
+            ->taskBuilder
+            ->taskGitListFiles()
+            ->run();
 
-        $result = $task->run();
-        $this->assertEquals(1, $result->getExitCode());
+        $this->tester->assertSameSize(
+            DummyProcess::$instances,
+            DummyProcess::$prophecy,
+            'Amount of process'
+        );
+
+        $this->tester->assertSame(1, $result->getExitCode());
     }
 
     public function testRunVisibleStdOutput(): void
     {
-        $container = Robo::createDefaultContainer();
-        Robo::setContainer($container);
-
-        $mainStdOutput = new DummyOutput([]);
-
-        /** @var \Sweetchuck\Robo\Git\Task\GitListFilesTask $task */
-        $task = Stub::construct(
-            GitListFilesTask::class,
-            [],
-            [
-                'processClass' => DummyProcess::class,
-            ]
-        );
-        $task->setOptions(['visibleStdOutput' => true]);
-
         $processIndex = count(DummyProcess::$instances);
-
         DummyProcess::$prophecy[$processIndex] = [
             'exitCode' => 0,
-            DummyProcess::OUT => 'My custom std-output.',
-            DummyProcess::ERR => '',
+            'stdOutput' => 'My custom std-output.',
+            'stdError' => '',
         ];
 
-        $task->setLogger($container->get('logger'));
-        $task->setOutput($mainStdOutput);
+        /** @var \Sweetchuck\Codeception\Module\RoboTaskRunner\DummyOutput $output */
+        $output = $this->container->get('output');
 
-        $task->run();
-        $this->assertEquals('My custom std-output.', $mainStdOutput->output);
+        $this
+            ->taskBuilder
+            ->taskGitListFiles(['visibleStdOutput' => true])
+            ->setOutput($output)
+            ->run();
+
+        $this->tester->assertSameSize(
+            DummyProcess::$instances,
+            DummyProcess::$prophecy,
+            'Amount of process'
+        );
+
+        $this->tester->assertSame('My custom std-output.', $output->output);
     }
 }

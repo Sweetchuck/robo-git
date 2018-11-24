@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Task;
 
 use Robo\Contract\BuilderAwareInterface;
+use Robo\Contract\CommandInterface;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Sweetchuck\Robo\Git\Argument\ArgumentPathsTrait;
+use Sweetchuck\Robo\Git\OutputParser\DiffNameStatusParser;
 use Sweetchuck\Robo\Git\Utils;
-use Webmozart\PathUtil\Path;
 
-class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
+class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, CommandInterface
 {
     use ArgumentPathsTrait;
     use GitTaskLoader;
@@ -21,7 +24,7 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
     /**
      * {@inheritdoc}
      */
-    protected $action = 'diff';
+    protected $action = '--no-pager diff';
 
     // region filePathStyle
     /**
@@ -60,6 +63,28 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
     }
     // endregion
 
+    // region diffFilter
+    /**
+     * @var array
+     */
+    protected $diffFilter = [];
+
+    public function getDiffFilter(): array
+    {
+        return $this->diffFilter;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setDiffFilter(array $diffFilter)
+    {
+        $this->diffFilter = $diffFilter;
+
+        return $this;
+    }
+    // endregion
+
     /**
      * {@inheritdoc}
      */
@@ -75,6 +100,10 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
             $this->setFilePathStyle($options['filePathStyle']);
         }
 
+        if (isset($options['diffFilter'])) {
+            $this->setDiffFilter($options['diffFilter']);
+        }
+
         return $this;
     }
 
@@ -83,7 +112,11 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
         $filePathStyle = $this->getFilePathStyle();
 
         $options = [
-            '--name-only' => [
+            '--no-color' => [
+                'type' => 'flag',
+                'value' => true,
+            ],
+            '--name-status' => [
                 'type' => 'flag',
                 'value' => true,
             ],
@@ -91,9 +124,17 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
                 'type' => 'flag',
                 'value' => true,
             ],
+            '-z' => [
+                'type' => 'flag',
+                'value' => true,
+            ],
             '--relative' => [
                 'type' => 'flag',
                 'value' => $filePathStyle === 'relativeToWorkingDirectory',
+            ],
+            '--diff-filter' => [
+                'type' => 'value:required',
+                'value' => Utils::parseDiffFilter($this->getDiffFilter()),
             ],
             'argument:paths' => [
                 'type' => 'arg-extra:list',
@@ -106,36 +147,25 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface
 
     protected function runProcessOutputs()
     {
-        $this->assets['files'] = [];
-        if ($this->actionStdOutput === '' || $this->actionExitCode !== 0) {
-            return $this;
-        }
-
-        $this->assets['files'] = Utils::splitLines($this->actionStdOutput);
-
         $filePathStyle = $this->getFilePathStyle();
-        if ($filePathStyle === 'relativeToTopLevel') {
-            return $this;
+        $outputParser = new DiffNameStatusParser();
+        $outputParser->setFilePathStyle($this->getFilePathStyle());
+
+        if ($filePathStyle === 'absolute') {
+            $result = $this
+                ->taskGitTopLevel()
+                ->setWorkingDirectory($this->getWorkingDirectory())
+                ->run()
+                ->stopOnFail();
+
+            $outputParser->setGitTopLevelDir($result['git.topLevel']);
         }
 
-        if ($filePathStyle === 'relativeToWorkingDirectory') {
-            foreach ($this->assets['files'] as $key => $file) {
-                $this->assets['files'][$key] = "./$file";
-            }
-
-            return $this;
-        }
-
-        $result = $this
-            ->taskGitTopLevel()
-            ->setWorkingDirectory($this->getWorkingDirectory())
-            ->run()
-            ->stopOnFail();
-
-        $gitTopLevel = $result['git.topLevel'];
-        foreach ($this->assets['files'] as $key => $file) {
-            $this->assets['files'][$key] = Path::join($gitTopLevel, $file);
-        }
+        $this->assets = $outputParser->parse(
+            $this->actionExitCode,
+            $this->actionStdOutput,
+            $this->actionStdError
+        );
 
         return $this;
     }

@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Task;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Robo\Contract\BuilderAwareInterface;
 use Sweetchuck\Robo\Git\Argument\ArgumentPathsTrait;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 
-class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface
+class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface, LoggerAwareInterface
 {
     use ArgumentPathsTrait;
     use GitTaskLoader;
+    use LoggerAwareTrait;
 
     /**
      * {@inheritdoc}
@@ -21,13 +26,7 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface
      */
     protected $assets = [
         'workingDirectory' => '',
-        'files' => [],
     ];
-
-    /**
-     * @var string[]
-     */
-    protected $stagedFileNames = [];
 
     //region Options.
     //region Option - commandOnly
@@ -71,19 +70,16 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface
         return $this;
     }
 
-    protected function runPrepare()
-    {
-        $this->runPrepareStagedFileNames();
-
-        return $this;
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     protected function runHeader()
     {
+        $paths = array_keys($this->getPaths(), true);
         $this->printTaskDebug(
-            'Read staged file contents from <info>{count}</info> files in directory <info>{workingDirectory}</info>',
+            'Read content from <info>{count}</info> staged files from the <info>{workingDirectory}</info> directory',
             [
-                'count' => count($this->stagedFileNames),
+                'count' => count($paths),
                 'workingDirectory' => $this->getWorkingDirectory() ?: '.',
             ]
         );
@@ -91,25 +87,30 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function runAction()
     {
         $this->actionExitCode = 0;
         $this->actionStdError = '';
 
-        $baseDir = $this->getWorkingDirectory() ?: '.';
-
-        $cmdPattern = '%s show :%s';
+        $cmdPattern = '%s --no-pager show :%s';
         $cmdArgs = [
             'git' => escapeshellcmd($this->getGitExecutable()),
             'fileName' => null,
         ];
 
         $this->assets['workingDirectory'] = $this->getWorkingDirectory();
-        foreach ($this->stagedFileNames as $fileName) {
-            if (!$this->fileExists("$baseDir/$fileName")) {
-                continue;
-            }
+        $this->assets['files'] = [];
 
+        $workingDirectory = $this->assets['workingDirectory'] ?: '.';
+        $commandPrefix = ($workingDirectory && $workingDirectory !== '.') ?
+            sprintf('cd %s && ', escapeshellarg($workingDirectory))
+            : '';
+
+        $fileNames = array_keys($this->getPaths(), true);
+        foreach ($fileNames as $fileName) {
             $cmdArgs['fileName'] = escapeshellarg($fileName);
 
             $this->assets['files'][$fileName] = [
@@ -118,44 +119,36 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface
                 'command' => vsprintf($cmdPattern, $cmdArgs),
             ];
 
-            if (!$this->getCommandOnly()) {
-                /** @var \Symfony\Component\Process\Process $process */
-                $process = new $this->processClass(
-                    $this->assets['files'][$fileName]['command'],
-                    $this->getWorkingDirectory()
-                );
-
-                $exitCode = $process->run();
-                // @todo Error handler.
-                if ($exitCode === 0) {
-                    $this->assets['files'][$fileName]['content'] = $process->getOutput();
-                }
+            if ($this->getCommandOnly()) {
+                continue;
             }
+
+            $this->runActionSetContent($commandPrefix, $this->assets['files'][$fileName]);
         }
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function runPrepareStagedFileNames()
+    protected function runActionSetContent(string $commandPrefix, array &$item)
     {
-        $result = $this
-            ->taskGitListStagedFiles()
-            ->setWorkingDirectory($this->getWorkingDirectory())
-            ->setPaths($this->getPaths())
-            ->setFilePathStyle('relativeToWorkingDirectory')
-            ->run()
-            ->stopOnFail();
+        $process = $this
+            ->getProcessHelper()
+            ->run(
+                $this->output(),
+                "{$commandPrefix}{$item['command']}",
+                null,
+                $this->processRunCallbackWrapper
+            );
 
-        $this->stagedFileNames = $result['files'];
+        $exitCode = $process->getExitCode();
+        if ($exitCode !== 0) {
+            $this->printTaskDebug($process->getErrorOutput());
+
+            return $this;
+        }
+
+        $item['content'] = $process->getOutput();
 
         return $this;
-    }
-
-    protected function fileExists(string $fileName): bool
-    {
-        return file_exists($fileName);
     }
 }

@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sweetchuck\Robo\Git\Tests\Unit;
 
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
+use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\ListFilesItem;
 
-class ListFilesItemTest extends TestCase
+class ListFilesItemTest extends Unit
 {
+    /**
+     * @var \Sweetchuck\Robo\Git\Test\UnitTester
+     */
+    protected $tester;
 
     public function casesToString(): array
     {
@@ -28,6 +33,6 @@ class ListFilesItemTest extends TestCase
     {
         $item = new ListFilesItem($args);
 
-        Assert::assertEquals($expected, (string) $item);
+        $this->tester->assertEquals($expected, (string) $item);
     }
 }

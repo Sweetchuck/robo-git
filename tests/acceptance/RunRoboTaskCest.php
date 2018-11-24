@@ -2,6 +2,7 @@
 
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
+use Codeception\Example;
 use Robo\Robo;
 use Sweetchuck\Robo\Git\Test\AcceptanceTester;
 use Sweetchuck\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
@@ -76,31 +77,24 @@ class RunRoboTaskCest
     // endregion
 
     // region Task - GitCurrentBranchTask
-    public function currentBranchSuccess10x(AcceptanceTester $i): void
+    protected function currentBranchSuccessCases(): array
     {
-        $this->currentBranchSuccess($i, '1.0.x');
+        return [
+            '1.0.x' => ['branchName' => '1.0.x'],
+            '1.1.x' => ['branchName' => '1.1.x'],
+            'personal/a' => ['branchName' => 'personal/a'],
+            'personal/b/c' => ['branchName' => 'personal/b/c'],
+        ];
     }
 
-    public function currentBranchSuccess11x(AcceptanceTester $i): void
-    {
-        $this->currentBranchSuccess($i, '1.1.x');
-    }
-
-    public function currentBranchSuccessPersonalA(AcceptanceTester $i): void
-    {
-        $this->currentBranchSuccess($i, 'personal/a');
-    }
-
-    public function currentBranchSuccessPersonalBD(AcceptanceTester $i): void
-    {
-        $this->currentBranchSuccess($i, 'personal/b/d');
-    }
-
-    protected function currentBranchSuccess(AcceptanceTester $i, string $branchName): void
+    /**
+     * @dataProvider currentBranchSuccessCases
+     */
+    public function currentBranchSuccess(AcceptanceTester $i, Example $example): void
     {
         $roboTaskName = 'current-branch:success';
-        $id = "$roboTaskName:$branchName";
-        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName, $branchName);
+        $id = "$roboTaskName:{$example['branchName']}";
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName, $example['branchName']);
 
         $exitCode = $i->getRoboTaskExitCode($id);
         $stdOutput = $i->getRoboTaskStdOutput($id);
@@ -113,13 +107,12 @@ class RunRoboTaskCest
             'Robo task - stdError'
         );
         $assets = Yaml::parse($stdOutput);
-        $i->assertEquals($branchName, $assets['short'], 'Robo task - assets.short');
-        $i->assertEquals("refs/heads/$branchName", $assets['long'], 'Robo task - assets.long');
+        $i->assertEquals($example['branchName'], $assets['short'], 'Robo task - assets.short');
+        $i->assertEquals("refs/heads/{$example['branchName']}", $assets['long'], 'Robo task - assets.long');
     }
     // endregion
 
     // region Task - GitListFilesTask
-
     public function listFiles(AcceptanceTester $i): void
     {
         $roboTaskName = 'list-files';
@@ -135,49 +128,61 @@ class RunRoboTaskCest
     }
     // endregion
 
-    // region Task - GitNumOfCommitsBetweenTask
-    public function numOfCommitsBetweenBasicNormal(AcceptanceTester $i): void
+    // region Task - GitListStagedFilesTask
+    public function listStagedFiles(AcceptanceTester $i)
     {
-        $roboTaskName = 'num-of-commits-between:basic';
-        $id = "$roboTaskName:normal";
-        $i->runRoboTask(
-            $id,
-            GitRoboFile::class,
-            $roboTaskName,
-            '1.0.0',
-            '1.0.3'
-        );
-        $stdOutput = $i->getRoboTaskStdOutput($id);
-        $stdError = $i->getRoboTaskStdError($id);
-        $exitCode = $i->getRoboTaskExitCode($id);
+        $roboTaskName = 'list-staged-files';
+        $id = $roboTaskName;
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
 
-        $i->assertEquals("2\n", $stdOutput, 'Robo task stdOutput');
-        $i->assertContains(
-            "git rev-list --count '1.0.0..1.0.3'",
-            $stdError,
-            'Robo task stdError'
-        );
+        $exitCode = $i->getRoboTaskExitCode($id);
+        $stdOutput = $i->getRoboTaskStdOutput($id);
+
         $i->assertEquals(0, $exitCode, 'Robo task exit code');
+        $i->assertContains('A - a.php', $stdOutput, 'Robo task stdOutput a.php');
+        $i->assertContains('A - b.php', $stdOutput, 'Robo task stdOutput b.php');
+    }
+    // endregion
+
+    // region Task - GitNumOfCommitsBetweenTask
+    protected function numOfCommitsBetweenBasicCases(): array
+    {
+        return [
+            '1.0.0..1.0.3' => [
+                'expected' => 2,
+                'refFrom' => '1.0.0',
+                'refTo' => '1.0.3',
+            ],
+            '1.0.3..1.0.3' => [
+                'expected' => 0,
+                'refFrom' => '1.0.3',
+                'refTo' => '1.0.3',
+            ],
+        ];
     }
 
-    public function numOfCommitsBetweenBasicSame(AcceptanceTester $i): void
+    /**
+     * @dataProvider numOfCommitsBetweenBasicCases
+     */
+    public function numOfCommitsBetweenBasic(AcceptanceTester $i, Example $example): void
     {
+        $refRange = "{$example['refFrom']}..{$example['refTo']}";
         $roboTaskName = 'num-of-commits-between:basic';
-        $id = "$roboTaskName:same";
+        $id = "$roboTaskName:{$refRange}";
         $i->runRoboTask(
             $id,
             GitRoboFile::class,
             $roboTaskName,
-            '1.0.3',
-            '1.0.3'
+            $example['refFrom'],
+            $example['refTo']
         );
         $stdOutput = $i->getRoboTaskStdOutput($id);
         $stdError = $i->getRoboTaskStdError($id);
         $exitCode = $i->getRoboTaskExitCode($id);
 
-        $i->assertEquals("0\n", $stdOutput, 'Robo task stdOutput');
+        $i->assertEquals("{$example['expected']}\n", $stdOutput, 'Robo task stdOutput');
         $i->assertContains(
-            "git rev-list --count '1.0.3..1.0.3'",
+            "git rev-list --count '{$refRange}",
             $stdError,
             'Robo task stdError'
         );
