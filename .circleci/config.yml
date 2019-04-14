@@ -120,6 +120,11 @@ jobs:
         docker:
             -
                 image: 'circleci/php:7.2'
+    php703__lint_and_test:
+        <<: *job__lint_and_test
+        docker:
+            -
+                image: 'circleci/php:7.3'
 
 workflows:
     version: 2
@@ -129,3 +134,6 @@ workflows:
     php702__lint_and_test:
         jobs:
             - 'php702__lint_and_test'
+    php703__lint_and_test:
+        jobs:
+            - 'php703__lint_and_test'
