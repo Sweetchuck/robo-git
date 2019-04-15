@@ -3,28 +3,12 @@
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
 use Codeception\Example;
-use Robo\Robo;
 use Sweetchuck\Robo\Git\Test\AcceptanceTester;
 use Sweetchuck\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
 use Symfony\Component\Yaml\Yaml;
 
-class RunRoboTaskCest
+class RunRoboTaskCest extends CestBase
 {
-    /**
-     * @var string
-     */
-    protected $expectedDir = 'tests/_data/expected';
-
-    public function __construct()
-    {
-        $this->expectedDir = codecept_data_dir('expected');
-    }
-
-    public function _after()
-    {
-        Robo::createDefaultContainer();
-    }
-
     // region Task - GitBranchListTask
     public function branchListBasic(AcceptanceTester $i): void
     {

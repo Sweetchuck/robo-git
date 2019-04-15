@@ -7,7 +7,6 @@ use Psr\Log\LoggerAwareTrait;
 use Robo\State\Data as RoboStateData;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Sweetchuck\Robo\Git\ListStagedFilesItem;
-use Sweetchuck\Robo\Git\Utils;
 use Robo\Collection\CollectionBuilder;
 use Robo\Tasks as BaseRoboFile;
 use Symfony\Component\Yaml\Yaml;
@@ -227,7 +226,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     }
     // endregion
 
-    // region GitListStagedFilesTask
+    // region Task - GitListStagedFilesTask
     /**
      * @command list-staged-files
      */
@@ -250,6 +249,84 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     {
         return $this->readStagedFilesPrepareGitRepo();
     }
+    // endregion
+    
+    // region Task - GitListChangedFiles
+    /**
+     * @command list-changed-files
+     */
+    public function listChangedFiles($fromRevName = '', $toRevName = '')
+    {
+        $listChangedFilesTask = $this->taskGitListChangedFiles();
+        if ($fromRevName) {
+            $listChangedFilesTask->setFromRevName($fromRevName);
+            if ($toRevName) {
+                $listChangedFilesTask->setToRevName($toRevName);
+            }
+        }
+
+        return $this
+            ->listChangedFilesPrepareGitRepo()
+            ->addTask($listChangedFilesTask)
+            ->addCode(function (RoboStateData $data): int {
+                $output = $this->output();
+                /** @var ListStagedFilesItem $file */
+                foreach ($data['files'] as $file) {
+                    $output->writeln(sprintf('%s - %s', $file->status, $file->fileName));
+                }
+
+                return 0;
+            });
+    }
+
+    protected function listChangedFilesPrepareGitRepo(): CollectionBuilder
+    {
+        return $this
+            ->collectionBuilder()
+            ->addTask(
+                $this
+                    ->taskTmpDir('robo-git.list-changed-files.', $this->tmpDirBase)
+                    ->cwd(true)
+            )
+            ->addTask(
+                $this
+                    ->taskWriteToFile('a.php')
+                    ->text('a-content')
+            )
+            ->addTask(
+                $this
+                    ->getTaskGitStackInitWorkingCopy()
+                    ->add('a.php')
+                    ->commit('Initial commit')
+                    ->tag('1.0.0')
+            )
+            ->addTask(
+                $this
+                    ->taskWriteToFile('a.php')
+                    ->append()
+                    ->line('New line 1')
+            )
+            ->addTask(
+                $this
+                    ->taskWriteToFile('b.php')
+                    ->text('b-content')
+            )
+            ->addTask(
+                $this
+                    ->taskWriteToFile('c.php')
+                    ->text('c-content')
+            )
+            ->addTask(
+                $this
+                    ->taskGitStack()
+                    ->printOutput(false)
+                    ->add('a.php')
+                    ->add('b.php')
+                    ->commit("Add new files")
+                    ->tag('1.0.1')
+            );
+    }
+    
     // endregion
 
     // region Task - GitNumOfCommitsBetweenTask

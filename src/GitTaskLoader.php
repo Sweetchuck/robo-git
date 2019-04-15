@@ -49,6 +49,19 @@ trait GitTaskLoader
     }
 
     /**
+     * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitListChangedFilesTask
+     */
+    protected function taskGitListChangedFiles(array $options = [])
+    {
+        /** @var \Sweetchuck\Robo\Git\Task\GitListChangedFilesTask $task */
+        $task = $this->task(Task\GitListChangedFilesTask::class);
+        $this->injectDependenciesContainer($task);
+        $task->setOptions($options);
+
+        return $task;
+    }
+
+    /**
      * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitListStagedFilesTask
      */
     protected function taskGitListStagedFiles(array $options = [])
