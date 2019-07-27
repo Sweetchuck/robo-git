@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
@@ -41,10 +41,9 @@ class TaskTestBase extends Unit
      */
     protected $taskBuilder;
 
-    // @codingStandardsIgnoreStart
+    // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
     public function _before()
     {
-        // @codingStandardsIgnoreEnd
         parent::_before();
 
         Robo::unsetContainer();

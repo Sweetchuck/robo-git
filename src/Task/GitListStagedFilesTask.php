@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Task;
 
@@ -24,7 +24,7 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
     /**
      * {@inheritdoc}
      */
-    protected $action = '--no-pager diff';
+    protected $action = 'diff';
 
     // region filePathStyle
     /**
@@ -112,6 +112,10 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
         $filePathStyle = $this->getFilePathStyle();
 
         $options = [
+            '--no-pager' => [
+                'type' => 'flag:main',
+                'value' => true,
+            ],
             '--no-color' => [
                 'type' => 'flag',
                 'value' => true,

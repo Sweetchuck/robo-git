@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Task;
 
@@ -32,10 +32,10 @@ class GitTagListTask extends BaseTask implements CommandInterface
     protected $action = 'tag';
 
     /**
-     * @var array
+     * {@inheritdoc}
      */
     protected $assets = [
-        'gitTags' => [],
+        'git.tags' => [],
     ];
 
     /**
