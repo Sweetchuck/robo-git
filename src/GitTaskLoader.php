@@ -102,6 +102,19 @@ trait GitTaskLoader
     }
 
     /**
+     * @return \Sweetchuck\Robo\Git\Task\GitRemoteListTask|\Robo\Collection\CollectionBuilder
+     */
+    protected function taskGitRemoteList(array $options = [])
+    {
+        /** @var \Sweetchuck\Robo\Git\Task\GitRemoteListTask $task */
+        $task = $this->task(Task\GitRemoteListTask::class);
+        $this->injectDependenciesContainer($task);
+        $task->setOptions($options);
+
+        return $task;
+    }
+
+    /**
      * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitTagListTask
      */
     protected function taskGitTagList(array $options = [])

@@ -11,6 +11,7 @@ use Robo\Common\TaskIO;
 use Robo\Contract\BuilderAwareInterface;
 use Robo\State\StateAwareTrait;
 use Robo\TaskAccessor;
+use Sweetchuck\Robo\Git\GitComboTaskLoader;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 
 class DummyTaskBuilder implements BuilderAwareInterface, ContainerAwareInterface
@@ -27,8 +28,13 @@ class DummyTaskBuilder implements BuilderAwareInterface, ContainerAwareInterface
         taskGitListStagedFiles as public;
         taskGitNumOfCommitsBetween as public;
         taskGitReadStagedFiles as public;
+        taskGitRemoteList as public;
         taskGitTagList as public;
         taskGitTopLevel as public;
+    }
+
+    use GitComboTaskLoader {
+        taskGitCloneAndClean as public;
     }
 
     public function collectionBuilder(): CollectionBuilder
