@@ -6,22 +6,21 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
-class GitCurrentBranchTaskTest extends TaskTestBase
+class GitRemoteListTaskTest extends TaskTestBase
 {
+
     public function casesGetCommand(): array
     {
         return [
             'basic' => [
-                "git symbolic-ref 'HEAD'",
+                'git remote --verbose',
                 [],
             ],
             'workingDirectory' => [
-                "cd 'foo' && git symbolic-ref 'HEAD'",
-                ['workingDirectory' => 'foo'],
-            ],
-            'gitExecutable' => [
-                "my-git symbolic-ref 'HEAD'",
-                ['gitExecutable' => 'my-git'],
+                "cd 'foo' && git remote --verbose",
+                [
+                    'workingDirectory' => 'foo',
+                ],
             ],
         ];
     }
@@ -31,9 +30,8 @@ class GitCurrentBranchTaskTest extends TaskTestBase
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $task = $this->taskBuilder->taskGitCurrentBranch($options);
-
-        $this->tester->assertEquals($expected, $task->getCommand());
+        $task = $this->taskBuilder->taskGitRemoteList($options);
+        $this->tester->assertSame($expected, $task->getCommand());
     }
 
     public function casesRunSuccess(): array
@@ -42,8 +40,10 @@ class GitCurrentBranchTaskTest extends TaskTestBase
             'empty' => [
                 [
                     'assets' => [
-                        'gitCurrentBranch.long' => '',
-                        'gitCurrentBranch.short' => '',
+                        'git.remotes' => [],
+                        'git.remotes.names' => [],
+                        'git.remotes.fetch' => [],
+                        'git.remotes.push' => [],
                     ],
                 ],
                 [],
@@ -51,12 +51,35 @@ class GitCurrentBranchTaskTest extends TaskTestBase
             'basic' => [
                 [
                     'assets' => [
-                        'gitCurrentBranch.long' => 'refs/heads/issue/42',
-                        'gitCurrentBranch.short' => 'issue/42',
+                        'git.remotes' => [
+                            'a' => [
+                                'fetch' => 'b',
+                                'push' => 'c',
+                            ],
+                            'd' => [
+                                'fetch' => 'e',
+                                'push' => 'f',
+                            ],
+                        ],
+                        'git.remotes.names' => ['a', 'd'],
+                        'git.remotes.fetch' => [
+                            'a' => 'b',
+                            'd' => 'e',
+                        ],
+                        'git.remotes.push' => [
+                            'a' => 'c',
+                            'd' => 'f',
+                        ],
                     ],
                 ],
                 [
-                    'stdOutput' => 'refs/heads/issue/42' . PHP_EOL,
+                    'stdOutput' => implode(PHP_EOL, [
+                        'a b (fetch)',
+                        'a c (push)',
+                        'd e (fetch)',
+                        'd f (push)',
+                        '',
+                    ]),
                 ],
             ],
         ];
@@ -77,7 +100,7 @@ class GitCurrentBranchTaskTest extends TaskTestBase
 
         $result = $this
             ->taskBuilder
-            ->taskGitCurrentBranch($options)
+            ->taskGitRemoteList($options)
             ->setContainer($this->container)
             ->run();
 

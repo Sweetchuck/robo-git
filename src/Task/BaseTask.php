@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Task;
 
@@ -199,7 +199,10 @@ abstract class BaseTask extends RoboBaseTask implements
     {
         $options = $this->getOptions();
 
-        $cmdFragments = [];
+        $cmdExecutable = [];
+
+        $cmdMainOptionsPattern = [];
+        $cmdMainOptionsArgs = [];
 
         $cmdOptionsPattern = [];
         $cmdOptionsArgs = [];
@@ -210,19 +213,14 @@ abstract class BaseTask extends RoboBaseTask implements
         $cmdArgsExtraPattern = [];
         $cmdArgsExtraArgs = [];
 
-        $workingDir = $this->getWorkingDirectory();
-        if ($workingDir) {
-            $cmdFragments[] = 'cd ' . escapeshellarg($workingDir);
-            $cmdFragments[] = '&&';
-        }
-
-        $cmdFragments[] = escapeshellcmd($this->getGitExecutable());
-        if ($this->action) {
-            $cmdFragments[] = $this->action;
-        }
-
         foreach ($options as $optionName => $option) {
             switch ($option['type']) {
+                case 'flag:main':
+                    if ($option['value']) {
+                        $cmdMainOptionsPattern[] = $optionName;
+                    }
+                    break;
+
                 case 'flag':
                     if ($option['value']) {
                         $cmdOptionsPattern[] = $optionName;
@@ -305,18 +303,32 @@ abstract class BaseTask extends RoboBaseTask implements
             }
         }
 
-        $cmdFragments[] = vsprintf(implode(' ', $cmdOptionsPattern), $cmdOptionsArgs);
+        $workingDir = $this->getWorkingDirectory();
+        if ($workingDir) {
+            $cmdExecutable[] = 'cd ' . escapeshellarg($workingDir);
+            $cmdExecutable[] = '&&';
+        }
+
+        $cmdExecutable[] = escapeshellcmd($this->getGitExecutable());
+
+        $cmdExecutable[] = vsprintf(implode(' ', $cmdMainOptionsPattern), $cmdMainOptionsArgs);
+
+        if ($this->action) {
+            $cmdExecutable[] = $this->action;
+        }
+
+        $cmdExecutable[] = vsprintf(implode(' ', $cmdOptionsPattern), $cmdOptionsArgs);
 
         if ($cmdArgsNormalPattern) {
-            $cmdFragments[] = vsprintf(implode(' ', $cmdArgsNormalPattern), $cmdArgsNormalArgs);
+            $cmdExecutable[] = vsprintf(implode(' ', $cmdArgsNormalPattern), $cmdArgsNormalArgs);
         }
 
         if ($cmdArgsExtraPattern) {
-            $cmdFragments[] = '--';
-            $cmdFragments[] = vsprintf(implode(' ', $cmdArgsExtraPattern), $cmdArgsExtraArgs);
+            $cmdExecutable[] = '--';
+            $cmdExecutable[] = vsprintf(implode(' ', $cmdArgsExtraPattern), $cmdArgsExtraArgs);
         }
 
-        return implode(' ', array_filter($cmdFragments));
+        return implode(' ', array_filter($cmdExecutable, 'strlen'));
     }
 
     /**

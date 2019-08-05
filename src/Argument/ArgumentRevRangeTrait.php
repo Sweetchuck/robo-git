@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Argument;
 
@@ -64,7 +64,7 @@ trait ArgumentRevRangeTrait
             return [
                 'argument:revRange' => [
                     'type' => 'arg-normal',
-                    'value' => sprintf('%s..%s', $this->getFromRevName(), $this->getToRevName()),
+                    'value' => "$from..$to",
                 ],
             ];
         }

@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
-use Sweetchuck\Robo\Git\Task\GitTopLevelTask;
-use Codeception\Test\Unit;
 
 class GitTopLevelTaskTest extends TaskTestBase
 {

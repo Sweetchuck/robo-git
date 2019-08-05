@@ -1,10 +1,8 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
-
-use Sweetchuck\Robo\Git\Task\GitBranchListTask;
 
 class GitBranchListTaskTest extends TaskTestBase
 {

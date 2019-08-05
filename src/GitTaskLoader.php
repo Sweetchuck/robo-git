@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git;
 
@@ -96,6 +96,19 @@ trait GitTaskLoader
         $task = $this->task(Task\GitReadStagedFilesTask::class);
         $this->injectDependenciesContainer($task);
         $this->injectDependenciesLogger($task);
+        $task->setOptions($options);
+
+        return $task;
+    }
+
+    /**
+     * @return \Sweetchuck\Robo\Git\Task\GitRemoteListTask|\Robo\Collection\CollectionBuilder
+     */
+    protected function taskGitRemoteList(array $options = [])
+    {
+        /** @var \Sweetchuck\Robo\Git\Task\GitRemoteListTask $task */
+        $task = $this->task(Task\GitRemoteListTask::class);
+        $this->injectDependenciesContainer($task);
         $task->setOptions($options);
 
         return $task;

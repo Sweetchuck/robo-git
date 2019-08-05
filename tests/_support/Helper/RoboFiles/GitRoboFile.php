@@ -236,7 +236,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             ->listStagedFilesPrepareGitRepo()
             ->addTask($this->taskGitListStagedFiles())
             ->addCode(function (RoboStateData $data): int {
-                /** @var ListStagedFilesItem $file */
+                /** @var \Sweetchuck\Robo\Git\ListStagedFilesItem $file */
                 foreach ($data['files'] as $file) {
                     $this->output()->writeln(sprintf('%s - %s', $file->status, $file->fileName));
                 }
@@ -250,7 +250,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
         return $this->readStagedFilesPrepareGitRepo();
     }
     // endregion
-    
+
     // region Task - GitListChangedFiles
     /**
      * @command list-changed-files
@@ -270,7 +270,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             ->addTask($listChangedFilesTask)
             ->addCode(function (RoboStateData $data): int {
                 $output = $this->output();
-                /** @var ListStagedFilesItem $file */
+                /** @var \Sweetchuck\Robo\Git\ListStagedFilesItem $file */
                 foreach ($data['files'] as $file) {
                     $output->writeln(sprintf('%s - %s', $file->status, $file->fileName));
                 }
@@ -326,7 +326,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                     ->tag('1.0.1')
             );
     }
-    
+
     // endregion
 
     // region Task - GitNumOfCommitsBetweenTask

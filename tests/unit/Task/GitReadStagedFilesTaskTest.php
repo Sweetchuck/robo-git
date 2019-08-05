@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
@@ -20,8 +20,10 @@ class GitReadStagedFilesTaskTest extends TaskTestBase
 
     /**
      * {@inheritdoc}
+     *
+     * phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

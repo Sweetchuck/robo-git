@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
@@ -36,8 +36,9 @@ class GitListChangedFilesCest extends CestBase
             ]),
             'stdError' => "git --no-pager diff --no-color --name-status -z '1.0.0..1.0.1'" . PHP_EOL,
         ];
-        $i->assertSame($expected['exitCode'], $exitCode, 'Robo task exit code');
-        $i->assertSame($expected['stdOutput'], $stdOutput, 'Robo task stdOutput');
+
         $i->assertContains($expected['stdError'], $stdError, 'Robo task stdError');
+        $i->assertSame($expected['stdOutput'], $stdOutput, 'Robo task stdOutput');
+        $i->assertSame($expected['exitCode'], $exitCode, 'Robo task exit code');
     }
 }
