@@ -109,9 +109,6 @@ jobs:
 
 workflows:
     version: 2
-    php701__lint_and_test:
-        jobs:
-            - 'php701__lint_and_test'
     php702__lint_and_test:
         jobs:
             - 'php702__lint_and_test'
