@@ -261,7 +261,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         $dstDir = $this->getWorkingDirectory();
 
         $this
-            ->taskGitStack($dstDir)
+            ->taskGitStack()
             ->exec(sprintf(
                 'clone --origin=%s --branch=%s %s %s',
                 escapeshellarg($this->getRemoteName()),
