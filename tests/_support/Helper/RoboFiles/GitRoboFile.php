@@ -6,10 +6,10 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\State\Data as RoboStateData;
 use Sweetchuck\Robo\Git\GitTaskLoader;
-use Sweetchuck\Robo\Git\ListStagedFilesItem;
 use Robo\Collection\CollectionBuilder;
 use Robo\Tasks as BaseRoboFile;
 use Symfony\Component\Yaml\Yaml;
+use Webmozart\PathUtil\Path;
 
 class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
 {
@@ -52,7 +52,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                     ->setVisibleStdOutput(false)
             )
             ->addCode(function (RoboStateData $data) {
-                $this->output()->write(Yaml::dump($data['gitBranches']), 50);
+                $this->output()->writeln(Yaml::dump($data['gitBranches'], 50));
             });
     }
 
@@ -532,7 +532,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                 foreach (array_keys($tags) as $tag) {
                     $tags[$tag]['objectName'] = 'SHA-' . $shaCounter++;
                 }
-                $this->output()->write(Yaml::dump($tags), true);
+                $this->output()->writeln(Yaml::dump($tags, 50));
 
                 return 0;
             });
@@ -592,18 +592,184 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     }
     // endregion
 
+    // region Task - GitConfigGet
+    /**
+     * @command config-get:basic
+     */
+    public function configGetBasic()
+    {
+        return $this
+            ->collectionBuilder()
+            ->addTask(
+                $this
+                    ->taskTmpDir('robo-git.config-get.basic.', $this->tmpDirBase)
+                    ->cwd(true)
+            )
+            ->addTask($this->getTaskGitStackInitWorkingCopy())
+            ->addTask(
+                $this
+                    ->taskGitConfigGet()
+                    ->setSource('local')
+                    ->setName('user.email')
+            )
+            ->addCode(function (RoboStateData $data): int {
+                $result = [
+                    'user' => [
+                        'email' => $data['git.config.user.email'],
+                    ],
+                ];
+                $this->output()->write(Yaml::dump($result, 50));
+
+                return 0;
+            });
+    }
+
+    /**
+     * @command config-get:copy
+     */
+    public function configGetCopy()
+    {
+        $cb = $this->collectionBuilder();
+        $cb
+            ->addTask($this->taskTmpDir('robo-git.config-get.copy.', $this->tmpDirBase))
+            ->addCode(function (RoboStateData $data): int {
+                $data['gitConfigNamesToCopy'] = [
+                    'user.name',
+                    'user.email',
+                ];
+
+                $data['srcDir'] = Path::join($data['path'], 'src');
+                $data['dstDir'] = Path::join($data['path'], 'dst');
+
+                return 0;
+            })
+            ->addTask(
+                $this
+                    ->taskFilesystemStack()
+                    ->deferTaskConfiguration('mkdir', 'srcDir')
+                    ->deferTaskConfiguration('mkdir', 'dstDir')
+            )
+            ->addTask($this->getTaskGitStackInitWorkingCopy(
+                'srcDir',
+                [
+                    'user.name' => 'Abc Def',
+                    'user.email' => 'abc.def@example.com',
+                ]
+            ))
+            ->addTask($this->getTaskGitStackInitWorkingCopy('dstDir'))
+            ->addTask(
+                $this
+                    ->taskForEach()
+                    ->deferTaskConfiguration('setIterable', 'gitConfigNamesToCopy')
+                    ->withBuilder(function (CollectionBuilder $builder, int $key, string $name) use ($cb) {
+                        $state = $cb->getState();
+
+                        $builder
+                            ->addTask(
+                                $this
+                                    ->taskGitConfigGet()
+                                    ->setWorkingDirectory($state['srcDir'])
+                                    ->setSource('local')
+                                    ->setName($name)
+                            )
+                            ->addCode(function (RoboStateData $data) use ($name): int {
+                                $value = $data["git.config.$name"] ?? null;
+
+                                if ($value === null) {
+                                    $data['gitConfigSetCommand'] = sprintf(
+                                        'config --unset %s',
+                                        escapeshellarg($name)
+                                    );
+
+                                    return 0;
+                                }
+
+                                $data['gitConfigSetCommand'] = sprintf(
+                                    'config %s %s',
+                                    escapeshellarg($name),
+                                    escapeshellarg($value)
+                                );
+
+                                return 0;
+                            })
+                            ->addTask(
+                                $this
+                                    ->taskGitStack()
+                                    ->dir($state['dstDir'])
+                                    ->deferTaskConfiguration('exec', 'gitConfigSetCommand')
+                            );
+                    })
+            )
+            ->addTask(
+                $this
+                    ->taskForEach()
+                    ->deferTaskConfiguration('setIterable', 'gitConfigNamesToCopy')
+                    ->withBuilder(function (CollectionBuilder $builder, int $key, string $name) use ($cb) {
+                        $state = $cb->getState();
+
+                        $builder
+                            ->addTask(
+                                $this
+                                    ->taskGitConfigGet()
+                                    ->setWorkingDirectory($state['dstDir'])
+                                    ->setSource('local')
+                                    ->setName($name)
+                            )
+                            ->addCode(function (RoboStateData $data) use ($name): int {
+                                $value = $data["git.config.$name"];
+                                $this->output()->writeln("dstDir.git.config.{$name}: {$value}");
+
+                                return 0;
+                            });
+                    })
+            );
+
+        return $cb;
+    }
+    // endregion
+
     /**
      * @return \Robo\Collection\CollectionBuilder|\Robo\Task\Vcs\GitStack
      */
-    protected function getTaskGitStackInitWorkingCopy()
+    protected function getTaskGitStackInitWorkingCopy(string $dirStateKey = '', array $config = [])
     {
-        return $this
+        $config += [
+            'user.name' => 'RoboGit TestRunner',
+            'user.email' => 'robo-git.test-runner@example.com',
+            'push.default' => 'current',
+        ];
+
+        $task = $this
             ->taskGitStack()
             ->printOutput(false)
             ->stopOnFail(true)
-            ->exec('init')
-            ->exec("config user.name 'RoboGit TestRunner'")
-            ->exec("config user.email 'robo-git.test-runner@example.com'")
-            ->exec("config push.default 'current'");
+            ->exec('init');
+
+        if ($dirStateKey) {
+            $task->deferTaskConfiguration('dir', $dirStateKey);
+        }
+
+        foreach ($config as $name => $value) {
+            if ($value === false) {
+                continue;
+            }
+
+            if ($value === null) {
+                $task->exec(sprintf(
+                    'config --unset %s',
+                    escapeshellarg($name)
+                ));
+
+                continue;
+            }
+
+            $task->exec(sprintf(
+                'config %s %s',
+                escapeshellarg($name),
+                escapeshellarg($value)
+            ));
+        }
+
+        return $task;
     }
 }
