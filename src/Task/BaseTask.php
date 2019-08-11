@@ -173,19 +173,19 @@ abstract class BaseTask extends RoboBaseTask implements
      */
     public function setOptions(array $options)
     {
-        if (isset($options['assetNamePrefix'])) {
+        if (array_key_exists('assetNamePrefix', $options)) {
             $this->setAssetNamePrefix($options['assetNamePrefix']);
         }
 
-        if (isset($options['workingDirectory'])) {
+        if (array_key_exists('workingDirectory', $options)) {
             $this->setWorkingDirectory($options['workingDirectory']);
         }
 
-        if (isset($options['gitExecutable'])) {
+        if (array_key_exists('gitExecutable', $options)) {
             $this->setGitExecutable($options['gitExecutable']);
         }
 
-        if (isset($options['stdOutputVisible'])) {
+        if (array_key_exists('stdOutputVisible', $options)) {
             $this->setVisibleStdOutput($options['stdOutputVisible']);
         }
 
@@ -421,7 +421,7 @@ abstract class BaseTask extends RoboBaseTask implements
 
         return new Result(
             $this,
-            $this->actionExitCode,
+            $this->getTaskExitCode(),
             $this->actionStdError,
             $data
         );
@@ -465,5 +465,10 @@ abstract class BaseTask extends RoboBaseTask implements
         }
 
         return parent::getTaskContext($context);
+    }
+
+    protected function getTaskExitCode(): int
+    {
+        return $this->actionExitCode;
     }
 }
