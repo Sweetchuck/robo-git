@@ -2,32 +2,11 @@
 version: 2
 
 _custom:
-    step__run__install_php_extensions: &step__run__install_php_extensions
-        name: 'Install PHP extensions'
+    step__git_config: &step__git_config
+        name: 'Git config'
         command: |
-            sudo apt-get -y install zlib1g-dev
-            sudo docker-php-ext-install zip
-    step__run__install_composer: &step__run__install_composer
-        name: 'Install composer'
-        command: |
-            cd /tmp
-            EXPECTED_SIGNATURE=$(curl -q https://composer.github.io/installer.sig)
-            php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-            ACTUAL_SIGNATURE=$(php -r "echo hash_file('SHA384', 'composer-setup.php');")
-
-            if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]
-            then
-                >&2 echo 'ERROR: Invalid installer signature'
-                rm composer-setup.php
-
-                exit 1
-            fi
-
-            sudo php composer-setup.php --quiet --install-dir /usr/local/bin --filename composer
-            RESULT=$?
-            rm composer-setup.php
-
-            exit $RESULT
+            git config --global user.name 'Circle CI'
+            git config --global user.email 'circle.ci@example.com'
     step__restore_cache: &step__restore_cache
         name: 'Cache restore - "./vendor"'
         keys:
@@ -66,10 +45,7 @@ _custom:
             - 'checkout'
             -
                 run:
-                    <<: *step__run__install_php_extensions
-            -
-                run:
-                    <<: *step__run__install_composer
+                    <<: *step__git_config
             -
                 restore_cache:
                     <<: *step__restore_cache

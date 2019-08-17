@@ -128,6 +128,19 @@ trait GitTaskLoader
     }
 
     /**
+     * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitStatusTask
+     */
+    protected function taskGitStatus(array $options = [])
+    {
+        /** @var \Sweetchuck\Robo\Git\Task\GitStatusTask $task */
+        $task = $this->task(Task\GitStatusTask::class);
+        $this->injectDependenciesContainer($task);
+        $task->setOptions($options);
+
+        return $task;
+    }
+
+    /**
      * @return \Robo\Collection\CollectionBuilder|\Sweetchuck\Robo\Git\Task\GitTagListTask
      */
     protected function taskGitTagList(array $options = [])
