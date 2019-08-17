@@ -4,16 +4,20 @@ namespace Sweetchuck\Robo\Git\Test\Helper\RoboFiles;
 
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Robo\Common\OutputAdapter;
 use Robo\State\Data as RoboStateData;
+use Sweetchuck\Robo\Git\GitComboTaskLoader;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Robo\Collection\CollectionBuilder;
 use Robo\Tasks as BaseRoboFile;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Yaml\Yaml;
 use Webmozart\PathUtil\Path;
 
 class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
 {
     use GitTaskLoader;
+    use GitComboTaskLoader;
     use LoggerAwareTrait;
 
     /**
@@ -108,6 +112,107 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                     ->exec('push origin 8.x-1.x:8.x-1.x --set-upstream')
                     ->deferTaskConfiguration('dir', 'localDir')
             );
+    }
+    // endregion
+
+    // region Task - GitCloneAndClean
+    /**
+     * @command clone-and-clean:success
+     */
+    public function cloneAndCleanExistsSuccess(): CollectionBuilder
+    {
+        return $this
+            ->collectionBuilder()
+            ->addTask(
+                $this
+                    ->taskTmpDir('robo-git.', realpath($this->tmpDirBase))
+                    ->cwd(true)
+            )
+            ->addCode(function (RoboStateData $data): int {
+                $data['./wc'] = "{$data['path']}/wc";
+                $data['./release'] = "{$data['path']}/release";
+
+                return 0;
+            })
+            ->addTask(
+                $this
+                    ->taskExecStack()
+                    ->exec('git init --bare release.git')
+
+                    ->exec('git clone release.git release')
+                    ->exec('cd release')
+                    ->exec('touch a.txt')
+                    ->exec('git add a.txt')
+                    ->exec('git commit -m "Add a.txt"')
+                    ->exec('git push origin master:master')
+                    ->exec('cd ..')
+
+                    ->exec('git init wc')
+                    ->exec('cd wc')
+                    ->exec('touch b.txt')
+                    ->exec('git add b.txt')
+                    ->exec('git commit -m "Add b.txt"')
+                    ->exec('git remote add live ../release.git')
+                    ->exec('git fetch live master:live/master')
+                    ->exec('cd ..')
+
+                    ->exec('cd release')
+                    ->exec('echo "line 1" >> a.txt')
+                    ->exec('git add a.txt')
+                    ->exec('git commit -m "Modify a.txt"')
+                    ->exec('git push origin master:master')
+                    ->exec('cd ..')
+                    ->exec('rm -rf release')
+            )
+            ->addTask(
+                $this
+                    ->taskGitCloneAndClean()
+                    ->setRemoteName('release-store')
+                    ->setRemoteUrl('../release.git')
+                    ->setRemoteBranch('master')
+                    ->setLocalBranch('master')
+                    ->deferTaskConfiguration('setSrcDir', './wc')
+                    ->deferTaskConfiguration('setWorkingDirectory', './release')
+            )
+            ->addCode(function (RoboStateData $data): int {
+                $dirs = [
+                    'wc' => 'wc',
+                    'release' => 'release',
+                ];
+                $output = new BufferedOutput();
+                $outputAdapter = new OutputAdapter();
+                $outputAdapter->setOutput($output);
+
+                $actual = [];
+                foreach ($dirs as $name => $dir) {
+                    $result = $this
+                        ->taskGitBranchList()
+                        ->setWorkingDirectory($dir)
+                        ->setFormat([
+                            'isCurrentBranch' => 'HEAD',
+                            'push.short' => 'push:strip=0',
+                            'upstream.short' => 'upstream:strip=0',
+                        ])
+                        ->run();
+                    $actual[$name]['branches'] = $result['gitBranches'];
+
+                    $result = $this
+                        ->taskGitRemoteList()
+                        ->setWorkingDirectory($dir)
+                        ->run();
+                    $actual[$name]['remotes'] = $result['git.remotes.fetch'];
+
+                    $result = $this
+                        ->taskGitStatus()
+                        ->setWorkingDirectory($dir)
+                        ->run();
+                    $actual[$name]['status'] = $result['git.status'];
+                }
+
+                $this->output()->write(Yaml::dump($actual, 99));
+
+                return 0;
+            });
     }
     // endregion
 

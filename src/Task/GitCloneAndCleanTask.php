@@ -8,12 +8,16 @@ use Robo\Contract\BuilderAwareInterface;
 use Robo\Task\Vcs\loadTasks as VcsTaskLoader;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 
 class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
 {
     use GitTaskLoader;
     use VcsTaskLoader;
+
+    /**
+     * @var string
+     */
+    protected $taskName = 'Git clone and clean';
 
     // region srcDir
     /**
@@ -166,26 +170,31 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     /**
      * {@inheritdoc}
      */
+    protected function runHeader()
+    {
+        $this->printTaskDebug(
+            'src: "{src}" dst: "{dst}"',
+            [
+                'src' => $this->getSrcDir(),
+                'dst' => $this->getWorkingDirectory(),
+            ]
+        );
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function runAction()
     {
         $srcDir = $this->getSrcDir();
         $remoteUrl = $this->getRemoteUrl();
-        $dstDir = $this->getWorkingDirectory();
 
         $srcRemotes = $this->getRemotes($srcDir);
         $srcRemoteName = array_search($remoteUrl, $srcRemotes);
 
-        $this->fs->mkdir($dstDir);
-
-        if ($srcRemoteName !== false) {
-            $this->runActionExisting();
-
-            return $this;
-        }
-
-        $this->runActionClone();
-
-        return $this;
+        return $srcRemoteName !== false ? $this->runActionExisting() : $this->runActionClone();
     }
 
     protected function runActionExisting()
@@ -196,29 +205,28 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         $srcGitDir = $this->fs->exists("$srcDir/.git") ? "$srcDir/.git" : $srcDir;
 
         $dstDir = $this->getWorkingDirectory();
-        $dstGitDir = "$dstDir/.git";
 
+        $this->fs->mkdir($dstDir);
         $this->fs->remove("$dstDir/.git");
-        $this->fs->mirror($srcGitDir, $dstGitDir);
-
-        $dstDir = $this->getWorkingDirectory();
+        $this->fs->mirror($srcGitDir, "$dstDir/.git");
+        $this->fs->remove("$dstDir/.git/info/exclude");
 
         $task = $this
-            ->taskGitStack()
+            ->taskGitStack($this->getGitExecutable())
             ->printOutput(false)
+            ->printMetadata(false)
             ->dir($dstDir);
 
-        foreach ($this->getRemotes($dstDir) as $name => $null) {
+        foreach (array_keys($this->getRemotes($dstDir)) as $name) {
             $task->exec(sprintf('remote remove %s', escapeshellarg($name)));
         }
 
-        $task->exec(sprintf(
-            'remote add %s %s',
-            $this->getRemoteName(),
-            $this->getRemoteUrl()
-        ));
-
         $task
+            ->exec(sprintf(
+                'remote add %s %s',
+                $this->getRemoteName(),
+                $this->getRemoteUrl()
+            ))
             ->exec(sprintf(
                 'fetch %s %s:%s',
                 escapeshellarg($this->getRemoteName()),
@@ -226,7 +234,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
                 escapeshellarg($tmpBranchName)
             ))
             ->exec(sprintf(
-                'git symbolic-ref HEAD %s',
+                'symbolic-ref HEAD %s',
                 escapeshellarg("refs/heads/$tmpBranchName")
             ))
             ->exec('reset');
@@ -251,40 +259,22 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
             ->run()
             ->stopOnFail();
 
-        $this->deleteFiles($dstDir);
-
         return $this;
     }
 
     protected function runActionClone()
     {
-        $dstDir = $this->getWorkingDirectory();
-
         $this
             ->taskGitStack()
             ->exec(sprintf(
-                'clone --origin=%s --branch=%s %s %s',
+                'clone --origin=%s --branch=%s --no-checkout --dissociate %s %s',
                 escapeshellarg($this->getRemoteName()),
                 escapeshellarg($this->getRemoteBranch()),
                 escapeshellarg($this->getRemoteUrl()),
-                escapeshellarg($dstDir)
+                escapeshellarg($this->getWorkingDirectory())
             ))
             ->run()
             ->stopOnFail();
-
-        $this->deleteFiles($dstDir);
-    }
-
-    protected function deleteFiles(string $dir)
-    {
-        $files = (new Finder())
-            ->in($dir)
-            ->ignoreVCS(true)
-            ->ignoreDotFiles(false)
-            ->ignoreVCSIgnored(false)
-            ->depth('== 0');
-
-        $this->fs->remove($files);
 
         return $this;
     }
