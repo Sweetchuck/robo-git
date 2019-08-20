@@ -461,7 +461,10 @@ class RoboFile extends Tasks implements LoggerAwareInterface
 
     protected function isPhpDbgAvailable(): bool
     {
-        $command = sprintf('%s -qrr', escapeshellcmd($this->getPhpdbgExecutable()));
+        $command = [
+            escapeshellcmd($this->getPhpdbgExecutable()),
+            '-qrr',
+        ];
 
         return (new Process($command))->run() === 0;
     }

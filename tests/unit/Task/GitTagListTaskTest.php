@@ -4,6 +4,9 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\Task\GitTagListTask<extended>
+ */
 class GitTagListTaskTest extends TaskTestBase
 {
     public function casesGetCommand(): array

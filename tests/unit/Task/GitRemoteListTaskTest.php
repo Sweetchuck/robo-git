@@ -6,6 +6,9 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\Task\GitRemoteListTask<extended>
+ */
 class GitRemoteListTaskTest extends TaskTestBase
 {
 

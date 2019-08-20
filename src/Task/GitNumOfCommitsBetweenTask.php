@@ -92,16 +92,13 @@ class GitNumOfCommitsBetweenTask extends BaseTask implements CommandInterface
     public function setOptions(array $options)
     {
         parent::setOptions($options);
-        foreach ($options as $key => $value) {
-            switch ($key) {
-                case 'fromRevName':
-                    $this->setFromRevName($value);
-                    break;
 
-                case 'toRevName':
-                    $this->setToRevName($value);
-                    break;
-            }
+        if (array_key_exists('fromRevName', $options)) {
+            $this->setFromRevName($options['fromRevName']);
+        }
+
+        if (array_key_exists('toRevName', $options)) {
+            $this->setToRevName($options['toRevName']);
         }
 
         return  $this;

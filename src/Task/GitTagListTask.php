@@ -66,40 +66,37 @@ class GitTagListTask extends BaseTask implements CommandInterface
     public function setOptions(array $options)
     {
         parent::setOptions($options);
-        foreach ($options as $key => $value) {
-            switch ($key) {
-                case 'mergedState':
-                    $this->setMergedState($value);
-                    break;
 
-                case 'mergedValue':
-                    $this->setMergedValue($value);
-                    break;
+        if (array_key_exists('mergedState', $options)) {
+            $this->setMergedState($options['mergedState']);
+        }
 
-                case 'sort':
-                    $this->setSort($value);
-                    break;
+        if (array_key_exists('mergedValue', $options)) {
+            $this->setMergedValue($options['mergedValue']);
+        }
 
-                case 'listPatterns':
-                    $this->setListPatterns($value);
-                    break;
+        if (array_key_exists('sort', $options)) {
+            $this->setSort($options['sort']);
+        }
 
-                case 'containsState':
-                    $this->setContainsState($value);
-                    break;
+        if (array_key_exists('listPatterns', $options)) {
+            $this->setListPatterns($options['listPatterns']);
+        }
 
-                case 'containsValue':
-                    $this->setContainsValue($value);
-                    break;
+        if (array_key_exists('containsState', $options)) {
+            $this->setContainsState($options['containsState']);
+        }
 
-                case 'pointsAt':
-                    $this->setPointsAt($value);
-                    break;
+        if (array_key_exists('containsValue', $options)) {
+            $this->setContainsValue($options['containsValue']);
+        }
 
-                case 'format':
-                    $this->setFormat($value);
-                    break;
-            }
+        if (array_key_exists('pointsAt', $options)) {
+            $this->setPointsAt($options['pointsAt']);
+        }
+
+        if (array_key_exists('format', $options)) {
+            $this->setFormat($options['format']);
         }
 
         return  $this;

@@ -72,48 +72,45 @@ class GitBranchListTask extends BaseTask implements CommandInterface
     public function setOptions(array $options)
     {
         parent::setOptions($options);
-        foreach ($options as $key => $value) {
-            switch ($key) {
-                case 'all':
-                    $this->setAll($value);
-                    break;
 
-                case 'color':
-                    $this->setColor($value);
-                    break;
+        if (array_key_exists('all', $options)) {
+            $this->setAll($options['all']);
+        }
 
-                case 'containsState':
-                    $this->setContainsState($value);
-                    break;
+        if (array_key_exists('color', $options)) {
+            $this->setColor($options['color']);
+        }
 
-                case 'containsValue':
-                    $this->setContainsValue($value);
-                    break;
+        if (array_key_exists('containsState', $options)) {
+            $this->setContainsState($options['containsState']);
+        }
 
-                case 'format':
-                    $this->setFormat($value);
-                    break;
+        if (array_key_exists('containsValue', $options)) {
+            $this->setContainsValue($options['containsValue']);
+        }
 
-                case 'listPatterns':
-                    $this->setListPatterns($value);
-                    break;
+        if (array_key_exists('format', $options)) {
+            $this->setFormat($options['format']);
+        }
 
-                case 'mergedState':
-                    $this->setMergedState($value);
-                    break;
+        if (array_key_exists('listPatterns', $options)) {
+            $this->setListPatterns($options['listPatterns']);
+        }
 
-                case 'mergedValue':
-                    $this->setMergedValue($value);
-                    break;
+        if (array_key_exists('mergedState', $options)) {
+            $this->setMergedState($options['mergedState']);
+        }
 
-                case 'pointsAt':
-                    $this->setPointsAt($value);
-                    break;
+        if (array_key_exists('mergedValue', $options)) {
+            $this->setMergedValue($options['mergedValue']);
+        }
 
-                case 'sort':
-                    $this->setSort($value);
-                    break;
-            }
+        if (array_key_exists('pointsAt', $options)) {
+            $this->setPointsAt($options['pointsAt']);
+        }
+
+        if (array_key_exists('sort', $options)) {
+            $this->setSort($options['sort']);
         }
 
         return  $this;

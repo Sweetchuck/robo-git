@@ -19,13 +19,16 @@ class GitCurrentBranchTask extends BaseTask implements CommandInterface
     protected $action = 'symbolic-ref';
 
     /**
-     * @var array
+     * {@inheritdoc}
      */
     protected $assets = [
         'gitCurrentBranch.long' => null,
         'gitCurrentBranch.short' => null,
     ];
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getOptions(): array
     {
         return [
