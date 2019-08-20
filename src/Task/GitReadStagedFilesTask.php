@@ -59,11 +59,11 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
     {
         parent::setOptions($options);
 
-        if (isset($options['commandOnly'])) {
+        if (array_key_exists('commandOnly', $options)) {
             $this->setCommandOnly($options['commandOnly']);
         }
 
-        if (isset($options['paths'])) {
+        if (array_key_exists('paths', $options)) {
             $this->setPaths($options['paths']);
         }
 

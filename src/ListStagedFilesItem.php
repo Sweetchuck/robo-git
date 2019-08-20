@@ -23,8 +23,6 @@ class ListStagedFilesItem
     {
         foreach ($properties as $name => $value) {
             if (!property_exists($this, $name)) {
-                trigger_error(sprintf('Unknown property %s::%s', get_called_class(), $name));
-
                 continue;
             }
 

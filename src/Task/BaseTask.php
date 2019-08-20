@@ -244,7 +244,7 @@ abstract class BaseTask extends RoboBaseTask implements
                             $cmdOptionsPattern[] = $optionName;
                         } else {
                             $cmdOptionsPattern[] = "$optionName %s";
-                            $cmdOptionsArgs[] = escapeshellarg($option['value']);
+                            $cmdOptionsArgs[] = escapeshellarg((string) $option['value']);
                         }
                     }
                     break;

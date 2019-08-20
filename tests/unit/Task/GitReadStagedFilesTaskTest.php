@@ -7,6 +7,9 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 use Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask<extended>
+ */
 class GitReadStagedFilesTaskTest extends TaskTestBase
 {
     protected static function getMethod(string $name): \ReflectionMethod

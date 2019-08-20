@@ -7,6 +7,9 @@ namespace Sweetchuck\Robo\Git\Tests\Unit;
 use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\FormatHandler;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\FormatHandler<extended>
+ */
 class FormatHandlerTest extends Unit
 {
     /**

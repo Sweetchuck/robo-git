@@ -23,12 +23,14 @@ class DummyTaskBuilder implements BuilderAwareInterface, ContainerAwareInterface
     use GitTaskLoader {
         taskGitBranchList as public;
         taskGitCurrentBranch as public;
+        taskGitConfigGet as public;
         taskGitListFiles as public;
         taskGitListChangedFiles as public;
         taskGitListStagedFiles as public;
         taskGitNumOfCommitsBetween as public;
         taskGitReadStagedFiles as public;
         taskGitRemoteList as public;
+        taskGitStatus as public;
         taskGitTagList as public;
         taskGitTopLevel as public;
     }

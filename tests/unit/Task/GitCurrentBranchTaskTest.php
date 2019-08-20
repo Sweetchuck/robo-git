@@ -6,6 +6,9 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\Task\GitCurrentBranchTask<extended>
+ */
 class GitCurrentBranchTaskTest extends TaskTestBase
 {
     public function casesGetCommand(): array

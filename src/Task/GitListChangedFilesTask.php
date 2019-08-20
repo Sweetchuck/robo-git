@@ -10,6 +10,9 @@ class GitListChangedFilesTask extends GitListStagedFilesTask
 {
     use ArgumentRevRangeTrait;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setOptions(array $options)
     {
         parent::setOptions($options);

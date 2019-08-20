@@ -84,6 +84,9 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
     }
     // endregion
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getOptions(): array
     {
         $options = [];
@@ -105,7 +108,7 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
     }
 
     /**
-     * @return $this
+     * {@inheritdoc}
      */
     public function setOptions(array $options)
     {
@@ -124,6 +127,9 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function runProcessOutputs()
     {
         $name = $this->getName();
@@ -139,6 +145,9 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
         return ['local', 'system', 'global'];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getTaskExitCode(): int
     {
         return $this->getStopOnFail() ? $this->actionExitCode : 0;

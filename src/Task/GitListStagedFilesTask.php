@@ -92,15 +92,15 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
     {
         parent::setOptions($options);
 
-        if (isset($options['paths'])) {
+        if (array_key_exists('paths', $options)) {
             $this->setPaths($options['paths']);
         }
 
-        if (isset($options['filePathStyle'])) {
+        if (array_key_exists('filePathStyle', $options)) {
             $this->setFilePathStyle($options['filePathStyle']);
         }
 
-        if (isset($options['diffFilter'])) {
+        if (array_key_exists('diffFilter', $options)) {
             $this->setDiffFilter($options['diffFilter']);
         }
 

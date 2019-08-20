@@ -7,6 +7,9 @@ namespace Sweetchuck\Robo\Git\Tests\Unit;
 use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\ListFilesItem;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\ListFilesItem<extended>
+ */
 class ListFilesItemTest extends Unit
 {
     /**

@@ -557,91 +557,88 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     public function setOptions(array $options)
     {
         parent::setOptions($options);
-        foreach ($options as $key => $value) {
-            switch ($key) {
-                case 'separatedWithNullChar':
-                    $this->setSeparatedWithNullChar($value);
-                    break;
 
-                case 'fileStatusWithTags':
-                    $this->setFileStatusWithTags($value);
-                    break;
-
-                case 'lowercaseStatusLetters':
-                    $this->setLowercaseStatusLetters($value);
-                    break;
-
-                case 'showCached':
-                    $this->setShowCached($value);
-                    break;
-
-                case 'showDeleted':
-                    $this->setShowDeleted($value);
-                    break;
-
-                case 'showModified':
-                    $this->setShowModified($value);
-                    break;
-
-                case 'showOthers':
-                    $this->setShowOthers($value);
-                    break;
-
-                case 'showIgnored':
-                    $this->setShowIgnored($value);
-                    break;
-
-                case 'showStaged':
-                    $this->setShowStaged($value);
-                    break;
-
-                case 'showKilled':
-                    $this->setShowKilled($value);
-                    break;
-
-                case 'showOtherDirectoriesNamesOnly':
-                    $this->setShowOtherDirectoriesNamesOnly($value);
-                    break;
-
-                case 'showLineEndings':
-                    $this->setShowLineEndings($value);
-                    break;
-
-                case 'showEmptyDirectories':
-                    $this->setShowEmptyDirectories($value);
-                    break;
-
-                case 'showUnmerged':
-                    $this->setShowUnmerged($value);
-                    break;
-
-                case 'showResolveUndo':
-                    $this->setShowResolveUndo($value);
-                    break;
-
-                case 'excludePattern':
-                    $this->setExcludePattern($value);
-                    break;
-
-                case 'excludeFile':
-                    $this->setExcludeFile($value);
-                    break;
-
-                case 'fullName':
-                    $this->setFullName($value);
-                    break;
-
-                case 'paths':
-                    $this->setPaths($value);
-                    break;
-
-                case 'visibleStdOutput':
-                    $this->setVisibleStdOutput($value);
-                    break;
-            }
+        if (array_key_exists('separatedWithNullChar', $options)) {
+            $this->setSeparatedWithNullChar($options['separatedWithNullChar']);
         }
 
-        return  $this;
+        if (array_key_exists('fileStatusWithTags', $options)) {
+            $this->setFileStatusWithTags($options['fileStatusWithTags']);
+        }
+
+        if (array_key_exists('lowercaseStatusLetters', $options)) {
+            $this->setLowercaseStatusLetters($options['lowercaseStatusLetters']);
+        }
+
+        if (array_key_exists('showCached', $options)) {
+            $this->setShowCached($options['showCached']);
+        }
+
+        if (array_key_exists('showDeleted', $options)) {
+            $this->setShowDeleted($options['showDeleted']);
+        }
+
+        if (array_key_exists('showModified', $options)) {
+            $this->setShowModified($options['showModified']);
+        }
+
+        if (array_key_exists('showOthers', $options)) {
+            $this->setShowOthers($options['showOthers']);
+        }
+
+        if (array_key_exists('showIgnored', $options)) {
+            $this->setShowIgnored($options['showIgnored']);
+        }
+
+        if (array_key_exists('showStaged', $options)) {
+            $this->setShowStaged($options['showStaged']);
+        }
+
+        if (array_key_exists('showKilled', $options)) {
+            $this->setShowKilled($options['showKilled']);
+        }
+
+        if (array_key_exists('showOtherDirectoriesNamesOnly', $options)) {
+            $this->setShowOtherDirectoriesNamesOnly($options['showOtherDirectoriesNamesOnly']);
+        }
+
+        if (array_key_exists('showLineEndings', $options)) {
+            $this->setShowLineEndings($options['showLineEndings']);
+        }
+
+        if (array_key_exists('showEmptyDirectories', $options)) {
+            $this->setShowEmptyDirectories($options['showEmptyDirectories']);
+        }
+
+        if (array_key_exists('showUnmerged', $options)) {
+            $this->setShowUnmerged($options['showUnmerged']);
+        }
+
+        if (array_key_exists('showResolveUndo', $options)) {
+            $this->setShowResolveUndo($options['showResolveUndo']);
+        }
+
+        if (array_key_exists('excludePattern', $options)) {
+            $this->setExcludePattern($options['excludePattern']);
+        }
+
+        if (array_key_exists('excludeFile', $options)) {
+            $this->setExcludeFile($options['excludeFile']);
+        }
+
+        if (array_key_exists('fullName', $options)) {
+            $this->setFullName($options['fullName']);
+        }
+
+        if (array_key_exists('paths', $options)) {
+            $this->setPaths($options['paths']);
+        }
+
+        if (array_key_exists('visibleStdOutput', $options)) {
+            $this->setVisibleStdOutput($options['visibleStdOutput']);
+        }
+
+        return $this;
     }
 
     /**

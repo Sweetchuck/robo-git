@@ -5,10 +5,13 @@ declare(strict_types = 1);
 namespace Sweetchuck\Robo\Git\Task;
 
 use Robo\Contract\CommandInterface;
+use Sweetchuck\Robo\Git\Argument\ArgumentPathsTrait;
 use Sweetchuck\Robo\Git\OutputParser\StatusParser;
 
 class GitStatusTask extends BaseTask implements CommandInterface
 {
+    use ArgumentPathsTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -119,32 +122,35 @@ class GitStatusTask extends BaseTask implements CommandInterface
      */
     protected function getOptions(): array
     {
-        return [
-            '--porcelain' => [
-                'type' => 'flag',
-                'value' => true,
-            ],
-            '-z' => [
-                'type' => 'flag',
-                'value' => true,
-            ],
-            'renames' => [
-                'type' => 'flag:true-value',
-                'value' => $this->getRenames(),
-            ],
-            '--find-renames' => [
-                'type' => 'flag',
-                'value' => (string) $this->getFindRenames(),
-            ],
-            '--ignored' => [
-                'type' => 'value:optional',
-                'value' => $this->getIgnored(),
-            ],
-            '--untracked-files' => [
-                'type' => 'value:optional',
-                'value' => $this->getUntrackedFiles(),
-            ],
-        ] + parent::getOptions();
+        return
+            [
+                '--porcelain' => [
+                    'type' => 'flag',
+                    'value' => true,
+                ],
+                '-z' => [
+                    'type' => 'flag',
+                    'value' => true,
+                ],
+                'renames' => [
+                    'type' => 'flag:true-value',
+                    'value' => $this->getRenames(),
+                ],
+                '--find-renames' => [
+                    'type' => 'value:optional',
+                    'value' => $this->getFindRenames() === 0 ? '' : $this->getFindRenames(),
+                ],
+                '--ignored' => [
+                    'type' => 'value:optional',
+                    'value' => $this->getIgnored(),
+                ],
+                '--untracked-files' => [
+                    'type' => 'value:optional',
+                    'value' => $this->getUntrackedFiles(),
+                ],
+            ]
+            + $this->getArgumentPaths()
+            + parent::getOptions();
     }
 
     /**
@@ -168,6 +174,10 @@ class GitStatusTask extends BaseTask implements CommandInterface
 
         if (array_key_exists('untrackedFiles', $options)) {
             $this->setUntrackedFiles($options['untrackedFiles']);
+        }
+
+        if (array_key_exists('paths', $options)) {
+            $this->setPaths($options['paths']);
         }
 
         return  $this;

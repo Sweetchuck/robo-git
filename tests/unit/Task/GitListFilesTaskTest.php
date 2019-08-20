@@ -9,6 +9,9 @@ use Sweetchuck\Robo\Git\Task\GitListFilesTask;
 use Codeception\Util\Stub;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\Task\GitListFilesTask<extended>
+ */
 class GitListFilesTaskTest extends TaskTestBase
 {
     protected static function getMethod(string $name): \ReflectionMethod
