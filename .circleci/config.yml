@@ -1,93 +1,158 @@
 
-version: 2
+version: 2.1
 
-_custom:
-    step__git_config: &step__git_config
-        name: 'Git config'
-        command: |
-            git config --global user.name 'Circle CI'
-            git config --global user.email 'circle.ci@example.com'
-    step__restore_cache: &step__restore_cache
-        name: 'Cache restore - "./vendor"'
-        keys:
-            - 'v1-dependencies-{{ checksum "composer.lock" }}'
-            - 'v1-dependencies-'
-    step__run__composer_install: &step__run__composer_install
-        name: 'Build'
-        command: 'composer install --no-interaction'
-    step__save_cache: &step__save_cache
-        name: 'Cache save - "./vendor"'
-        paths:
-            - './vendor'
-        key: 'v1-dependencies-{{ checksum "composer.lock" }}'
-    step__run__linters: &step__run__linters
-        name: 'Run linters'
-        command: 'bin/robo lint'
-    step__run__codeception_unit: &step__run__codeception_unit
-        name: 'Codeception - unit'
-        command: 'bin/robo test unit'
-    step__run__codeception_acceptance: &step__run__codeception_acceptance
-        name: 'Codeception - acceptance'
-        command: 'bin/robo test acceptance'
-    step__store_test_results: &step__store_test_results
-        path: 'tests/_output/machine/junit'
-    step__run__codecov: &step__run__codecov
-        name: 'Publish the code coverage report on Codecov.io'
-        when: 'always'
-        command: >
-            [ ! -s tests/_output/machine/coverage/*/coverage.xml ]
-            || bash <(curl -s https://codecov.io/bash)
-            || true
+.env_composer: &env_composer
+    COMPOSER_NO_INTERACTION: '1'
+    COMPOSER_MEMORY_LIMIT: '-1'
+    COMPOSER_DISABLE_XDEBUG_WARN: '1'
 
-    job__lint_and_test: &job__lint_and_test
+executors:
+    php704:
+        environment:
+            <<: *env_composer
+
+        docker:
+            -
+                name: 'main'
+                image: 'circleci/php:7.4'
+
+    php703:
+        environment:
+            <<: *env_composer
+
+        docker:
+            -
+                name: 'main'
+                image: 'circleci/php:7.3'
+
+    php702:
+        environment:
+            <<: *env_composer
+
+        docker:
+            -
+                name: 'main'
+                image: 'circleci/php:7.2'
+
+commands:
+    composer_install:
+        description: 'Install Composer dependencies with cache restore and save'
+        steps:
+            -
+                restore_cache:
+                    name: 'Composer - cache restore'
+                    keys:
+                        - 'composer-{{ checksum "./composer.lock" }}-1'
+
+            -
+                run:
+                    name: 'Composer - install'
+                    command: >
+                        [[ -d "$(composer config vendor-dir)" ]] || composer install --no-progress
+
+            -
+                save_cache:
+                    name: 'Composer - cache save'
+                    key: 'composer-{{ checksum "./composer.lock" }}-1'
+                    paths:
+                        - './bin/'
+                        - './vendor/'
+                        - '~/.composer/cache/'
+
+
+    lint:
+        description: 'Run linters'
+        steps:
+            -
+                run:
+                    name: 'Run linters'
+                    command: 'bin/robo lint'
+
+    test:
+        description: 'Run tests'
+        steps:
+            -
+                run:
+                    name: 'Git config user.name and user.email'
+                    command: |
+                        git config --global user.name 'Circle CI'
+                        git config --global user.email 'circle.ci@example.com'
+            -
+                run:
+                    name: 'Codeception - unit'
+                    command: 'bin/robo test unit'
+            -
+                run:
+                    name: 'Codeception - acceptance'
+                    command: 'bin/robo test acceptance'
+            -
+                store_test_results:
+                    name: 'Store unit test results'
+                    path: './tests/_output/machine/junit'
+            -
+                run:
+                    # @todo Use orb.
+                    name: 'Publish the code coverage report on Codecov.io'
+                    when: 'always'
+                    command: >-
+                        [ ! -s ./tests/_output/machine/coverage/coverage.xml ]
+                        || bash <(curl -s https://codecov.io/bash)
+                        || true
+
+jobs:
+    build:
+        executor: 'php702'
         working_directory: '~/repo'
         steps:
             - 'checkout'
-            -
-                run:
-                    <<: *step__git_config
-            -
-                restore_cache:
-                    <<: *step__restore_cache
-            -
-                run:
-                    <<: *step__run__composer_install
-            -
-                save_cache:
-                    <<: *step__save_cache
-            -
-                run:
-                    <<: *step__run__linters
-            -
-                run:
-                    <<: *step__run__codeception_unit
-            -
-                run:
-                    <<: *step__run__codeception_acceptance
-            -
-                store_test_results:
-                    <<: *step__store_test_results
-            -
-                run:
-                    <<: *step__run__codecov
-
-jobs:
-    php702__lint_and_test:
-        <<: *job__lint_and_test
-        docker:
-            -
-                image: 'circleci/php:7.2'
-    php703__lint_and_test:
-        <<: *job__lint_and_test
-        docker:
-            -
-                image: 'circleci/php:7.3'
+            - 'composer_install'
+    lint:
+        executor: 'php702'
+        working_directory: '~/repo'
+        steps:
+            - 'checkout'
+            - 'composer_install'
+            - 'lint'
+    test_php704:
+        executor: 'php704'
+        working_directory: '~/repo'
+        steps:
+            - 'checkout'
+            - 'composer_install'
+            - 'test'
+    test_php703:
+        executor: 'php703'
+        working_directory: '~/repo'
+        steps:
+            - 'checkout'
+            - 'composer_install'
+            - 'test'
+    test_php702:
+        executor: 'php702'
+        working_directory: '~/repo'
+        steps:
+            - 'checkout'
+            - 'composer_install'
+            - 'test'
 
 workflows:
-    version: 2
-    php702__lint_and_test:
+    lint_and_test:
         jobs:
-            - 'php702__lint_and_test'
-    php703__lint_and_test:
-        jobs:
-            - 'php703__lint_and_test'
+            -
+                build: {}
+            -
+                lint:
+                    requires:
+                        - build
+            -
+                test_php704:
+                    requires:
+                        - build
+            -
+                test_php703:
+                    requires:
+                        - build
+            -
+                test_php702:
+                    requires:
+                        - build
