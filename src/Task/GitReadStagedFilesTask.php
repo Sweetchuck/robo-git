@@ -135,7 +135,11 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
             ->getProcessHelper()
             ->run(
                 $this->output(),
-                "{$commandPrefix}{$item['command']}",
+                [
+                    $this->shell,
+                    '-c',
+                    "{$commandPrefix}{$item['command']}",
+                ],
                 null,
                 $this->processRunCallbackWrapper
             );
