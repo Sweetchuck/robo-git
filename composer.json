@@ -2,6 +2,22 @@
     "name": "sweetchuck/robo-git",
     "description": "Robo task to read the content of the staged files",
     "license": "GPL-2.0-or-later",
+    "keywords": [
+        "robo-tasks",
+        "git"
+    ],
+    "authors": [
+        {
+            "name": "Dávid Andor",
+            "role": "Maintainer",
+            "homepage": "https://github.com/Sweetchuck"
+        }
+    ],
+    "homepage": "https://github.com/Sweetchuck/robo-git",
+    "support": {
+        "source": "https://github.com/Sweetchuck/robo-git",
+        "issues": "https://github.com/Sweetchuck/robo-git/issues"
+    },
     "config": {
         "bin-dir": "bin",
         "sort-packages": true,
