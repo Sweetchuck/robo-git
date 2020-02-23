@@ -6,6 +6,9 @@ version: 2.1
     COMPOSER_MEMORY_LIMIT: '-1'
     COMPOSER_DISABLE_XDEBUG_WARN: '1'
 
+orbs:
+    codecov: codecov/codecov@1.0.5
+
 executors:
     php704:
         environment:
@@ -82,22 +85,21 @@ commands:
                     name: 'Codeception - unit'
                     command: 'bin/robo test unit'
             -
+                codecov/upload:
+                    flags: 'unit'
+                    file: './tests/_output/machine/coverage/unit/coverage.xml'
+            -
                 run:
                     name: 'Codeception - acceptance'
                     command: 'bin/robo test acceptance'
             -
+                codecov/upload:
+                    flags: 'acceptance'
+                    file: './tests/_output/machine/coverage/acceptance/coverage.xml'
+            -
                 store_test_results:
                     name: 'Store unit test results'
                     path: './tests/_output/machine/junit'
-            -
-                run:
-                    # @todo Use orb.
-                    name: 'Publish the code coverage report on Codecov.io'
-                    when: 'always'
-                    command: >-
-                        [ ! -s ./tests/_output/machine/coverage/coverage.xml ]
-                        || bash <(curl -s https://codecov.io/bash)
-                        || true
 
 jobs:
     build:

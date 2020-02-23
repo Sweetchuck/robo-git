@@ -38,6 +38,11 @@ abstract class BaseTask extends RoboBaseTask implements
 
     //region Options.
 
+    /**
+     * @var string
+     */
+    protected $shell = 'bash';
+
     // region Option - assetNamePrefix.
     /**
      * @var string
@@ -390,7 +395,16 @@ abstract class BaseTask extends RoboBaseTask implements
     {
         $process = $this
             ->getProcessHelper()
-            ->run($this->output(), $this->command, null, $this->processRunCallbackWrapper);
+            ->run(
+                $this->output(),
+                [
+                    $this->shell,
+                    '-c',
+                    $this->command
+                ],
+                null,
+                $this->processRunCallbackWrapper
+            );
 
         $this->actionExitCode = $process->getExitCode();
         $this->actionStdOutput = $process->getOutput();
