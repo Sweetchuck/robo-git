@@ -50,8 +50,8 @@ class RunRoboTaskCest extends CestBase
         ];
         $actual = Yaml::parse($stdOutput);
 
-        $i->assertEquals(0, $exitCode, 'Robo task exit code');
-        $i->assertEquals($expected, $actual, 'Robo task stdOutput');
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
+        $i->assertSame($expected, $actual, 'Robo task stdOutput');
         $i->assertRegExp(
             "/\\n \[Git branch list\] cd 'local' && git branch --format '(.+?)'\\n/",
             $stdError,
@@ -84,15 +84,15 @@ class RunRoboTaskCest extends CestBase
         $stdOutput = $i->getRoboTaskStdOutput($id);
         $stdError = $i->getRoboTaskStdError($id);
 
-        $i->assertEquals(0, $exitCode, 'Robo task - exit code');
-        $i->assertContains(
+        $i->assertSame(0, $exitCode, 'Robo task - exit code');
+        $i->assertStringContainsString(
             "\n [Git current branch] git symbolic-ref 'HEAD'\n",
             $stdError,
             'Robo task - stdError'
         );
         $assets = Yaml::parse($stdOutput);
-        $i->assertEquals($example['branchName'], $assets['short'], 'Robo task - assets.short');
-        $i->assertEquals("refs/heads/{$example['branchName']}", $assets['long'], 'Robo task - assets.long');
+        $i->assertSame($example['branchName'], $assets['short'], 'Robo task - assets.short');
+        $i->assertSame("refs/heads/{$example['branchName']}", $assets['long'], 'Robo task - assets.long');
     }
     // endregion
 
@@ -106,9 +106,9 @@ class RunRoboTaskCest extends CestBase
         $exitCode = $i->getRoboTaskExitCode($id);
         $stdOutput = $i->getRoboTaskStdOutput($id);
 
-        $i->assertEquals(0, $exitCode, 'Robo task exit code');
-        $i->assertContains('a.php', $stdOutput, 'Robo task stdOutput a.php');
-        $i->assertContains('b.php', $stdOutput, 'Robo task stdOutput b.php');
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
+        $i->assertStringContainsString('a.php', $stdOutput, 'Robo task stdOutput a.php');
+        $i->assertStringContainsString('b.php', $stdOutput, 'Robo task stdOutput b.php');
     }
     // endregion
 
@@ -122,9 +122,9 @@ class RunRoboTaskCest extends CestBase
         $exitCode = $i->getRoboTaskExitCode($id);
         $stdOutput = $i->getRoboTaskStdOutput($id);
 
-        $i->assertEquals(0, $exitCode, 'Robo task exit code');
-        $i->assertContains('A - a.php', $stdOutput, 'Robo task stdOutput a.php');
-        $i->assertContains('A - b.php', $stdOutput, 'Robo task stdOutput b.php');
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
+        $i->assertStringContainsString('A - a.php', $stdOutput, 'Robo task stdOutput a.php');
+        $i->assertStringContainsString('A - b.php', $stdOutput, 'Robo task stdOutput b.php');
     }
     // endregion
 
@@ -164,13 +164,13 @@ class RunRoboTaskCest extends CestBase
         $stdError = $i->getRoboTaskStdError($id);
         $exitCode = $i->getRoboTaskExitCode($id);
 
-        $i->assertEquals("{$example['expected']}\n", $stdOutput, 'Robo task stdOutput');
-        $i->assertContains(
+        $i->assertSame("{$example['expected']}\n", $stdOutput, 'Robo task stdOutput');
+        $i->assertStringContainsString(
             "git rev-list --count '{$refRange}",
             $stdError,
             'Robo task stdError'
         );
-        $i->assertEquals(0, $exitCode, 'Robo task exit code');
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
     }
     // endregion
 
@@ -185,8 +185,8 @@ class RunRoboTaskCest extends CestBase
         $exitCode = $i->getRoboTaskExitCode($id);
         $stdOutput = $i->getRoboTaskStdOutput($id);
 
-        $i->assertEquals(0, $exitCode, 'Robo task exit code');
-        $i->assertEquals(
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
+        $i->assertSame(
             file_get_contents("{$this->expectedDir}/contents.txt"),
             $stdOutput,
             'Robo task stdOutput'
@@ -202,8 +202,8 @@ class RunRoboTaskCest extends CestBase
         $exitCode = $i->getRoboTaskExitCode($id);
         $stdOutput = $i->getRoboTaskStdOutput($id);
 
-        $i->assertEquals(0, $exitCode, 'Robo task exit code');
-        $i->assertEquals(
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
+        $i->assertSame(
             file_get_contents("{$this->expectedDir}/commands.txt"),
             $stdOutput,
             'Robo task stdOutput'
@@ -245,8 +245,8 @@ class RunRoboTaskCest extends CestBase
         ];
         $actual = Yaml::parse($stdOutput);
 
-        $i->assertEquals(0, $exitCode, 'Robo task exit code');
-        $i->assertEquals($expected, $actual, 'Robo task stdOutput');
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
+        $i->assertSame($expected, $actual, 'Robo task stdOutput');
     }
     // endregion
 }

@@ -132,7 +132,7 @@ class GitBranchListTaskTest extends TaskTestBase
     {
         $task = $this->taskBuilder->taskGitBranchList($options);
 
-        $this->tester->assertEquals($expected, $task->getCommand());
+        $this->tester->assertSame($expected, $task->getCommand());
     }
 
     public function testGetSetListPatterns(): void
@@ -145,15 +145,46 @@ class GitBranchListTaskTest extends TaskTestBase
 
         $task->addListPatterns(['a']);
         $task->addListPatterns(['b' => true]);
-        $this->tester->assertEquals(['a' => true, 'b' => true], $task->getListPatterns());
+        $this->tester->assertSame(
+            [
+                'b' => true,
+                'a' => true,
+            ],
+            $task->getListPatterns(),
+            'initial state'
+        );
 
         $task->addListPattern('c');
-        $this->tester->assertEquals(['a' => true, 'b' => true, 'c' => true], $task->getListPatterns());
+        $this->tester->assertSame(
+            [
+                'b' => true,
+                'a' => true,
+                'c' => true,
+            ],
+            $task->getListPatterns(),
+            'c added'
+        );
 
         $task->removeListPatterns(['a', 'c']);
-        $this->tester->assertEquals(['a' => false, 'b' => true, 'c' => false], $task->getListPatterns());
+        $this->tester->assertSame(
+            [
+                'a' => false,
+                'c' => false,
+                'b' => true,
+            ],
+            $task->getListPatterns(),
+            'c removed'
+        );
 
         $task->removeListPattern('b');
-        $this->tester->assertEquals(['a' => false, 'b' => false, 'c' => false], $task->getListPatterns());
+        $this->tester->assertSame(
+            [
+                'a' => false,
+                'c' => false,
+                'b' => false,
+            ],
+            $task->getListPatterns(),
+            'b removed'
+        );
     }
 }

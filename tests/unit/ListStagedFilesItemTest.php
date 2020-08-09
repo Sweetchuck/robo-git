@@ -50,7 +50,7 @@ class ListStagedFilesItemTest extends Unit
 
         $item = new ListStagedFilesItem($args);
 
-        $this->tester->assertEquals($expected['fileName'], $item->fileName);
-        $this->tester->assertEquals($expected['status'], $item->status);
+        $this->tester->assertSame($expected['fileName'], $item->fileName);
+        $this->tester->assertSame($expected['status'], $item->status);
     }
 }

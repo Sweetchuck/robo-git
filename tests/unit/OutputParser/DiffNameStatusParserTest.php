@@ -60,6 +60,9 @@ class DiffNameStatusParserTest extends Unit
     public function testParse(array $expected, int $exitCode, string $stdOutput, string $stdError): void
     {
         $parser = new DiffNameStatusParser();
-        static::assertEquals($expected, $parser->parse($exitCode, $stdOutput, $stdError));
+        static::assertEquals(
+            $expected,
+            $parser->parse($exitCode, $stdOutput, $stdError)
+        );
     }
 }

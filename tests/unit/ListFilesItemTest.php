@@ -36,6 +36,6 @@ class ListFilesItemTest extends Unit
     {
         $item = new ListFilesItem($args);
 
-        $this->tester->assertEquals($expected, (string) $item);
+        $this->tester->assertSame($expected, (string) $item);
     }
 }

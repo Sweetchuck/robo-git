@@ -353,7 +353,11 @@ class RoboFile extends Tasks implements LoggerAwareInterface
             $cmdPattern .= ' || [[ "${?}" == "1" ]]';
         }
 
-        $command = vsprintf($cmdPattern, $cmdArgs);
+        $command = [
+            'bash',
+            '-c',
+            vsprintf($cmdPattern, $cmdArgs),
+        ];
 
         return $cb
             ->addCode(function () use ($command) {
@@ -361,7 +365,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface
                     '<question>[{name}]</question> runs <info>{command}</info>',
                     [
                         '{name}' => 'Codeception',
-                        '{command}' => $command,
+                        '{command}' => implode(' ', $command),
                     ]
                 ));
                 $process = new Process($command, null, null, null, null);
