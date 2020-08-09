@@ -37,7 +37,7 @@ class GitListChangedFilesCest extends CestBase
             'stdError' => "git --no-pager diff --no-color --name-status -z '1.0.0..1.0.1'" . PHP_EOL,
         ];
 
-        $i->assertContains($expected['stdError'], $stdError, 'Robo task stdError');
+        $i->assertStringContainsString($expected['stdError'], $stdError, 'Robo task stdError');
         $i->assertSame($expected['stdOutput'], $stdOutput, 'Robo task stdOutput');
         $i->assertSame($expected['exitCode'], $exitCode, 'Robo task exit code');
     }

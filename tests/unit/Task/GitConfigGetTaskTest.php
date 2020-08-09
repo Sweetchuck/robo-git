@@ -49,7 +49,7 @@ class GitConfigGetTaskTest extends TaskTestBase
      */
     public function testGetCommand(string $expected, array $options): void
     {
-        $this->tester->assertEquals(
+        $this->tester->assertSame(
             $expected,
             $this
                 ->taskBuilder

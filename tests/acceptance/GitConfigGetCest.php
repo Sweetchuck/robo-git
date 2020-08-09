@@ -33,7 +33,7 @@ class GitConfigGetCest extends CestBase
             'stdError' => "[Git - Config get] git config --local 'user.email'" . PHP_EOL,
         ];
 
-        $i->assertContains($expected['stdError'], $stdError, 'Robo task stdError');
+        $i->assertStringContainsString($expected['stdError'], $stdError, 'Robo task stdError');
         $i->assertSame($expected['stdOutput'], $stdOutput, 'Robo task stdOutput');
         $i->assertSame($expected['exitCode'], $exitCode, 'Robo task exit code');
     }

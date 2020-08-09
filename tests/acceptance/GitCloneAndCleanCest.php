@@ -80,8 +80,8 @@ class GitCloneAndCleanCest extends CestBase
             'stdError' => '[Git clone and clean]',
         ];
 
-        $i->assertContains($expected['stdError'], $stdError, 'Robo task stdError');
-        $i->assertContains($expected['stdOutput'], $stdOutput, 'Robo task stdOutput');
+        $i->assertStringContainsString($expected['stdError'], $stdError, 'Robo task stdError');
+        $i->assertStringContainsString($expected['stdOutput'], $stdOutput, 'Robo task stdOutput');
         $i->assertSame($expected['exitCode'], $exitCode, 'Robo task exit code');
     }
 }
