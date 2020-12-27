@@ -5,6 +5,8 @@
 /tests/_data/tmp/
 /tests/_output/
 /tests/_support/_generated/
+/tests/*.suite.yml
 
 /.git-hooks.local
 /RoboFileLocal.php
+/codeception.yml

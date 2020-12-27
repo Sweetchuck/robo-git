@@ -2,7 +2,6 @@
 
 declare(strict_types = 1);
 
-
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
 use Sweetchuck\Robo\Git\Test\AcceptanceTester;

@@ -7,11 +7,11 @@
 @todo
 
 
-# Install
+## Install
 
 Run `composer require --dev sweetchuck/robo-git`
 
 
-# Usage
+## Usage
 
 @todo

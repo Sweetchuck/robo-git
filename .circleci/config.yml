@@ -1,6 +1,12 @@
 
 version: 2.1
 
+.env_common: &env_common
+    SHELL: '/bin/bash'
+
+.env_xdebug: &env_xdebug
+    XDEBUG_MODE: 'coverage'
+
 .env_composer: &env_composer
     COMPOSER_NO_INTERACTION: '1'
     COMPOSER_MEMORY_LIMIT: '-1'
@@ -12,6 +18,8 @@ orbs:
 executors:
     php704:
         environment:
+            <<: *env_common
+            <<: *env_xdebug
             <<: *env_composer
 
         docker:
@@ -21,6 +29,8 @@ executors:
 
     php703:
         environment:
+            <<: *env_common
+            <<: *env_xdebug
             <<: *env_composer
 
         docker:
@@ -28,16 +38,18 @@ executors:
                 name: 'main'
                 image: 'circleci/php:7.3'
 
-    php702:
-        environment:
-            <<: *env_composer
-
-        docker:
-            -
-                name: 'main'
-                image: 'circleci/php:7.2'
-
 commands:
+    upgrade_git:
+        description: 'Upgrade Git'
+        steps:
+            -
+                run:
+                    name: 'Upgrade Git'
+                    command: |
+                        sudo bash -c "echo 'deb http://deb.debian.org/debian buster-backports main contrib non-free' >> /etc/apt/sources.list.d/my.list"
+                        sudo apt-get update
+                        sudo apt-get -t buster-backports install 'git'
+
     composer_install:
         description: 'Install Composer dependencies with cache restore and save'
         steps:
@@ -103,13 +115,13 @@ commands:
 
 jobs:
     build:
-        executor: 'php702'
+        executor: 'php703'
         working_directory: '~/repo'
         steps:
             - 'checkout'
             - 'composer_install'
     lint:
-        executor: 'php702'
+        executor: 'php703'
         working_directory: '~/repo'
         steps:
             - 'checkout'
@@ -119,6 +131,7 @@ jobs:
         executor: 'php704'
         working_directory: '~/repo'
         steps:
+            - 'upgrade_git'
             - 'checkout'
             - 'composer_install'
             - 'test'
@@ -126,13 +139,7 @@ jobs:
         executor: 'php703'
         working_directory: '~/repo'
         steps:
-            - 'checkout'
-            - 'composer_install'
-            - 'test'
-    test_php702:
-        executor: 'php702'
-        working_directory: '~/repo'
-        steps:
+            - 'upgrade_git'
             - 'checkout'
             - 'composer_install'
             - 'test'
@@ -152,9 +159,5 @@ workflows:
                         - build
             -
                 test_php703:
-                    requires:
-                        - build
-            -
-                test_php702:
                     requires:
                         - build

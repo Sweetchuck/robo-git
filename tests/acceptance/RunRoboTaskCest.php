@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
 use Codeception\Example;
@@ -34,12 +36,12 @@ class RunRoboTaskCest extends CestBase
                 'upstream' => 'refs/remotes/origin/8.x-1.x',
                 'upstream.short' => 'origin/8.x-1.x',
             ],
-            'refs/heads/master' => [
+            'refs/heads/main' => [
                 'isCurrentBranch' => true,
-                'push' => 'refs/remotes/origin/master',
-                'push.short' => 'origin/master',
-                'refName' => 'refs/heads/master',
-                'refName.short' => 'master',
+                'push' => 'refs/remotes/origin/main',
+                'push.short' => 'origin/main',
+                'refName' => 'refs/heads/main',
+                'refName.short' => 'main',
                 'track' => '',
                 'track.ahead' => null,
                 'track.behind' => null,
