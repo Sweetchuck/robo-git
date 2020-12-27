@@ -31,21 +31,21 @@ class GitCloneAndCleanCest extends CestBase
                 [
                     'wc' => [
                         'branches' => [
-                            'refs/heads/live/master' => [
+                            'refs/heads/live/main' => [
                                 'isCurrentBranch' => false,
                                 'push.short' => '',
                                 'push.short.short' => '',
-                                'refName' => 'refs/heads/live/master',
-                                'refName.short' => 'live/master',
+                                'refName' => 'refs/heads/live/main',
+                                'refName.short' => 'live/main',
                                 'upstream.short' => '',
                                 'upstream.short.short' => '',
                             ],
-                            'refs/heads/master' => [
+                            'refs/heads/main' => [
                                 'isCurrentBranch' =>  true,
                                 'push.short' =>  '',
                                 'push.short.short' =>  '',
-                                'refName' =>  'refs/heads/master',
-                                'refName.short' =>  'master',
+                                'refName' =>  'refs/heads/main',
+                                'refName.short' =>  'main',
                                 'upstream.short' => '',
                                 'upstream.short.short' =>  '',
                             ],
@@ -57,14 +57,14 @@ class GitCloneAndCleanCest extends CestBase
                     ],
                     'release' => [
                         'branches' => [
-                            'refs/heads/master' => [
+                            'refs/heads/main' => [
                                 'isCurrentBranch' => true,
-                                'push.short' => 'refs/remotes/release-store/master',
-                                'push.short.short' => 'release-store/master',
-                                'refName' => 'refs/heads/master',
-                                'refName.short' => 'master',
-                                'upstream.short' => 'refs/remotes/release-store/master',
-                                'upstream.short.short' => 'release-store/master',
+                                'push.short' => 'refs/remotes/release-store/main',
+                                'push.short.short' => 'release-store/main',
+                                'refName' => 'refs/heads/main',
+                                'refName.short' => 'main',
+                                'upstream.short' => 'refs/remotes/release-store/main',
+                                'upstream.short.short' => 'release-store/main',
                             ],
                         ],
                         'remotes' => [

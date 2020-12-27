@@ -7,12 +7,13 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 use Codeception\Test\Unit;
 use League\Container\Container as LeagueContainer;
 use Robo\Collection\CollectionBuilder;
+use Robo\Config\Config as RoboConfig;
 use Robo\Robo;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyOutput;
-use Sweetchuck\Robo\Git\Test\Helper\Dummy\DummyProcessHelper;
+use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcessHelper;
 use Sweetchuck\Robo\Git\Test\Helper\Dummy\DummyTaskBuilder;
 use Symfony\Component\Console\Application as SymfonyApplication;
-use Symfony\Component\Debug\BufferingLogger;
+use Symfony\Component\ErrorHandler\BufferingLogger;
 
 class TaskTestBase extends Unit
 {
@@ -51,7 +52,7 @@ class TaskTestBase extends Unit
         $this->container = new LeagueContainer();
         $application = new SymfonyApplication('Sweetchuck - Robo Git', '1.0.0');
         $application->getHelperSet()->set(new DummyProcessHelper(), 'process');
-        $this->config = (new \Robo\Config\Config());
+        $this->config = (new RoboConfig());
         $input = null;
         $output = new DummyOutput([
             'verbosity' => DummyOutput::VERBOSITY_DEBUG,

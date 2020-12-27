@@ -634,10 +634,6 @@ class GitListFilesTask extends BaseTask implements CommandInterface
             $this->setPaths($options['paths']);
         }
 
-        if (array_key_exists('visibleStdOutput', $options)) {
-            $this->setVisibleStdOutput($options['visibleStdOutput']);
-        }
-
         return $this;
     }
 

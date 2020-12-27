@@ -25,6 +25,14 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
      */
     protected $tmpDirBase = 'tests/_data/tmp';
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function output()
+    {
+        return $this->getContainer()->get('output');
+    }
+
     // region Task - GitBranchListTask
     /**
      * @command branch-list:basic
@@ -92,7 +100,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                     ->taskGitStack()
                     ->stopOnFail(true)
                     ->printOutput(false)
-                    ->exec('init --bare')
+                    ->exec('init --initial-branch=main --bare')
                     ->deferTaskConfiguration('dir', 'remoteDir')
             )
             ->addTask(
@@ -137,30 +145,31 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             ->addTask(
                 $this
                     ->taskExecStack()
-                    ->exec('git init --bare release.git')
+                    ->exec('git init --initial-branch=main --bare release.git')
 
                     ->exec('git clone release.git release')
                     ->exec('cd release')
+                    ->exec('git switch --create=main')
                     ->exec('touch a.txt')
                     ->exec('git add a.txt')
                     ->exec('git commit -m "Add a.txt"')
-                    ->exec('git push origin master:master')
+                    ->exec('git push origin main:main')
                     ->exec('cd ..')
 
-                    ->exec('git init wc')
+                    ->exec('git init --initial-branch=main wc')
                     ->exec('cd wc')
                     ->exec('touch b.txt')
                     ->exec('git add b.txt')
                     ->exec('git commit -m "Add b.txt"')
                     ->exec('git remote add live ../release.git')
-                    ->exec('git fetch live master:live/master')
+                    ->exec('git fetch live main:live/main')
                     ->exec('cd ..')
 
                     ->exec('cd release')
                     ->exec('echo "line 1" >> a.txt')
                     ->exec('git add a.txt')
                     ->exec('git commit -m "Modify a.txt"')
-                    ->exec('git push origin master:master')
+                    ->exec('git push origin main:main')
                     ->exec('cd ..')
                     ->exec('rm -rf release')
             )
@@ -169,12 +178,12 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                     ->taskGitCloneAndClean()
                     ->setRemoteName('release-store')
                     ->setRemoteUrl('../release.git')
-                    ->setRemoteBranch('master')
-                    ->setLocalBranch('master')
+                    ->setRemoteBranch('main')
+                    ->setLocalBranch('main')
                     ->deferTaskConfiguration('setSrcDir', './wc')
                     ->deferTaskConfiguration('setWorkingDirectory', './release')
             )
-            ->addCode(function (RoboStateData $data): int {
+            ->addCode(function (): int {
                 $dirs = [
                     'wc' => 'wc',
                     'release' => 'release',
@@ -725,6 +734,10 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                 ];
                 $this->output()->write(Yaml::dump($result, 50));
 
+                /** @var \Symfony\Component\Console\Output\OutputInterface $output */
+                //$output = $this->getContainer()->get('output');
+                //$output->write(Yaml::dump($result, 50));
+
                 return 0;
             });
     }
@@ -848,7 +861,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             ->taskGitStack()
             ->printOutput(false)
             ->stopOnFail(true)
-            ->exec('init');
+            ->exec('init --initial-branch=main');
 
         if ($dirStateKey) {
             $task->deferTaskConfiguration('dir', $dirStateKey);

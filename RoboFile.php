@@ -492,10 +492,12 @@ class RoboFile extends Tasks implements LoggerAwareInterface
                 ->in($this->codeceptionInfo['paths']['tests'])
                 ->files()
                 ->name('*.suite.yml')
+                ->name('*.suite.dist.yml')
                 ->depth(0);
 
             foreach ($suiteFiles as $suiteFile) {
-                $this->codeceptionSuiteNames[] = $suiteFile->getBasename('.suite.yml');
+                $parts = explode('.', $suiteFile->getBasename());
+                $this->codeceptionSuiteNames[] = reset($parts);
             }
         }
 

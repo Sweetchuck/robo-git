@@ -393,8 +393,10 @@ class GitListFilesTaskTest extends TaskTestBase
 
         $this
             ->taskBuilder
-            ->taskGitListFiles(['visibleStdOutput' => true])
-            ->setOutput($output)
+            ->taskGitListFiles([
+                'output' => $output,
+                'stdOutputVisible' => true,
+            ])
             ->run();
 
         $this->tester->assertSameSize(

@@ -4,13 +4,13 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Task;
 
+use Consolidation\AnnotatedCommand\Output\OutputAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Contract\InflectionInterface;
 use Robo\TaskAccessor;
 use Sweetchuck\Robo\Git\Utils;
 use League\Container\ContainerAwareInterface;
 use Robo\Common\IO;
-use Robo\Contract\OutputAwareInterface;
 use Robo\Result;
 use Robo\Task\BaseTask as RoboBaseTask;
 use Robo\TaskInfo;
@@ -192,6 +192,10 @@ abstract class BaseTask extends RoboBaseTask implements
 
         if (array_key_exists('stdOutputVisible', $options)) {
             $this->setVisibleStdOutput($options['stdOutputVisible']);
+        }
+
+        if (!empty($options['output'])) {
+            $this->setOutput($options['output']);
         }
 
         return $this;
@@ -393,18 +397,17 @@ abstract class BaseTask extends RoboBaseTask implements
      */
     protected function runAction()
     {
-        $process = $this
-            ->getProcessHelper()
-            ->run(
-                $this->output(),
-                [
-                    $this->shell,
-                    '-c',
-                    $this->command
-                ],
-                null,
-                $this->processRunCallbackWrapper
-            );
+        $processHelper = $this->getProcessHelper();
+        $process = $processHelper->run(
+            $this->output(),
+            [
+                $this->shell,
+                '-c',
+                $this->command
+            ],
+            null,
+            $this->processRunCallbackWrapper
+        );
 
         $this->actionExitCode = $process->getExitCode();
         $this->actionStdOutput = $process->getOutput();
