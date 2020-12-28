@@ -5,8 +5,8 @@
 [![codecov](https://codecov.io/gh/Sweetchuck/robo-git/branch/1.x/graph/badge.svg)](https://codecov.io/gh/Sweetchuck/robo-git)
 
 The main additional feature compare to the ::taskExec() is that this tasks parse
-the stdOutput/errorOutput and make the result available for the next tasks in
-the `\Robo\State\Data` instance which belongs to the pipeline.
+the stdOutput/stdError and make the result available for the next tasks by
+putting it into the `\Robo\State\Data` instance which belongs to the pipeline.
 
 
 ## Install
@@ -116,12 +116,111 @@ Example output:
 
 ## Task - taskGitCurrentBranch()
 
-@todo
+```php
+<?php
+
+declare(strict_types = 1);
+
+class RoboFileExample extends \Robo\Tasks
+{
+    use \Sweetchuck\Robo\Git\GitTaskLoader;
+
+    /**
+     * @command git:current-branch
+     */
+    public function gitCurrentBranch()
+    {
+        return $this
+            ->collectionBuilder()
+            ->addTask($this->taskGitCurrentBranch())
+            ->addCode(function (\Robo\State\Data $data): int {
+                $this->output()->writeln("long = {$data['gitCurrentBranch.long']}");
+                $this->output()->writeln("short = {$data['gitCurrentBranch.short']}");
+
+                return 0;
+            });
+    }
+}
+```
+
+Run: `$ vendor/bin/robo git:current-branch`
+
+Example output:
+> long = refs/heads/1.x<br />
+> short = 1.x
 
 
 ## Task - taskGitListFiles()
 
-@todo
+```php
+<?php
+
+declare(strict_types = 1);
+
+class RoboFileExample extends \Robo\Tasks
+{
+    use \Sweetchuck\Robo\Git\GitTaskLoader;
+
+    /**
+     * @command git:list-files
+     */
+    public function gitListFiles()
+    {
+        return $this
+            ->collectionBuilder()
+            ->addTask(
+                $this
+                    ->taskGitListFiles()
+                    ->setPaths(['R*.md'])
+                    // Available options:
+                    // -t
+                    // -v
+                    // -z
+                    // --cached
+                    // --deleted
+                    // --directory
+                    // --empty-directory
+                    // --eol
+                    // --exclude
+                    // --exclude-file
+                    // --full-name
+                    // --killed
+                    // --ignored
+                    // --modified
+                    // --others
+                    // --stage
+                    // --resolve-undo
+                    // --unmerged
+            )
+            ->addCode(function (\Robo\State\Data $data): int {
+                $output = $this->output();
+                /** * @var \Sweetchuck\Robo\Git\ListFilesItem $file */
+                foreach ($data['files'] as $filePath => $file) {
+                    $output->writeln($filePath);
+                    $output->writeln('    status = ' . var_export($file->status, true));
+                    $output->writeln('    objectName = ' . var_export($file->objectName, true));
+                    $output->writeln('    eolInfoI = ' . var_export($file->eolInfoI, true));
+                    $output->writeln('    eolInfoW = ' . var_export($file->eolInfoW, true));
+                    $output->writeln('    eolAttr = ' . var_export($file->eolAttr, true));
+                    $output->writeln('    fileName = ' . var_export($file->fileName, true));
+                }
+
+                return 0;
+            });
+    }
+}
+```
+
+Run: `$ vendor/bin/robo git:list-files`
+
+Example output:
+> <pre>README.md
+>     status = NULL
+>     objectName = NULL
+>     eolInfoI = NULL
+>     eolInfoW = NULL
+>     eolAttr = NULL
+>     fileName = 'README.md'</pre>
 
 
 ## Task - taskGitListChangedFiles()

@@ -8,8 +8,12 @@ use Sweetchuck\Robo\Git\OutputParserInterface;
 
 class RemoteListParser implements OutputParserInterface
 {
-    public function parse(int $exitCode, string $stdOutput, string $stdError): array
-    {
+    public function parse(
+        int $exitCode,
+        string $stdOutput,
+        string $stdError,
+        array $options = []
+    ): array {
         $stdOutput = trim($stdOutput);
         if ($exitCode || !$stdOutput) {
             return [];

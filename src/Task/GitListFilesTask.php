@@ -6,6 +6,7 @@ namespace Sweetchuck\Robo\Git\Task;
 
 use Sweetchuck\Robo\Git\ListFilesItem;
 use Robo\Contract\CommandInterface;
+use Sweetchuck\Robo\Git\OutputParser\ListFilesParser;
 
 class GitListFilesTask extends BaseTask implements CommandInterface
 {
@@ -643,7 +644,7 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     protected function runProcessOutputs()
     {
         $this->assets['workingDirectory'] = $this->getWorkingDirectory();
-        $this->assets['files'] = $this->parseStdOutput($this->actionStdOutput);
+        $this->assets['files'] = $this->parseStdOutput();
 
         return $this;
     }
@@ -651,53 +652,21 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     /**
      * @return ListFilesItem[]
      */
-    protected function parseStdOutput(string $stdOutput): array
+    protected function parseStdOutput(): array
     {
-        $lineSeparator = $this->getSeparatedWithNullChar() ? '\0' : '\n';
-        $lines = preg_split("/{$lineSeparator}+/u", trim($stdOutput, "\n\0"), -1, PREG_SPLIT_NO_EMPTY);
+        $parser = new ListFilesParser();
 
-        $items = [];
-        $pattern = $this->getStdOutputLineParserPattern();
-        foreach ($lines as $line) {
-            if ($line) {
-                $item = $this->parseStdOutputLine($line, $pattern);
-                $items[$item->fileName] = $item;
-            }
-        }
-
-        return $items;
-    }
-
-    protected function parseStdOutputLine(string $line, string $pattern = ''): ListFilesItem
-    {
-        $matches = null;
-        preg_match($pattern, $line, $matches);
-
-        return new ListFilesItem(array_diff_key($matches, range(0, 10)));
-    }
-
-    protected function getStdOutputLineParserPattern(): string
-    {
-        $fragments = [];
-
-        if ($this->getFileStatusWithTags()) {
-            $fragments[] = '(?P<status>[^\s]+)';
-        }
-
-        if ($this->getShowStaged()) {
-            $fragments[] = '(?P<mask>[^\s]+)';
-            $fragments[] = '(?P<objectName>[^\s]+)';
-            $fragments[] = '(?P<unknown>[^\s]+)';
-        }
-
-        if ($this->getShowLineEndings()) {
-            $fragments[] = '(?P<eolInfoI>[^\s]+)';
-            $fragments[] = '(?P<eolInfoW>[^\s]+)';
-            $fragments[] = '(?P<eolAttr>[^\s]+)';
-        }
-
-        $fragments[] = '(?P<fileName>.+)';
-
-        return '/^' . implode('[ \t]+', $fragments) . '$/mu';
+        return $parser->parse(
+            $this->actionExitCode,
+            $this->actionStdOutput,
+            $this->actionStdError,
+            [
+                'separatedWithNullChar' => $this->getSeparatedWithNullChar(),
+                'fileStatusWithTags' => $this->getFileStatusWithTags(),
+                'showStaged' => $this->getShowStaged(),
+                'showLineEndings' => $this->getShowLineEndings(),
+                'lowercaseStatusLetters' => $this->getLowercaseStatusLetters(),
+            ],
+        );
     }
 }

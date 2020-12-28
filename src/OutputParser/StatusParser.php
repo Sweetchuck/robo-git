@@ -11,8 +11,12 @@ class StatusParser implements OutputParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse(int $exitCode, string $stdOutput, string $stdError): array
-    {
+    public function parse(
+        int $exitCode,
+        string $stdOutput,
+        string $stdError,
+        array $options = []
+    ): array {
         if ($exitCode || !trim($stdOutput)) {
             return [];
         }
