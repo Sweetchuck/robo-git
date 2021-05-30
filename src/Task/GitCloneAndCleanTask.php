@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Sweetchuck\Robo\Git\Task;
 
 use Robo\Contract\BuilderAwareInterface;
-use Robo\Task\Vcs\loadTasks as VcsTaskLoader;
+use Robo\Task\Vcs\Tasks as VcsTaskLoader;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -20,10 +20,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     protected $taskName = 'Git clone and clean';
 
     // region srcDir
-    /**
-     * @var string
-     */
-    protected $srcDir = '';
+    protected string $srcDir = '';
 
     public function getSrcDir(): string
     {
@@ -42,10 +39,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     // endregion
 
     // region remoteUrl
-    /**
-     * @var string
-     */
-    protected $remoteUrl = '';
+    protected string $remoteUrl = '';
 
     public function getRemoteUrl(): string
     {
@@ -64,10 +58,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     // endregion
 
     // region remoteBranch
-    /**
-     * @var string
-     */
-    protected $remoteBranch = 'production';
+    protected string $remoteBranch = 'production';
 
     public function getRemoteBranch(): string
     {
@@ -86,10 +77,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     // endregion
 
     // region localBranch
-    /**
-     * @var string
-     */
-    protected $localBranch = 'production';
+    protected string $localBranch = 'production';
 
     public function getLocalBranch(): string
     {
@@ -108,10 +96,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     // endregion
 
     // region remoteName
-    /**
-     * @var string
-     */
-    protected $remoteName = 'live';
+    protected string $remoteName = 'live';
 
     public function getRemoteName(): string
     {
@@ -157,10 +142,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         }
     }
 
-    /**
-     * @var \Symfony\Component\Filesystem\Filesystem
-     */
-    protected $fs;
+    protected Filesystem $fs;
 
     public function __construct(?Filesystem $fs = null)
     {

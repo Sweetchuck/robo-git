@@ -20,10 +20,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     use GitComboTaskLoader;
     use LoggerAwareTrait;
 
-    /**
-     * @var string
-     */
-    protected $tmpDirBase = 'tests/_data/tmp';
+    protected string $tmpDirBase = 'tests/_data/tmp';
 
     /**
      * {@inheritdoc}
@@ -288,11 +285,10 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             ->listFilesPrepareGitRepo()
             ->addTask(
                 $this
-                    ->taskGitListFiles()
+                    ->taskGitListFiles(['output' => $this->output()])
                     ->setVisibleStdOutput(true)
                     ->setShowStaged(true)
                     ->setFileStatusWithTags(true)
-                    ->setOutput($this->output())
             );
     }
 
@@ -453,11 +449,10 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             ->numOfCommitsBetweenPrepareGitRepo()
             ->addTask(
                 $this
-                    ->taskGitNumOfCommitsBetween()
+                    ->taskGitNumOfCommitsBetween(['output' => $this->output()])
                     ->setVisibleStdOutput(false)
                     ->setFromRevName($fromRevName)
                     ->setToRevName($toRevName)
-                    ->setOutput($this->output())
             )
             ->addCode(function (RoboStateData $data) {
                 $this->output()->writeln($data['numOfCommits']);
