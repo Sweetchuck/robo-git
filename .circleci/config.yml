@@ -16,18 +16,7 @@ orbs:
     codecov: codecov/codecov@1.0.5
 
 executors:
-    php704:
-        environment:
-            <<: *env_common
-            <<: *env_xdebug
-            <<: *env_composer
-
-        docker:
-            -
-                name: 'main'
-                image: 'circleci/php:7.4'
-
-    php703:
+    php_min:
         environment:
             <<: *env_common
             <<: *env_xdebug
@@ -37,6 +26,17 @@ executors:
             -
                 name: 'main'
                 image: 'circleci/php:7.3'
+
+    php_plus1:
+        environment:
+            <<: *env_common
+            <<: *env_xdebug
+            <<: *env_composer
+
+        docker:
+            -
+                name: 'main'
+                image: 'circleci/php:7.4'
 
 commands:
     upgrade_git:
@@ -57,22 +57,21 @@ commands:
                 restore_cache:
                     name: 'Composer - cache restore'
                     keys:
-                        - 'composer-{{ checksum "./composer.lock" }}-1'
+                        - 'composer-{{ checksum "./composer.lock" }}-2'
 
             -
                 run:
                     name: 'Composer - install'
                     command: >
-                        [[ -d "$(composer config vendor-dir)" ]] || composer install --no-progress
+                        composer install --no-progress
 
             -
                 save_cache:
                     name: 'Composer - cache save'
-                    key: 'composer-{{ checksum "./composer.lock" }}-1'
+                    key: 'composer-{{ checksum "./composer.lock" }}-2'
                     paths:
-                        - './bin/'
-                        - './vendor/'
                         - '~/.composer/cache/'
+                        - '~/.cache/composer/'
 
 
     lint:
@@ -115,28 +114,28 @@ commands:
 
 jobs:
     build:
-        executor: 'php703'
+        executor: 'php_min'
         working_directory: '~/repo'
         steps:
             - 'checkout'
             - 'composer_install'
     lint:
-        executor: 'php703'
+        executor: 'php_min'
         working_directory: '~/repo'
         steps:
             - 'checkout'
             - 'composer_install'
             - 'lint'
-    test_php704:
-        executor: 'php704'
+    test_php_min:
+        executor: 'php_min'
         working_directory: '~/repo'
         steps:
             - 'upgrade_git'
             - 'checkout'
             - 'composer_install'
             - 'test'
-    test_php703:
-        executor: 'php703'
+    test_php_plus1:
+        executor: 'php_plus1'
         working_directory: '~/repo'
         steps:
             - 'upgrade_git'
@@ -152,12 +151,12 @@ workflows:
             -
                 lint:
                     requires:
-                        - build
+                        - 'build'
             -
-                test_php704:
+                test_php_min:
                     requires:
-                        - build
+                        - 'build'
             -
-                test_php703:
+                test_php_plus1:
                     requires:
-                        - build
+                        - 'build'
