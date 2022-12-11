@@ -6,7 +6,7 @@ namespace Sweetchuck\Robo\Git\OutputParser;
 
 use Sweetchuck\Robo\Git\ListStagedFilesItem;
 use Sweetchuck\Robo\Git\OutputParserInterface;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 class DiffNameStatusParser implements OutputParserInterface
 {

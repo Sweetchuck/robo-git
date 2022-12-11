@@ -16,17 +16,6 @@ orbs:
     codecov: 'codecov/codecov@1.2.0'
 
 executors:
-    php800:
-        environment:
-            <<: *env_common
-            <<: *env_xdebug
-            <<: *env_composer
-
-        docker:
-            -
-                name: 'main'
-                image: 'circleci/php:8.0'
-
     php704:
         environment:
             <<: *env_common
@@ -37,6 +26,16 @@ executors:
             -
                 name: 'main'
                 image: 'circleci/php:7.4'
+    php800:
+        environment:
+            <<: *env_common
+            <<: *env_xdebug
+            <<: *env_composer
+
+        docker:
+            -
+                name: 'main'
+                image: 'circleci/php:8.0'
 
 
 commands:

@@ -25,6 +25,8 @@ class GitCloneAndCleanCest extends CestBase
         $stdOutput = $i->getRoboTaskStdOutput($id);
         $stdError = $i->getRoboTaskStdError($id);
 
+        $isGitPushShortSupported = $this->isGitPushShortSupported();
+
         $expected = [
             'exitCode' => 0,
             'stdOutput' => Yaml::dump(
@@ -33,8 +35,8 @@ class GitCloneAndCleanCest extends CestBase
                         'branches' => [
                             'refs/heads/live/main' => [
                                 'isCurrentBranch' => false,
-                                'push.short' => '',
-                                'push.short.short' => '',
+                                'push.short' => $isGitPushShortSupported ? 'refs/remotes/live/live/main' : '',
+                                'push.short.short' => $isGitPushShortSupported ? 'live/live/main' : '',
                                 'refName' => 'refs/heads/live/main',
                                 'refName.short' => 'live/main',
                                 'upstream.short' => '',
@@ -42,8 +44,8 @@ class GitCloneAndCleanCest extends CestBase
                             ],
                             'refs/heads/main' => [
                                 'isCurrentBranch' =>  true,
-                                'push.short' =>  '',
-                                'push.short.short' =>  '',
+                                'push.short' =>  $isGitPushShortSupported ? 'refs/remotes/live/main' : '',
+                                'push.short.short' =>  $isGitPushShortSupported ? 'live/main' : '',
                                 'refName' =>  'refs/heads/main',
                                 'refName.short' =>  'main',
                                 'upstream.short' => '',
@@ -75,7 +77,7 @@ class GitCloneAndCleanCest extends CestBase
                         ],
                     ],
                 ],
-                99
+                99,
             ),
             'stdError' => '[Git clone and clean]',
         ];
@@ -83,5 +85,12 @@ class GitCloneAndCleanCest extends CestBase
         $i->assertStringContainsString($expected['stdError'], $stdError, 'Robo task stdError');
         $i->assertStringContainsString($expected['stdOutput'], $stdOutput, 'Robo task stdOutput');
         $i->assertSame($expected['exitCode'], $exitCode, 'Robo task exit code');
+    }
+
+    protected function isGitPushShortSupported(): bool
+    {
+        $gitVersion = preg_replace('/^\D+/', '', exec('git --version'));
+
+        return version_compare($gitVersion, '2.38.0', '>=');
     }
 }
