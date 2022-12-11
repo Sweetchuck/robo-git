@@ -12,7 +12,7 @@ use Robo\Collection\CollectionBuilder;
 use Robo\Tasks as BaseRoboFile;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Yaml\Yaml;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
 {
