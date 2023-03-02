@@ -5,7 +5,8 @@ declare(strict_types = 1);
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 /**
- * @covers \Sweetchuck\Robo\Git\Task\GitListStagedFilesTask<extended>
+ * @covers \Sweetchuck\Robo\Git\Task\GitListStagedFilesTask
+ * @covers \Sweetchuck\Robo\Git\Task\BaseTask
  */
 class GitListStagedFilesTaskTest extends TaskTestBase
 {

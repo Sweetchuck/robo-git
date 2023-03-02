@@ -4,38 +4,33 @@ version: 2.1
 .env_common: &env_common
     SHELL: '/bin/bash'
 
-.env_xdebug: &env_xdebug
-    XDEBUG_MODE: 'coverage'
-
 .env_composer: &env_composer
     COMPOSER_NO_INTERACTION: '1'
     COMPOSER_MEMORY_LIMIT: '-1'
     COMPOSER_DISABLE_XDEBUG_WARN: '1'
 
 orbs:
-    codecov: 'codecov/codecov@1.2.0'
+    codecov: 'codecov/codecov@3.2.4'
 
 executors:
-    php704:
+    php_min:
         environment:
             <<: *env_common
-            <<: *env_xdebug
             <<: *env_composer
 
         docker:
             -
                 name: 'main'
-                image: 'circleci/php:7.4'
-    php800:
+                image: 'cimg/php:8.1'
+    php_plus1:
         environment:
             <<: *env_common
-            <<: *env_xdebug
             <<: *env_composer
 
         docker:
             -
                 name: 'main'
-                image: 'circleci/php:8.0'
+                image: 'cimg/php:8.2'
 
 
 commands:
@@ -46,9 +41,16 @@ commands:
                 run:
                     name: 'Upgrade Git'
                     command: |
-                        sudo bash -c "echo 'deb http://deb.debian.org/debian buster-backports main contrib non-free' >> /etc/apt/sources.list.d/my.list"
                         sudo apt-get update
-                        sudo apt-get -t buster-backports install 'git'
+                        sudo apt-get -y install 'git'
+
+    install_php_extension_pcov:
+        description: 'Install PCOV PHP extension'
+        steps:
+            -
+                run:
+                    name: 'Install PCOV PHP extension - pecl install pcov'
+                    command: 'sudo pecl install pcov'
 
     composer_install:
         description: 'Install Composer dependencies with cache restore and save'
@@ -79,7 +81,8 @@ commands:
             -
                 run:
                     name: 'Run linters'
-                    command: 'bin/robo lint'
+                    command: |
+                        "$(composer config bin-dir)/robo" lint
 
     test:
         description: 'Run tests'
@@ -93,51 +96,46 @@ commands:
             -
                 run:
                     name: 'Codeception - unit'
-                    command: 'bin/robo test unit'
+                    command: |
+                        "$(composer config bin-dir)/robo" test unit
             -
                 codecov/upload:
                     flags: 'unit'
-                    file: './tests/_output/machine/coverage/unit/coverage.xml'
+                    file: './tests/_log/machine/coverage/unit/coverage.xml'
             -
                 run:
                     name: 'Codeception - acceptance'
-                    command: 'bin/robo test acceptance'
+                    command: |
+                        "$(composer config bin-dir)/robo" test acceptance
             -
                 codecov/upload:
                     flags: 'acceptance'
-                    file: './tests/_output/machine/coverage/acceptance/coverage.xml'
+                    file: './tests/_log/machine/coverage/acceptance/coverage.xml'
             -
                 store_test_results:
                     name: 'Store unit test results'
-                    path: './tests/_output/machine/junit'
+                    path: './tests/_log/machine/junit'
 
 jobs:
     build:
-        executor: 'php704'
-        working_directory: '~/repo'
+        executor: 'php_min'
         steps:
             - 'checkout'
             - 'composer_install'
     lint:
-        executor: 'php704'
-        working_directory: '~/repo'
+        executor: 'php_min'
         steps:
             - 'checkout'
             - 'composer_install'
             - 'lint'
-    test_php800:
-        executor: 'php800'
-        working_directory: '~/repo'
+    test:
+        parameters:
+            executor:
+                type: 'string'
+        executor: '<<parameters.executor>>'
         steps:
             - 'upgrade_git'
-            - 'checkout'
-            - 'composer_install'
-            - 'test'
-    test_php704:
-        executor: 'php704'
-        working_directory: '~/repo'
-        steps:
-            - 'upgrade_git'
+            - 'install_php_extension_pcov'
             - 'checkout'
             - 'composer_install'
             - 'test'
@@ -152,10 +150,12 @@ workflows:
                     requires:
                         - 'build'
             -
-                test_php800:
+                test:
+                    name: 'test_<<matrix.executor>>'
                     requires:
                         - 'build'
-            -
-                test_php704:
-                    requires:
-                        - 'build'
+                    matrix:
+                        parameters:
+                            executor:
+                                - 'php_min'
+                                - 'php_plus1'

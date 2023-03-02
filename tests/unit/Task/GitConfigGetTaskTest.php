@@ -7,7 +7,8 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
 /**
- * @covers \Sweetchuck\Robo\Git\Task\GitConfigGetTask<extended>
+ * @covers \Sweetchuck\Robo\Git\Task\GitConfigGetTask
+ * @covers \Sweetchuck\Robo\Git\Task\BaseTask
  */
 class GitConfigGetTaskTest extends TaskTestBase
 {

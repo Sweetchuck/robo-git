@@ -8,7 +8,8 @@ use Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
 /**
- * @covers \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask<extended>
+ * @covers \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask
+ * @covers \Sweetchuck\Robo\Git\Task\BaseTask
  */
 class GitReadStagedFilesTaskTest extends TaskTestBase
 {

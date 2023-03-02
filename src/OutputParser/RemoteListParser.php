@@ -12,7 +12,7 @@ class RemoteListParser implements OutputParserInterface
         int $exitCode,
         string $stdOutput,
         string $stdError,
-        array $options = []
+        array $options = [],
     ): array {
         $stdOutput = trim($stdOutput);
         if ($exitCode || !$stdOutput) {

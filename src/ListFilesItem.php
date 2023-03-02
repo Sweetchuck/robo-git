@@ -4,48 +4,24 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git;
 
-class ListFilesItem
+class ListFilesItem implements \Stringable
 {
 
-    /**
-     * @var null|string
-     */
-    public $status = null;
+    public ?string $status = null;
 
-    /**
-     * @var null|int
-     */
-    public $mask = null;
+    public ?int $mask = null;
 
-    /**
-     * @var null|string
-     */
-    public $objectName = null;
+    public ?string $objectName = null;
 
-    /**
-     * @var null|string
-     */
-    public $unknown = null;
+    public ?string $unknown = null;
 
-    /**
-     * @var null|string
-     */
-    public $eolInfoI = null;
+    public ?string $eolInfoI = null;
 
-    /**
-     * @var null|string
-     */
-    public $eolInfoW = null;
+    public ?string $eolInfoW = null;
 
-    /**
-     * @var null|string
-     */
-    public $eolAttr = null;
+    public ?string $eolAttr = null;
 
-    /**
-     * @var null|string
-     */
-    public $fileName = null;
+    public ?string $fileName = null;
 
     public function __construct(array $properties = [])
     {
@@ -68,7 +44,7 @@ class ListFilesItem
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->fileName;
     }

@@ -8,31 +8,19 @@ use Robo\Contract\CommandInterface;
 
 class GitConfigGetTask extends BaseTask implements CommandInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git - Config get';
+    protected string $taskName = 'Git - Config get';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'config';
+    protected string $action = 'config';
 
     // region source
-    /**
-     * @var string
-     */
-    protected $source = '';
+    protected string $source = '';
 
     public function getSource(): string
     {
         return $this->source;
     }
 
-    /**
-     * @return $this
-     */
-    public function setSource(string $source)
+    public function setSource(string $source): static
     {
         $this->source = $source;
 
@@ -41,20 +29,14 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
     // endregion
 
     // region name
-    /**
-     * @var string
-     */
-    protected $name = '';
+    protected string $name = '';
 
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return $this
-     */
-    public function setName(string $name)
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -63,20 +45,14 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
     // endregion
 
     // region stopOnFail
-    /**
-     * @var bool
-     */
-    protected $stopOnFail = true;
+    protected bool $stopOnFail = true;
 
     public function getStopOnFail(): bool
     {
         return $this->stopOnFail;
     }
 
-    /**
-     * @return $this
-     */
-    public function setStopOnFail(bool $stopOnFail)
+    public function setStopOnFail(bool $stopOnFail): static
     {
         $this->stopOnFail = $stopOnFail;
 
@@ -84,9 +60,6 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
     }
     // endregion
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getOptions(): array
     {
         $options = [];
@@ -107,10 +80,7 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
         return $options + parent::getOptions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         if (array_key_exists('source', $options)) {
             $this->setSource($options['source']);
@@ -127,10 +97,7 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         $name = $this->getName();
         $this->assets["git.config.$name"] = $this->actionExitCode === 0 ?
@@ -145,9 +112,6 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
         return ['local', 'system', 'global'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getTaskExitCode(): int
     {
         return $this->getStopOnFail() ? $this->actionExitCode : 0;

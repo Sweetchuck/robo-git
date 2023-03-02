@@ -35,8 +35,8 @@ class GitCloneAndCleanCest extends CestBase
                         'branches' => [
                             'refs/heads/live/main' => [
                                 'isCurrentBranch' => false,
-                                'push.short' => $isGitPushShortSupported ? 'refs/remotes/live/live/main' : '',
-                                'push.short.short' => $isGitPushShortSupported ? 'live/live/main' : '',
+                                //'push.short' => $isGitPushShortSupported ? 'refs/remotes/live/live/main' : '',
+                                //'push.short.short' => $isGitPushShortSupported ? 'live/live/main' : '',
                                 'refName' => 'refs/heads/live/main',
                                 'refName.short' => 'live/main',
                                 'upstream.short' => '',
@@ -44,8 +44,8 @@ class GitCloneAndCleanCest extends CestBase
                             ],
                             'refs/heads/main' => [
                                 'isCurrentBranch' =>  true,
-                                'push.short' =>  $isGitPushShortSupported ? 'refs/remotes/live/main' : '',
-                                'push.short.short' =>  $isGitPushShortSupported ? 'live/main' : '',
+                                //'push.short' =>  $isGitPushShortSupported ? 'refs/remotes/live/main' : '',
+                                //'push.short.short' =>  $isGitPushShortSupported ? 'live/main' : '',
                                 'refName' =>  'refs/heads/main',
                                 'refName.short' =>  'main',
                                 'upstream.short' => '',
@@ -61,8 +61,8 @@ class GitCloneAndCleanCest extends CestBase
                         'branches' => [
                             'refs/heads/main' => [
                                 'isCurrentBranch' => true,
-                                'push.short' => 'refs/remotes/release-store/main',
-                                'push.short.short' => 'release-store/main',
+                                //'push.short' => 'refs/remotes/release-store/main',
+                                //'push.short.short' => 'release-store/main',
                                 'refName' => 'refs/heads/main',
                                 'refName.short' => 'main',
                                 'upstream.short' => 'refs/remotes/release-store/main',

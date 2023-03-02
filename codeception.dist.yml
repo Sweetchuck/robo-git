@@ -1,14 +1,15 @@
 
-namespace: Sweetchuck\Robo\Git\Test
+namespace: 'Sweetchuck\Robo\Git\Test'
 
-actor: Tester
+actor: 'Tester'
 
 paths:
     tests: 'tests'
-    log: 'tests/_output'
     data: 'tests/_data'
-    support: 'tests/_support'
     envs: 'tests/_envs'
+    log: 'tests/_log'
+    output: 'tests/_log'
+    support: 'tests/_support'
 
 bootstrap: '_bootstrap.php'
 settings:

@@ -7,6 +7,9 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\OutputParser;
 use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\OutputParser\RemoteListParser;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\OutputParser\RemoteListParser
+ */
 class RemoteListParserTest extends Unit
 {
     public function casesParse(): array

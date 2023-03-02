@@ -16,26 +16,17 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
     use ArgumentPathsTrait;
     use GitTaskLoader;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git - List staged files';
+    protected string $taskName = 'Git - List staged files';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'diff';
+    protected string $action = 'diff';
 
     // region filePathStyle
-    /**
-     * @var string
-     */
-    protected $filePathStyle = 'relativeToTopLevel';
+    protected string $filePathStyle = 'relativeToTopLevel';
 
     /**
      * @var string[]
      */
-    protected $filePathStyleAllowedValues = [
+    protected array $filePathStyleAllowedValues = [
         'relativeToTopLevel',
         'relativeToWorkingDirectory',
         'absolute',
@@ -52,10 +43,8 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
      *   - relativeToTopLevel
      *   - relativeToWorkingDirectory
      *   - absolute
-     *
-     * @return $this
      */
-    public function setFilePathStyle(string $value)
+    public function setFilePathStyle(string $value): static
     {
         $this->filePathStyle = $value;
 
@@ -64,20 +53,14 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
     // endregion
 
     // region diffFilter
-    /**
-     * @var array
-     */
-    protected $diffFilter = [];
+    protected array $diffFilter = [];
 
     public function getDiffFilter(): array
     {
         return $this->diffFilter;
     }
 
-    /**
-     * @return $this
-     */
-    public function setDiffFilter(array $diffFilter)
+    public function setDiffFilter(array $diffFilter): static
     {
         $this->diffFilter = $diffFilter;
 
@@ -85,10 +68,7 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
     }
     // endregion
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -149,7 +129,7 @@ class GitListStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
         return $options + parent::getOptions();
     }
 
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         $filePathStyle = $this->getFilePathStyle();
         $outputParser = new DiffNameStatusParser();

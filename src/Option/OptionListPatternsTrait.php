@@ -6,20 +6,14 @@ namespace Sweetchuck\Robo\Git\Option;
 
 trait OptionListPatternsTrait
 {
-    /**
-     * @var array
-     */
-    protected $listPatterns = [];
+    protected array $listPatterns = [];
 
     public function getListPatterns(): array
     {
         return $this->listPatterns;
     }
 
-    /**
-     * @return $this
-     */
-    public function setListPatterns(array $value)
+    public function setListPatterns(array $value): static
     {
         if (gettype(reset($value)) !== 'boolean') {
             $value = array_fill_keys($value, true);
@@ -30,10 +24,7 @@ trait OptionListPatternsTrait
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function addListPatterns(array $value)
+    public function addListPatterns(array $value): static
     {
         if (gettype(reset($value)) !== 'boolean') {
             $value = array_fill_keys($value, true);
@@ -44,20 +35,14 @@ trait OptionListPatternsTrait
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function addListPattern(string $value)
+    public function addListPattern(string $value): static
     {
         $this->listPatterns[$value] = true;
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function removeListPatterns(array $value)
+    public function removeListPatterns(array $value): static
     {
         if (gettype(reset($value)) !== 'boolean') {
             $value = array_fill_keys($value, false);
@@ -68,10 +53,7 @@ trait OptionListPatternsTrait
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function removeListPattern(string $value)
+    public function removeListPattern(string $value): static
     {
         $this->listPatterns[$value] = false;
 

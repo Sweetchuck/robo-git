@@ -9,15 +9,9 @@ namespace Sweetchuck\Robo\Git;
  */
 class ListStagedFilesItem
 {
-    /**
-     * @var null|string
-     */
-    public $fileName = null;
+    public ?string $fileName = null;
 
-    /**
-     * @var null|string
-     */
-    public $status = null;
+    public ?string $status = null;
 
     public function __construct(array $properties = [])
     {

@@ -6,7 +6,7 @@ namespace Sweetchuck\Robo\Git;
 
 class Utils
 {
-    public static $predefinedRefFormats = [
+    public static array $predefinedRefFormats = [
         'branch-list.default' => [
             'refName' => 'refname:strip=0',
             'upstream' => 'upstream:strip=0',

@@ -7,20 +7,14 @@ namespace Sweetchuck\Robo\Git\Option;
 trait OptionAllTrait
 {
 
-    /**
-     * @var bool
-     */
-    protected $all = false;
+    protected bool $all = false;
 
     public function getAll(): bool
     {
         return $this->all;
     }
 
-    /**
-     * @return $this
-     */
-    public function setAll(bool $value)
+    public function setAll(bool $value): static
     {
         $this->all = $value;
 

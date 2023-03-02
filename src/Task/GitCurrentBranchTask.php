@@ -8,27 +8,15 @@ use Robo\Contract\CommandInterface;
 
 class GitCurrentBranchTask extends BaseTask implements CommandInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git current branch';
+    protected string $taskName = 'Git current branch';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'symbolic-ref';
+    protected string $action = 'symbolic-ref';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $assets = [
+    protected array $assets = [
         'gitCurrentBranch.long' => null,
         'gitCurrentBranch.short' => null,
     ];
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getOptions(): array
     {
         return [
@@ -39,10 +27,7 @@ class GitCurrentBranchTask extends BaseTask implements CommandInterface
         ] + parent::getOptions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         if ($this->actionExitCode === 0) {
             $branchName = trim($this->actionStdOutput);

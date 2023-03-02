@@ -8,7 +8,7 @@ use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\ListFilesItem;
 
 /**
- * @covers \Sweetchuck\Robo\Git\ListFilesItem<extended>
+ * @covers \Sweetchuck\Robo\Git\ListFilesItem
  */
 class ListFilesItemTest extends Unit
 {

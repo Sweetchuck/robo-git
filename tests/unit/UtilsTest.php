@@ -7,6 +7,9 @@ namespace Sweetchuck\Robo\Git\Tests\Unit;
 use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\Utils;
 
+/**
+ * @covers \Sweetchuck\Robo\Git\Utils
+ */
 class UtilsTest extends Unit
 {
     /**

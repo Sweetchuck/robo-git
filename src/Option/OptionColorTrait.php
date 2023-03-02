@@ -6,25 +6,14 @@ namespace Sweetchuck\Robo\Git\Option;
 
 trait OptionColorTrait
 {
-    /**
-     * @var bool|null|string
-     */
-    protected $color = null;
+    protected null|bool|string $color = null;
 
-    /**
-     * @return bool|null|string
-     */
-    public function getColor()
+    public function getColor(): null|bool|string
     {
         return $this->color;
     }
 
-    /**
-     * @param bool|null|string $value
-     *
-     * @return $this
-     */
-    public function setColor($value)
+    public function setColor(null|bool|string $value): static
     {
         $this->color = $value;
 

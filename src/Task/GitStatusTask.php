@@ -12,38 +12,23 @@ class GitStatusTask extends BaseTask implements CommandInterface
 {
     use ArgumentPathsTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git status';
+    protected string $taskName = 'Git status';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'status';
+    protected string $action = 'status';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $assets = [
+    protected array $assets = [
         'git.status' => [],
     ];
 
     // region renames
-    /**
-     * @var null|bool
-     */
-    protected $renames = null;
+    protected ?bool $renames = null;
 
     public function getRenames(): ?bool
     {
         return $this->renames;
     }
 
-    /**
-     * @return $this
-     */
-    public function setRenames(?bool $renames)
+    public function setRenames(?bool $renames): static
     {
         $this->renames = $renames;
 
@@ -52,20 +37,14 @@ class GitStatusTask extends BaseTask implements CommandInterface
     // endregion
 
     // region findRenames
-    /**
-     * @var null|int
-     */
-    protected $findRenames = null;
+    protected ?int $findRenames = null;
 
     public function getFindRenames(): ?int
     {
         return $this->findRenames;
     }
 
-    /**
-     * @return $this
-     */
-    public function setFindRenames(?int $findRenames)
+    public function setFindRenames(?int $findRenames): static
     {
         $this->findRenames = $findRenames;
 
@@ -74,20 +53,14 @@ class GitStatusTask extends BaseTask implements CommandInterface
     // endregion
 
     // region ignored
-    /**
-     * @var null|string
-     */
-    protected $ignored = null;
+    protected ?string $ignored = null;
 
     public function getIgnored(): ?string
     {
         return $this->ignored;
     }
 
-    /**
-     * @return $this
-     */
-    public function setIgnored(?string $ignored)
+    public function setIgnored(?string $ignored): static
     {
         $this->ignored = $ignored;
 
@@ -96,20 +69,14 @@ class GitStatusTask extends BaseTask implements CommandInterface
     // endregion
 
     // region untrackedFiles
-    /**
-     * @var null|string
-     */
-    protected $untrackedFiles = null;
+    protected ?string $untrackedFiles = null;
 
     public function getUntrackedFiles(): ?string
     {
         return $this->untrackedFiles;
     }
 
-    /**
-     * @return $this
-     */
-    public function setUntrackedFiles(?string $untrackedFiles)
+    public function setUntrackedFiles(?string $untrackedFiles): static
     {
         $this->untrackedFiles = $untrackedFiles;
 
@@ -117,9 +84,6 @@ class GitStatusTask extends BaseTask implements CommandInterface
     }
     // endregion
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getOptions(): array
     {
         return
@@ -153,10 +117,7 @@ class GitStatusTask extends BaseTask implements CommandInterface
             + parent::getOptions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -183,15 +144,12 @@ class GitStatusTask extends BaseTask implements CommandInterface
         return  $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         $this->assets['git.status'] = (new StatusParser())->parse(
             $this->actionExitCode,
             $this->actionStdOutput,
-            $this->actionStdError
+            $this->actionStdError,
         );
 
         return $this;

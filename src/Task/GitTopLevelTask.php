@@ -8,15 +8,9 @@ use Robo\Contract\CommandInterface;
 
 class GitTopLevelTask extends BaseTask implements CommandInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git - Top level';
+    protected string $taskName = 'Git - Top level';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'rev-parse';
+    protected string $action = 'rev-parse';
 
     protected function getOptions(): array
     {
@@ -30,7 +24,7 @@ class GitTopLevelTask extends BaseTask implements CommandInterface
         return $options + parent::getOptions();
     }
 
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         $this->assets['git.topLevel'] = trim($this->actionStdOutput, "\r\n");
 

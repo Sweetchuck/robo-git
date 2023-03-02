@@ -9,10 +9,7 @@ use Sweetchuck\Robo\Git\OutputParser\RemoteListParser;
 
 class GitRemoteListTask extends BaseTask implements CommandInterface
 {
-    /**
-     * @var string
-     */
-    protected $action = 'remote';
+    protected string $action = 'remote';
 
     protected function getOptions(): array
     {
@@ -24,7 +21,7 @@ class GitRemoteListTask extends BaseTask implements CommandInterface
         ] + parent::getOptions();
     }
 
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         $parser = new RemoteListParser();
         $items = $parser->parse($this->actionExitCode, $this->actionStdOutput, $this->actionStdError);

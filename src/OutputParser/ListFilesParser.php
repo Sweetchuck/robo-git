@@ -10,16 +10,13 @@ use Sweetchuck\Robo\Git\OutputParserInterface;
 class ListFilesParser implements OutputParserInterface
 {
 
-    /**
-     * @var array
-     */
-    protected $options = [];
+    protected array $options = [];
 
     public function parse(
         int $exitCode,
         string $stdOutput,
         string $stdError,
-        array $options = []
+        array $options = [],
     ): array {
         $this->options = $options;
         $this->options += [
@@ -47,7 +44,7 @@ class ListFilesParser implements OutputParserInterface
 
     protected function parseStdOutputLine(string $line, string $pattern): ListFilesItem
     {
-        $matches = null;
+        $matches = [];
         preg_match($pattern, $line, $matches);
 
         return new ListFilesItem(array_diff_key($matches, range(0, 10)));

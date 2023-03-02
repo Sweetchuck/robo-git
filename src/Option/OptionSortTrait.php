@@ -6,20 +6,14 @@ namespace Sweetchuck\Robo\Git\Option;
 
 trait OptionSortTrait
 {
-    /**
-     * @var string
-     */
-    protected $sort = '';
+    protected string $sort = '';
 
     public function getSort(): string
     {
         return $this->sort;
     }
 
-    /**
-     * @return $this
-     */
-    public function setSort(string $value)
+    public function setSort(string $value): static
     {
         $this->sort = $value;
 

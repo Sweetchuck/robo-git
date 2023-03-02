@@ -16,34 +16,22 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
     use GitTaskLoader;
     use LoggerAwareTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git - Read staged files';
+    protected string $taskName = 'Git - Read staged files';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $assets = [
+    protected array $assets = [
         'workingDirectory' => '',
     ];
 
     //region Options.
     //region Option - commandOnly
-    /**
-     * @var bool
-     */
-    protected $commandOnly = false;
+    protected bool $commandOnly = false;
 
     public function getCommandOnly(): bool
     {
         return $this->commandOnly;
     }
 
-    /**
-     * @return $this
-     */
-    public function setCommandOnly(bool $value)
+    public function setCommandOnly(bool $value): static
     {
         $this->commandOnly = $value;
 
@@ -52,10 +40,7 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
     //endregion
     //endregion
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -70,10 +55,7 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runHeader()
+    protected function runHeader(): static
     {
         $paths = array_keys($this->getPaths(), true);
         $this->printTaskDebug(
@@ -87,10 +69,7 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runAction()
+    protected function runAction(): static
     {
         $this->actionExitCode = 0;
         $this->actionStdError = '';
@@ -129,7 +108,7 @@ class GitReadStagedFilesTask extends BaseTask implements BuilderAwareInterface, 
         return $this;
     }
 
-    protected function runActionSetContent(string $commandPrefix, array &$item)
+    protected function runActionSetContent(string $commandPrefix, array &$item): static
     {
         $process = $this
             ->getProcessHelper()

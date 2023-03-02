@@ -6,40 +6,28 @@ namespace Sweetchuck\Robo\Git\Option;
 
 trait OptionMergedTrait
 {
-    /**
-     * @var null|bool
-     */
-    protected $mergedState = null;
+    protected ?bool $mergedState = null;
 
     public function getMergedState(): ?bool
     {
         return $this->mergedState;
     }
 
-    /**
-     * @return $this
-     */
-    public function setMergedState(?bool $value)
+    public function setMergedState(?bool $value): static
     {
         $this->mergedState = $value;
 
         return $this;
     }
 
-    /**
-     * @var string
-     */
-    protected $mergedValue = '';
+    protected string $mergedValue = '';
 
     public function getMergedValue(): string
     {
         return $this->mergedValue;
     }
 
-    /**
-     * @return $this
-     */
-    public function setMergedValue(string $value)
+    public function setMergedValue(string $value): static
     {
         $this->mergedValue = $value;
 

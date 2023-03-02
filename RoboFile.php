@@ -1,83 +1,63 @@
 <?php
 
+declare(strict_types = 1);
+
 use Consolidation\AnnotatedCommand\CommandData;
+use NuvoleWeb\Robo\Task\Config\Robo\loadTasks as ConfigLoader;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Tasks;
 use Robo\Collection\CollectionBuilder;
+use Robo\Common\ConfigAwareTrait;
 use Sweetchuck\Robo\Git\GitTaskLoader;
+use Sweetchuck\Utils\Filter\ArrayFilterEnabled;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Filesystem\Path;
 
-class RoboFile extends Tasks implements LoggerAwareInterface
+class RoboFile extends Tasks implements LoggerAwareInterface, \Robo\Contract\ConfigAwareInterface
 {
-    use GitTaskLoader;
+    use ConfigLoader;
     use LoggerAwareTrait;
+    use ConfigAwareTrait;
+    use GitTaskLoader;
 
-    /**
-     * @var array
-     */
-    protected $composerInfo = [];
+    protected array $composerInfo = [];
 
-    /**
-     * @var array
-     */
-    protected $codeceptionInfo = [];
+    protected array $codeceptionInfo = [];
 
     /**
      * @var string[]
      */
-    protected $codeceptionSuiteNames = [];
+    protected array $codeceptionSuiteNames = [];
 
-    /**
-     * @var string
-     */
-    protected $packageVendor = '';
+    protected string $packageVendor = '';
 
-    /**
-     * @var string
-     */
-    protected $packageName = '';
+    protected string $packageName = '';
 
-    /**
-     * @var string
-     */
-    protected $binDir = 'vendor/bin';
+    protected string $binDir = 'vendor/bin';
 
-    /**
-     * @var string
-     */
-    protected $gitHook = '';
+    protected string $gitHook = '';
 
-    /**
-     * @var string
-     */
-    protected $envVarNamePrefix = '';
+    protected string $envVarNamePrefix = '';
 
     /**
      * Allowed values: dev, ci, prod.
-     *
-     * @var string
      */
-    protected $environmentType = '';
+    protected string $environmentType = '';
 
     /**
      * Allowed values: local, jenkins, travis, circleci.
-     *
-     * @var string
      */
-    protected $environmentName = '';
+    protected string $environmentName = '';
 
     /**
      * RoboFile constructor.
      */
     public function __construct()
     {
-        putenv('COMPOSER_DISABLE_XDEBUG_WARN=1');
         $this
             ->initComposerInfo()
             ->initEnvVarNamePrefix()
@@ -152,8 +132,8 @@ class RoboFile extends Tasks implements LoggerAwareInterface
      */
     protected function initEnvironmentTypeAndName()
     {
-        $this->environmentType = getenv($this->getEnvVarName('environment_type'));
-        $this->environmentName = getenv($this->getEnvVarName('environment_name'));
+        $this->environmentType = (string) getenv($this->getEnvVarName('environment_type'));
+        $this->environmentName = (string) getenv($this->getEnvVarName('environment_name'));
 
         if (!$this->environmentType) {
             if (getenv('CI') === 'true') {
@@ -193,16 +173,6 @@ class RoboFile extends Tasks implements LoggerAwareInterface
         return "{$this->envVarNamePrefix}_" . strtoupper($name);
     }
 
-    protected function getPhpExecutable(): string
-    {
-        return getenv($this->getEnvVarName('php_executable')) ?: PHP_BINARY;
-    }
-
-    protected function getPhpdbgExecutable(): string
-    {
-        return getenv($this->getEnvVarName('phpdbg_executable')) ?: Path::join(PHP_BINDIR, 'phpdbg');
-    }
-
     /**
      * @return $this
      */
@@ -213,7 +183,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface
         }
 
         $this->composerInfo = json_decode(file_get_contents('composer.json'), true);
-        list($this->packageVendor, $this->packageName) = explode('/', $this->composerInfo['name']);
+        [$this->packageVendor, $this->packageName] = explode('/', $this->composerInfo['name']);
 
         if (!empty($this->composerInfo['config']['bin-dir'])) {
             $this->binDir = $this->composerInfo['config']['bin-dir'];
@@ -237,7 +207,8 @@ class RoboFile extends Tasks implements LoggerAwareInterface
             $this->codeceptionInfo = [
                 'paths' => [
                     'tests' => 'tests',
-                    'log' => 'tests/_output',
+                    'log' => 'tests/_log',
+                    'envs' => 'tests/_envs',
                 ],
             ];
         }
@@ -251,43 +222,50 @@ class RoboFile extends Tasks implements LoggerAwareInterface
             $suiteNames = ['all'];
         }
 
+        $phpExecutables = $this->getEnabledPhpExecutables();
         $cb = $this->collectionBuilder();
         foreach ($suiteNames as $suiteName) {
-            $cb->addTask($this->getTaskCodeceptRunSuite($suiteName, $options));
+            foreach ($phpExecutables as $phpExecutable) {
+                $cb->addTask($this->getTaskCodeceptRunSuite($suiteName, $phpExecutable));
+            }
         }
 
         return $cb;
     }
 
-    protected function getTaskCodeceptRunSuite(string $suite, array $options = []): CollectionBuilder
+    protected function getTaskCodeceptRunSuite(string $suite, array $php): CollectionBuilder
     {
         $this->initCodeceptionInfo();
 
-        $withCoverageHtml = in_array($this->environmentType, ['dev']);
-        $withCoverageXml = in_array($this->environmentType, ['ci']);
+        $withCoverageHtml = $this->environmentType === 'dev';
+        $withCoverageXml = $this->environmentType === 'ci';
 
-        $withUnitReportHtml = in_array($this->environmentType, ['dev']);
-        $withUnitReportXml = in_array($this->environmentType, ['ci']);
+        $withUnitReportHtml = $this->environmentType === 'dev';
+        $withUnitReportXml = $this->environmentType === 'ci';
 
         $logDir = $this->getLogDir();
 
+        $cmdPattern = '';
         $cmdArgs = [];
-        if ($this->isPhpDbgAvailable()) {
-            $cmdPattern = '%s -qrr';
-            $cmdArgs[] = escapeshellcmd($this->getPhpdbgExecutable());
-        } else {
-            $cmdPattern = '%s';
-            $cmdArgs[] = escapeshellcmd($this->getPhpExecutable());
+        foreach ($php['envVars'] ?? [] as $envName => $envValue) {
+            $cmdPattern .= $envName;
+            if ($envValue === null) {
+                $cmdPattern .= ' ';
+            } else {
+                $cmdPattern .= '=%s ';
+                $cmdArgs[] = escapeshellarg($envValue);
+            }
         }
+
+        $cmdPattern .= '%s';
+        $cmdArgs[] = $php['command'];
 
         $cmdPattern .= ' %s';
         $cmdArgs[] = escapeshellcmd("{$this->binDir}/codecept");
 
         $cmdPattern .= ' --ansi';
         $cmdPattern .= ' --verbose';
-        if (!empty($options['debug'])) {
-            $cmdPattern .= ' --debug';
-        }
+        $cmdPattern .= ' --debug';
 
         $cb = $this->collectionBuilder();
         if ($withCoverageHtml) {
@@ -308,7 +286,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface
 
         if ($withCoverageHtml || $withCoverageXml) {
             $cmdPattern .= ' --coverage=%s';
-            $cmdArgs[] = escapeshellarg("machine/coverage/$suite/coverage.php");
+            $cmdArgs[] = escapeshellarg("machine/coverage/$suite/coverage.serialized");
 
             $cb->addTask(
                 $this
@@ -329,16 +307,13 @@ class RoboFile extends Tasks implements LoggerAwareInterface
         }
 
         if ($withUnitReportXml) {
-            $jUnitFilePath = "machine/junit/$suite/junit.$suite.xml";
-            $dirToCreate = Path::getDirectory("$logDir/$jUnitFilePath");
-
             $cmdPattern .= ' --xml=%s';
-            $cmdArgs[] = escapeshellarg($jUnitFilePath);
+            $cmdArgs[] = escapeshellarg("machine/junit/junit.$suite.xml");
 
             $cb->addTask(
                 $this
                     ->taskFilesystemStack()
-                    ->mkdir($dirToCreate)
+                    ->mkdir("$logDir/machine/junit")
             );
         }
 
@@ -348,28 +323,39 @@ class RoboFile extends Tasks implements LoggerAwareInterface
             $cmdArgs[] = escapeshellarg($suite);
         }
 
+        $envDir = $this->codeceptionInfo['paths']['envs'];
+        $envFileName = "{$this->environmentType}.{$this->environmentName}";
+        if (file_exists("$envDir/$envFileName.yml")) {
+            $cmdPattern .= ' --env %s';
+            $cmdArgs[] = escapeshellarg($envFileName);
+        }
+
         if ($this->environmentType === 'ci' && $this->environmentName === 'jenkins') {
             // Jenkins has to use a post-build action to mark the build "unstable".
             $cmdPattern .= ' || [[ "${?}" == "1" ]]';
         }
 
-        $command = [
-            'bash',
-            '-c',
-            vsprintf($cmdPattern, $cmdArgs),
-        ];
+        $command = vsprintf($cmdPattern, $cmdArgs);
 
         return $cb
-            ->addCode(function () use ($command) {
+            ->addCode(function () use ($command, $php) {
                 $this->output()->writeln(strtr(
                     '<question>[{name}]</question> runs <info>{command}</info>',
                     [
                         '{name}' => 'Codeception',
-                        '{command}' => implode(' ', $command),
+                        '{command}' => $command,
                     ]
                 ));
-                $process = new Process($command, null, null, null, null);
-                $exitCode = $process->run(function ($type, $data) {
+
+                $process = Process::fromShellCommandline(
+                    $command,
+                    null,
+                    $php['envVars'] ?? null,
+                    null,
+                    null,
+                );
+
+                return $process->run(function ($type, $data) {
                     switch ($type) {
                         case Process::OUT:
                             $this->output()->write($data);
@@ -380,8 +366,6 @@ class RoboFile extends Tasks implements LoggerAwareInterface
                             break;
                     }
                 });
-
-                return $exitCode;
             });
     }
 
@@ -393,7 +377,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface
                 $execStack = $this->taskExecStack();
 
                 $cmdPattern = '%s';
-                $cmdArgs = [escapeshellcmd('bin/phpcs')];
+                $cmdArgs = [escapeshellcmd("{$this->binDir}/phpcs")];
 
                 $cmdPattern .= ' --colors';
 
@@ -438,7 +422,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface
                 }
 
                 if ($this->environmentType === 'ci') {
-                    $dir = 'tests/_output/machine/checkstyle';
+                    $dir = 'tests/_log/machine/checkstyle';
                     $execStack->exec(sprintf('mkdir -p %s', escapeshellarg($dir)));
                     $cmdPattern .= ' --report-checkstyle=%s';
                     $cmdArgs[] = escapeshellarg("$dir/phpcs.psr2.xml");
@@ -450,36 +434,13 @@ class RoboFile extends Tasks implements LoggerAwareInterface
             });
     }
 
-    protected function isPhpExtensionAvailable(string $extension): bool
-    {
-        $command = sprintf('%s -m', escapeshellcmd($this->getPhpExecutable()));
-
-        $process = new Process($command);
-        $exitCode = $process->run();
-        if ($exitCode !== 0) {
-            throw new \RuntimeException('@todo');
-        }
-
-        return in_array($extension, explode("\n", $process->getOutput()));
-    }
-
-    protected function isPhpDbgAvailable(): bool
-    {
-        $command = [
-            escapeshellcmd($this->getPhpdbgExecutable()),
-            '-qrr',
-        ];
-
-        return (new Process($command))->run() === 0;
-    }
-
     protected function getLogDir(): string
     {
         $this->initCodeceptionInfo();
 
         return !empty($this->codeceptionInfo['paths']['log']) ?
             $this->codeceptionInfo['paths']['log']
-            : 'tests/_output';
+            : 'tests/_log';
     }
 
     protected function getCodeceptionSuiteNames(): array
@@ -518,5 +479,16 @@ class RoboFile extends Tasks implements LoggerAwareInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getEnabledPhpExecutables(): array
+    {
+        return array_filter(
+            $this->getConfig()->get('php.executables'),
+            new ArrayFilterEnabled(),
+        );
     }
 }

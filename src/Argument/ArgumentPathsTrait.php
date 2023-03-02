@@ -6,20 +6,14 @@ namespace Sweetchuck\Robo\Git\Argument;
 
 trait ArgumentPathsTrait
 {
-    /**
-     * @var array
-     */
-    protected $paths = [];
+    protected array $paths = [];
 
     public function getPaths(): array
     {
         return $this->paths;
     }
 
-    /**
-     * @return $this
-     */
-    public function setPaths(array $value)
+    public function setPaths(array $value): static
     {
         if (gettype(reset($value)) !== 'boolean') {
             $value = array_fill_keys($value, true);
@@ -30,10 +24,7 @@ trait ArgumentPathsTrait
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function addPaths(array $value)
+    public function addPaths(array $value): static
     {
         if (gettype(reset($value)) !== 'boolean') {
             $value = array_fill_keys($value, true);
@@ -44,20 +35,14 @@ trait ArgumentPathsTrait
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function addPath(string $value)
+    public function addPath(string $value): static
     {
         $this->paths[$value] = true;
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function removePaths(array $value)
+    public function removePaths(array $value): static
     {
         if (gettype(reset($value)) !== 'boolean') {
             $value = array_fill_keys($value, false);
@@ -68,10 +53,7 @@ trait ArgumentPathsTrait
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function removePath(string $value)
+    public function removePath(string $value): static
     {
         $this->paths[$value] = false;
 

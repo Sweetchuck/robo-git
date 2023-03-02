@@ -8,6 +8,6 @@ interface OutputParserInterface
         int $exitCode,
         string $stdOutput,
         string $stdError,
-        array $options = []
+        array $options = [],
     ): array;
 }

@@ -24,20 +24,11 @@ class GitListFilesTask extends BaseTask implements CommandInterface
 
     const STATUS_OTHER = '?';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git list files';
+    protected string $taskName = 'Git list files';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'ls-files';
+    protected string $action = 'ls-files';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $assets = [
+    protected array $assets = [
         'workingDirectory' => '',
         'files' => [],
     ];
@@ -45,20 +36,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //region Options.
 
     //region Option - separatedWithNullChar
-    /**
-     * @var bool
-     */
-    protected $separatedWithNullChar = false;
+    protected bool $separatedWithNullChar = false;
 
     public function getSeparatedWithNullChar(): bool
     {
         return $this->separatedWithNullChar;
     }
 
-    /**
-     * @return $this
-     */
-    public function setSeparatedWithNullChar(bool $separatedWithNullChar)
+    public function setSeparatedWithNullChar(bool $separatedWithNullChar): static
     {
         $this->separatedWithNullChar = $separatedWithNullChar;
 
@@ -67,20 +52,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - fileStatusWithTags
-    /**
-     * @var bool
-     */
-    protected $fileStatusWithTags = false;
+    protected bool $fileStatusWithTags = false;
 
     public function getFileStatusWithTags(): bool
     {
         return $this->fileStatusWithTags;
     }
 
-    /**
-     * @return $this
-     */
-    public function setFileStatusWithTags(bool $fileStatusWithTags)
+    public function setFileStatusWithTags(bool $fileStatusWithTags): static
     {
         $this->fileStatusWithTags = $fileStatusWithTags;
 
@@ -89,20 +68,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - lowercaseStatusLetters
-    /**
-     * @var bool
-     */
-    protected $lowercaseStatusLetters = false;
+    protected bool $lowercaseStatusLetters = false;
 
     public function getLowercaseStatusLetters(): bool
     {
         return $this->lowercaseStatusLetters;
     }
 
-    /**
-     * @return $this
-     */
-    public function setLowercaseStatusLetters(bool $lowercaseStatusLetters)
+    public function setLowercaseStatusLetters(bool $lowercaseStatusLetters): static
     {
         $this->lowercaseStatusLetters = $lowercaseStatusLetters;
 
@@ -111,20 +84,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showCached
-    /**
-     * @var bool
-     */
-    protected $showCached = false;
+    protected bool $showCached = false;
 
     public function getShowCached(): bool
     {
         return $this->showCached;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowCached(bool $showCached)
+    public function setShowCached(bool $showCached): static
     {
         $this->showCached = $showCached;
 
@@ -133,20 +100,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showDeleted
-    /**
-     * @var bool
-     */
-    protected $showDeleted = false;
+    protected bool $showDeleted = false;
 
     public function getShowDeleted(): bool
     {
         return $this->showDeleted;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowDeleted(bool $showDeleted)
+    public function setShowDeleted(bool $showDeleted): static
     {
         $this->showDeleted = $showDeleted;
 
@@ -155,20 +116,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showModified
-    /**
-     * @var bool
-     */
-    protected $showModified = false;
+    protected bool $showModified = false;
 
     public function getShowModified(): bool
     {
         return $this->showModified;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowModified(bool $showModified)
+    public function setShowModified(bool $showModified): static
     {
         $this->showModified = $showModified;
 
@@ -177,20 +132,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showOthers
-    /**
-     * @var bool
-     */
-    protected $showOthers = false;
+    protected bool $showOthers = false;
 
     public function getShowOthers(): bool
     {
         return $this->showOthers;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowOthers(bool $showOthers)
+    public function setShowOthers(bool $showOthers): static
     {
         $this->showOthers = $showOthers;
 
@@ -199,20 +148,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showIgnored
-    /**
-     * @var bool
-     */
-    protected $showIgnored = false;
+    protected bool $showIgnored = false;
 
     public function getShowIgnored(): bool
     {
         return $this->showIgnored;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowIgnored(bool $showIgnored)
+    public function setShowIgnored(bool $showIgnored): static
     {
         $this->showIgnored = $showIgnored;
 
@@ -221,20 +164,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showStaged
-    /**
-     * @var bool
-     */
-    protected $showStaged = false;
+    protected bool $showStaged = false;
 
     public function getShowStaged(): bool
     {
         return $this->showStaged;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowStaged(bool $showStaged)
+    public function setShowStaged(bool $showStaged): static
     {
         $this->showStaged = $showStaged;
 
@@ -243,20 +180,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showKilled
-    /**
-     * @var bool
-     */
-    protected $showKilled = false;
+    protected bool $showKilled = false;
 
     public function getShowKilled(): bool
     {
         return $this->showKilled;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowKilled(bool $showKilled)
+    public function setShowKilled(bool $showKilled): static
     {
         $this->showKilled = $showKilled;
 
@@ -265,20 +196,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showOtherDirectoriesNamesOnly
-    /**
-     * @var bool
-     */
-    protected $showOtherDirectoriesNamesOnly = false;
+    protected bool $showOtherDirectoriesNamesOnly = false;
 
     public function getShowOtherDirectoriesNamesOnly(): bool
     {
         return $this->showOtherDirectoriesNamesOnly;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowOtherDirectoriesNamesOnly(bool $showOtherDirectoriesNamesOnly)
+    public function setShowOtherDirectoriesNamesOnly(bool $showOtherDirectoriesNamesOnly): static
     {
         $this->showOtherDirectoriesNamesOnly = $showOtherDirectoriesNamesOnly;
 
@@ -287,20 +212,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showLineEndings
-    /**
-     * @var bool
-     */
-    protected $showLineEndings = false;
+    protected bool $showLineEndings = false;
 
     public function getShowLineEndings(): bool
     {
         return $this->showLineEndings;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowLineEndings(bool $showLineEndings)
+    public function setShowLineEndings(bool $showLineEndings): static
     {
         $this->showLineEndings = $showLineEndings;
 
@@ -309,20 +228,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showEmptyDirectories
-    /**
-     * @var bool
-     */
-    protected $showEmptyDirectories = false;
+    protected bool $showEmptyDirectories = false;
 
     public function getShowEmptyDirectories(): bool
     {
         return $this->showEmptyDirectories;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowEmptyDirectories(bool $showEmptyDirectories)
+    public function setShowEmptyDirectories(bool $showEmptyDirectories): static
     {
         $this->showEmptyDirectories = $showEmptyDirectories;
 
@@ -331,20 +244,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showUnmerged
-    /**
-     * @var bool
-     */
-    protected $showUnmerged = false;
+    protected bool $showUnmerged = false;
 
     public function getShowUnmerged(): bool
     {
         return $this->showUnmerged;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowUnmerged(bool $showUnmerged)
+    public function setShowUnmerged(bool $showUnmerged): static
     {
         $this->showUnmerged = $showUnmerged;
 
@@ -353,20 +260,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - showResolveUndo
-    /**
-     * @var bool
-     */
-    protected $showResolveUndo = false;
+    protected bool $showResolveUndo = false;
 
     public function getShowResolveUndo(): bool
     {
         return $this->showResolveUndo;
     }
 
-    /**
-     * @return $this
-     */
-    public function setShowResolveUndo(bool $showResolveUndo)
+    public function setShowResolveUndo(bool $showResolveUndo): static
     {
         $this->showResolveUndo = $showResolveUndo;
 
@@ -375,20 +276,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - excludePattern
-    /**
-     * @var string
-     */
-    protected $excludePattern = '';
+    protected string $excludePattern = '';
 
     public function getExcludePattern(): string
     {
         return $this->excludePattern;
     }
 
-    /**
-     * @return $this
-     */
-    public function setExcludePattern(string $excludePattern)
+    public function setExcludePattern(string $excludePattern): static
     {
         $this->excludePattern = $excludePattern;
 
@@ -397,10 +292,7 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - excludeFile
-    /**
-     * @var string
-     */
-    protected $excludeFile = '';
+    protected string $excludeFile = '';
 
     /**
      * @return string
@@ -410,10 +302,7 @@ class GitListFilesTask extends BaseTask implements CommandInterface
         return $this->excludeFile;
     }
 
-    /**
-     * @return $this
-     */
-    public function setExcludeFile(string $excludeFile)
+    public function setExcludeFile(string $excludeFile): static
     {
         $this->excludeFile = $excludeFile;
 
@@ -422,20 +311,14 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     //endregion
 
     //region Option - fullName
-    /**
-     * @var bool
-     */
-    protected $fullName = false;
+    protected bool $fullName = false;
 
     public function getFullName(): bool
     {
         return $this->fullName;
     }
 
-    /**
-     * @return $this
-     */
-    public function setFullName(bool $fullName)
+    public function setFullName(bool $fullName): static
     {
         $this->fullName = $fullName;
 
@@ -447,7 +330,7 @@ class GitListFilesTask extends BaseTask implements CommandInterface
     /**
      * @var string[]
      */
-    protected $paths = [];
+    protected array $paths = [];
 
     /**
      * @return string[]
@@ -457,10 +340,7 @@ class GitListFilesTask extends BaseTask implements CommandInterface
         return $this->paths;
     }
 
-    /**
-     * @return $this
-     */
-    public function setPaths(array $paths)
+    public function setPaths(array $paths): static
     {
         $this->paths = $paths;
 
@@ -552,10 +432,7 @@ class GitListFilesTask extends BaseTask implements CommandInterface
         ] + parent::getOptions();
     }
 
-    /**
-     * @return $this
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -638,10 +515,7 @@ class GitListFilesTask extends BaseTask implements CommandInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         $this->assets['workingDirectory'] = $this->getWorkingDirectory();
         $this->assets['files'] = $this->parseStdOutput();

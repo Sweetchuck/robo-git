@@ -1,8 +1,8 @@
 
 # Robo task wrapper for Git commands
 
-[![CircleCI](https://circleci.com/gh/Sweetchuck/robo-git/tree/2.x.svg?style=svg)](https://circleci.com/gh/Sweetchuck/robo-git/tree/2.x)
-[![codecov](https://codecov.io/gh/Sweetchuck/robo-git/branch/2.x/graph/badge.svg)](https://codecov.io/gh/Sweetchuck/robo-git)
+[![CircleCI](https://circleci.com/gh/Sweetchuck/robo-git/tree/3.x.svg?style=svg)](https://circleci.com/gh/Sweetchuck/robo-git/tree/3.x)
+[![codecov](https://codecov.io/gh/Sweetchuck/robo-git/branch/3.x/graph/badge.svg)](https://codecov.io/gh/Sweetchuck/robo-git)
 
 The main additional feature compare to the ::taskExec() is that this tasks parse
 the stdOutput/stdError and make the result available for the next tasks by

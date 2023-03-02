@@ -26,38 +26,23 @@ abstract class BaseTask extends RoboBaseTask implements
     use IO;
     use TaskAccessor;
 
-    /**
-     * @var string
-     */
-    protected $taskName = '';
+    protected string $taskName = '';
 
-    /**
-     * @var array
-     */
-    protected $assets = [];
+    protected array $assets = [];
 
     //region Options.
 
-    /**
-     * @var string
-     */
-    protected $shell = 'bash';
+    protected string $shell = 'bash';
 
     // region Option - assetNamePrefix.
-    /**
-     * @var string
-     */
-    protected $assetNamePrefix = '';
+    protected string $assetNamePrefix = '';
 
     public function getAssetNamePrefix(): string
     {
         return $this->assetNamePrefix;
     }
 
-    /**
-     * @return $this
-     */
-    public function setAssetNamePrefix(string $value)
+    public function setAssetNamePrefix(string $value): static
     {
         $this->assetNamePrefix = $value;
 
@@ -66,20 +51,14 @@ abstract class BaseTask extends RoboBaseTask implements
     // endregion
 
     //region Option - workingDirectory
-    /**
-     * @var string
-     */
-    protected $workingDirectory = '';
+    protected string $workingDirectory = '';
 
     public function getWorkingDirectory(): string
     {
         return $this->workingDirectory;
     }
 
-    /**
-     * @return $this
-     */
-    public function setWorkingDirectory(string $workingDirectory)
+    public function setWorkingDirectory(string $workingDirectory): static
     {
         $this->workingDirectory = $workingDirectory;
 
@@ -88,20 +67,14 @@ abstract class BaseTask extends RoboBaseTask implements
     //endregion
 
     //region Option - gitExecutable
-    /**
-     * @var string
-     */
-    protected $gitExecutable = 'git';
+    protected string $gitExecutable = 'git';
 
     public function getGitExecutable(): string
     {
         return $this->gitExecutable;
     }
 
-    /**
-     * @return $this
-     */
-    public function setGitExecutable(string $gitExecutable)
+    public function setGitExecutable(string $gitExecutable): static
     {
         $this->gitExecutable = $gitExecutable;
 
@@ -110,20 +83,14 @@ abstract class BaseTask extends RoboBaseTask implements
     //endregion
 
     //region Option - visibleStdOutput
-    /**
-     * @var bool
-     */
-    protected $visibleStdOutput = false;
+    protected bool $visibleStdOutput = false;
 
     public function isStdOutputVisible(): bool
     {
         return $this->visibleStdOutput;
     }
 
-    /**
-     * @return $this
-     */
-    public function setVisibleStdOutput(bool $visible)
+    public function setVisibleStdOutput(bool $visible): static
     {
         $this->visibleStdOutput = $visible;
 
@@ -133,35 +100,17 @@ abstract class BaseTask extends RoboBaseTask implements
 
     //endregion
 
-    /**
-     * @var string
-     */
-    protected $action = '';
+    protected string $action = '';
 
-    /**
-     * @var int
-     */
-    protected $actionExitCode = 0;
+    protected int $actionExitCode = 0;
 
-    /**
-     * @var string
-     */
-    protected $actionStdOutput = '';
+    protected string $actionStdOutput = '';
 
-    /**
-     * @var string
-     */
-    protected $actionStdError = '';
+    protected string $actionStdError = '';
 
-    /**
-     * @var string
-     */
-    protected $command = '';
+    protected string $command = '';
 
-    /**
-     * @var null|\Closure
-     */
-    protected $processRunCallbackWrapper = null;
+    protected ?\Closure $processRunCallbackWrapper = null;
 
     public function getTaskName(): string
     {
@@ -173,10 +122,7 @@ abstract class BaseTask extends RoboBaseTask implements
         return [];
     }
 
-    /**
-     * @return $this
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         if (array_key_exists('assetNamePrefix', $options)) {
             $this->setAssetNamePrefix($options['assetNamePrefix']);
@@ -202,7 +148,9 @@ abstract class BaseTask extends RoboBaseTask implements
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
+     *
+     * @see \Robo\Contract\CommandInterface
      */
     public function getCommand()
     {
@@ -354,18 +302,12 @@ abstract class BaseTask extends RoboBaseTask implements
             ->runReturn();
     }
 
-    /**
-     * @return $this
-     */
-    protected function runValidate()
+    protected function runValidate(): static
     {
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function runPrepare()
+    protected function runPrepare(): static
     {
         $this->runPrepareProcessRunCallbackWrapper();
         $this->command = $this->getCommand();
@@ -373,7 +315,7 @@ abstract class BaseTask extends RoboBaseTask implements
         return $this;
     }
 
-    protected function runPrepareProcessRunCallbackWrapper()
+    protected function runPrepareProcessRunCallbackWrapper(): static
     {
         $this->processRunCallbackWrapper = function (string $type, string $data): void {
             $this->processRunCallback($type, $data);
@@ -382,20 +324,14 @@ abstract class BaseTask extends RoboBaseTask implements
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function runHeader()
+    protected function runHeader(): static
     {
         $this->printTaskDebug($this->command);
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function runAction()
+    protected function runAction(): static
     {
         $processHelper = $this->getProcessHelper();
         $process = $processHelper->run(
@@ -416,10 +352,7 @@ abstract class BaseTask extends RoboBaseTask implements
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         return $this;
     }

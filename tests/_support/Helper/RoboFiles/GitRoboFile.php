@@ -215,6 +215,15 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                     $actual[$name]['status'] = $result['git.status'];
                 }
 
+                unset(
+                    $actual['wc']['branches']['refs/heads/live/main']['push.short'],
+                    $actual['wc']['branches']['refs/heads/live/main']['push.short.short'],
+                    $actual['wc']['branches']['refs/heads/main']['push.short'],
+                    $actual['wc']['branches']['refs/heads/main']['push.short.short'],
+                    $actual['release']['branches']['refs/heads/main']['push.short'],
+                    $actual['release']['branches']['refs/heads/main']['push.short.short'],
+                );
+
                 $this->output()->write(Yaml::dump($actual, 99));
 
                 return 0;

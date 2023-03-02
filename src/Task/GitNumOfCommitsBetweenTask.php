@@ -8,38 +8,23 @@ use Robo\Contract\CommandInterface;
 
 class GitNumOfCommitsBetweenTask extends BaseTask implements CommandInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git number of commits between';
+    protected string $taskName = 'Git number of commits between';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'rev-list';
+    protected string $action = 'rev-list';
 
-    /**
-     * @var array
-     */
-    protected $assets = [
+    protected array $assets = [
         'numOfCommits' => null,
     ];
 
     // region Option - fromRevName.
-    /**
-     * @var string
-     */
-    protected $fromRevName = '';
+    protected string $fromRevName = '';
 
     public function getFromRevName(): string
     {
         return $this->fromRevName;
     }
 
-    /**
-     * @return $this
-     */
-    public function setFromRevName(string $value)
+    public function setFromRevName(string $value): static
     {
         $this->fromRevName = $value;
 
@@ -48,20 +33,14 @@ class GitNumOfCommitsBetweenTask extends BaseTask implements CommandInterface
     // endregion
 
     // region Option - toRevName.
-    /**
-     * @var string
-     */
-    protected $toRevName = 'HEAD';
+    protected string $toRevName = 'HEAD';
 
     public function getToRevName(): string
     {
         return $this->toRevName;
     }
 
-    /**
-     * @return $this
-     */
-    public function setToRevName(string $value)
+    public function setToRevName(string $value): static
     {
         $this->toRevName = $value;
 
@@ -69,9 +48,6 @@ class GitNumOfCommitsBetweenTask extends BaseTask implements CommandInterface
     }
     // endregion
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getOptions(): array
     {
         return [
@@ -86,10 +62,7 @@ class GitNumOfCommitsBetweenTask extends BaseTask implements CommandInterface
         ] + parent::getOptions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -104,7 +77,7 @@ class GitNumOfCommitsBetweenTask extends BaseTask implements CommandInterface
         return  $this;
     }
 
-    protected function runValidate()
+    protected function runValidate(): static
     {
         if (!$this->getFromRevName()) {
             throw new \Exception('The "from" rev name is missing', 1);
@@ -117,10 +90,7 @@ class GitNumOfCommitsBetweenTask extends BaseTask implements CommandInterface
         return parent::runValidate();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         $this->assets['numOfCommits'] = (int) trim($this->actionStdOutput);
 

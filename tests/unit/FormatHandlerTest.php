@@ -8,7 +8,7 @@ use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\FormatHandler;
 
 /**
- * @covers \Sweetchuck\Robo\Git\FormatHandler<extended>
+ * @covers \Sweetchuck\Robo\Git\FormatHandler
  */
 class FormatHandlerTest extends Unit
 {

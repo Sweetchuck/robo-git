@@ -25,34 +25,19 @@ class GitBranchListTask extends BaseTask implements CommandInterface
     use OptionPointsAtTrait;
     use OptionSortTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git branch list';
+    protected string $taskName = 'Git branch list';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'branch';
+    protected string $action = 'branch';
 
-    /**
-     * @var array
-     */
-    protected $assets = [
+    protected array $assets = [
         'gitBranches' => [],
     ];
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getDefaultFormat(): string
     {
         return 'branch-list.default';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getOptions(): array
     {
         return $this->getOptionsAll()
@@ -66,10 +51,7 @@ class GitBranchListTask extends BaseTask implements CommandInterface
             + parent::getOptions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -116,10 +98,7 @@ class GitBranchListTask extends BaseTask implements CommandInterface
         return  $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         if ($this->formatMachineReadableDefinition) {
             $this->assets['gitBranches'] = $this

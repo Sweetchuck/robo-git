@@ -16,9 +16,6 @@ class FormatHandler implements FormatHandlerInterface
         $this->uniqueHash = $uniqueHash ?: [Utils::class, 'getUniqueHash'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createMachineReadableFormatDefinition(array $properties): array
     {
         $properties += [
@@ -44,9 +41,6 @@ class FormatHandler implements FormatHandlerInterface
         return $definition;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function parseStdOutput(string $stdOutput, array $definition): array
     {
         $asset = [];
@@ -71,10 +65,7 @@ class FormatHandler implements FormatHandlerInterface
         return $asset;
     }
 
-    /**
-     * @return $this
-     */
-    protected function processRefProperties(array &$ref, array $definition)
+    protected function processRefProperties(array &$ref, array $definition): static
     {
         foreach ($definition['properties'] as $propertyName => $fieldName) {
             switch ($fieldName) {
@@ -101,7 +92,7 @@ class FormatHandler implements FormatHandlerInterface
         return $this;
     }
 
-    protected function processRefPropertiesRefName(string $key, array &$ref)
+    protected function processRefPropertiesRefName(string $key, array &$ref): static
     {
         $ref += [
             "$key.short" => preg_replace(
@@ -110,14 +101,18 @@ class FormatHandler implements FormatHandlerInterface
                 $ref[$key]
             ),
         ];
+
+        return $this;
     }
 
-    protected function processRefPropertiesHead(string $key, array &$ref)
+    protected function processRefPropertiesHead(string $key, array &$ref): static
     {
         $ref[$key] = (bool) trim($ref[$key]);
+
+        return $this;
     }
 
-    protected function processRefPropertiesUpstreamTrack(string $key, array &$ref)
+    protected function processRefPropertiesUpstreamTrack(string $key, array &$ref): static
     {
         $value = trim($ref[$key], '[]');
 
@@ -133,5 +128,7 @@ class FormatHandler implements FormatHandlerInterface
         }
 
         $ref += $additions;
+
+        return $this;
     }
 }

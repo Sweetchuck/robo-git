@@ -14,10 +14,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     use GitTaskLoader;
     use VcsTaskLoader;
 
-    /**
-     * @var string
-     */
-    protected $taskName = 'Git clone and clean';
+    protected string $taskName = 'Git clone and clean';
 
     // region srcDir
     protected string $srcDir = '';
@@ -27,10 +24,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         return $this->srcDir;
     }
 
-    /**
-     * @return $this
-     */
-    public function setSrcDir(string $srcDir)
+    public function setSrcDir(string $srcDir): static
     {
         $this->srcDir = $srcDir;
 
@@ -46,10 +40,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         return $this->remoteUrl;
     }
 
-    /**
-     * @return $this
-     */
-    public function setRemoteUrl(string $remoteUrl)
+    public function setRemoteUrl(string $remoteUrl): static
     {
         $this->remoteUrl = $remoteUrl;
 
@@ -65,10 +56,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         return $this->remoteBranch;
     }
 
-    /**
-     * @return $this
-     */
-    public function setRemoteBranch(string $remoteBranch)
+    public function setRemoteBranch(string $remoteBranch): static
     {
         $this->remoteBranch = $remoteBranch;
 
@@ -84,10 +72,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         return $this->localBranch;
     }
 
-    /**
-     * @return $this
-     */
-    public function setLocalBranch(string $localBranch)
+    public function setLocalBranch(string $localBranch): static
     {
         $this->localBranch = $localBranch;
 
@@ -103,10 +88,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         return $this->remoteName;
     }
 
-    /**
-     * @return $this
-     */
-    public function setRemoteName(string $remoteName)
+    public function setRemoteName(string $remoteName): static
     {
         $this->remoteName = $remoteName;
 
@@ -114,10 +96,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     }
     // endregion
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -140,6 +119,8 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         if (array_key_exists('remoteName', $options)) {
             $this->setRemoteName($options['remoteName']);
         }
+
+        return $this;
     }
 
     protected Filesystem $fs;
@@ -149,10 +130,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         $this->fs = $fs ?: new Filesystem();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runHeader()
+    protected function runHeader(): static
     {
         $this->printTaskDebug(
             'src: "{src}" dst: "{dst}"',
@@ -165,10 +143,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runAction()
+    protected function runAction(): static
     {
         $srcDir = $this->getSrcDir();
         $remoteUrl = $this->getRemoteUrl();
@@ -179,7 +154,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         return $srcRemoteName !== false ? $this->runActionExisting() : $this->runActionClone();
     }
 
-    protected function runActionExisting()
+    protected function runActionExisting(): static
     {
         $tmpBranchName = md5((string) time());
 
@@ -244,7 +219,7 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
         return $this;
     }
 
-    protected function runActionClone()
+    protected function runActionClone(): static
     {
         $this
             ->taskGitStack()

@@ -8,20 +8,14 @@ trait ArgumentRevRangeTrait
 {
 
     // region fromRevName
-    /**
-     * @var string
-     */
-    protected $fromRevName = '';
+    protected string $fromRevName = '';
 
     public function getFromRevName(): string
     {
         return $this->fromRevName;
     }
 
-    /**
-     * @return $this
-     */
-    public function setFromRevName(string $fromRevName)
+    public function setFromRevName(string $fromRevName): static
     {
         $this->fromRevName = $fromRevName;
 
@@ -30,20 +24,14 @@ trait ArgumentRevRangeTrait
     // endregion
 
     // region toRevName
-    /**
-     * @var string
-     */
-    protected $toRevName = '';
+    protected string $toRevName = '';
 
     public function getToRevName(): string
     {
         return $this->toRevName;
     }
 
-    /**
-     * @return $this
-     */
-    public function setToRevName(string $toRevName)
+    public function setToRevName(string $toRevName): static
     {
         $this->toRevName = $toRevName;
 

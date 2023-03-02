@@ -6,40 +6,28 @@ namespace Sweetchuck\Robo\Git\Option;
 
 trait OptionContainsTrait
 {
-    /**
-     * @var null|bool
-     */
-    protected $containsState = null;
+    protected ?bool $containsState = null;
 
     public function getContainsState(): ?bool
     {
         return $this->containsState;
     }
 
-    /**
-     * @return $this
-     */
-    public function setContainsState(?bool $value)
+    public function setContainsState(?bool $value): static
     {
         $this->containsState = $value;
 
         return $this;
     }
 
-    /**
-     * @var string
-     */
-    protected $containsValue = '';
+    protected string $containsValue = '';
 
     public function getContainsValue(): string
     {
         return $this->containsValue;
     }
 
-    /**
-     * @return $this
-     */
-    public function setContainsValue(string $value)
+    public function setContainsValue(string $value): static
     {
         $this->containsValue = $value;
 

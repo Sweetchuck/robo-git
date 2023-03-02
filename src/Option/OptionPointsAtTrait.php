@@ -6,20 +6,14 @@ namespace Sweetchuck\Robo\Git\Option;
 
 trait OptionPointsAtTrait
 {
-    /**
-     * @var string
-     */
-    protected $pointsAt = '';
+    protected string $pointsAt = '';
 
     public function getPointsAt(): string
     {
         return $this->pointsAt;
     }
 
-    /**
-     * @return $this
-     */
-    public function setPointsAt(string $value)
+    public function setPointsAt(string $value): static
     {
         $this->pointsAt = $value;
 

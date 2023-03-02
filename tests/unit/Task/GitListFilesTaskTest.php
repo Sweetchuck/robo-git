@@ -10,7 +10,8 @@ use Codeception\Util\Stub;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
 /**
- * @covers \Sweetchuck\Robo\Git\Task\GitListFilesTask<extended>
+ * @covers \Sweetchuck\Robo\Git\Task\GitListFilesTask
+ * @covers \Sweetchuck\Robo\Git\Task\BaseTask
  */
 class GitListFilesTaskTest extends TaskTestBase
 {

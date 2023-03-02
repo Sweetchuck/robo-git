@@ -21,34 +21,19 @@ class GitTagListTask extends BaseTask implements CommandInterface
     use OptionPointsAtTrait;
     use OptionSortTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $taskName = 'Git tag list';
+    protected string $taskName = 'Git tag list';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $action = 'tag';
+    protected string $action = 'tag';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $assets = [
+    protected array $assets = [
         'git.tags' => [],
     ];
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getDefaultFormat(): string
     {
         return 'tag-list.default';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getOptions(): array
     {
         return $this->getOptionsContains()
@@ -60,10 +45,7 @@ class GitTagListTask extends BaseTask implements CommandInterface
             + parent::getOptions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -102,10 +84,7 @@ class GitTagListTask extends BaseTask implements CommandInterface
         return  $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function runProcessOutputs()
+    protected function runProcessOutputs(): static
     {
         if ($this->formatMachineReadableDefinition) {
             $this->assets['git.tags'] = $this

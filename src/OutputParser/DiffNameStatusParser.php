@@ -10,10 +10,7 @@ use Symfony\Component\Filesystem\Path;
 
 class DiffNameStatusParser implements OutputParserInterface
 {
-    /**
-     * @var string
-     */
-    protected $filePathStyle = 'relativeToTopLevel';
+    protected string $filePathStyle = 'relativeToTopLevel';
 
     public function getFilePathStyle(): string
     {
@@ -26,44 +23,33 @@ class DiffNameStatusParser implements OutputParserInterface
      *   - relativeToTopLevel
      *   - relativeToWorkingDirectory
      *   - absolute
-     *
-     * @return $this
      */
-    public function setFilePathStyle(string $value)
+    public function setFilePathStyle(string $value): static
     {
         $this->filePathStyle = $value;
 
         return $this;
     }
 
-    /**
-     * @var string
-     */
-    protected $gitTopLevelDir = '';
+    protected string $gitTopLevelDir = '';
 
     public function getGitTopLevelDir(): string
     {
         return $this->gitTopLevelDir;
     }
 
-    /**
-     * @return $this
-     */
-    public function setGitTopLevelDir(string $gitTopLevelDir)
+    public function setGitTopLevelDir(string $gitTopLevelDir): static
     {
         $this->gitTopLevelDir = $gitTopLevelDir;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function parse(
         int $exitCode,
         string $stdOutput,
         string $stdError,
-        array $options = []
+        array $options = [],
     ): array {
         $items = [
             'fileNames' => [],

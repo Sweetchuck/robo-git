@@ -10,10 +10,7 @@ class GitListChangedFilesTask extends GitListStagedFilesTask
 {
     use ArgumentRevRangeTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         parent::setOptions($options);
 
@@ -28,9 +25,6 @@ class GitListChangedFilesTask extends GitListStagedFilesTask
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getOptions(): array
     {
         $options = parent::getOptions() + $this->getArgumentRevRange();

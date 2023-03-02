@@ -10,37 +10,20 @@ use Sweetchuck\Robo\Git\Utils;
 
 trait OptionFormatTrait
 {
-    /**
-     * @var array|string
-     */
-    protected $format = '';
+    protected array|string $format = '';
 
-    /**
-     * @var \Sweetchuck\Robo\Git\FormatHandlerInterface
-     */
-    protected $formatHandler;
+    protected ?FormatHandlerInterface $formatHandler = null;
 
-    /**
-     * @var array
-     */
-    protected $formatMachineReadableDefinition = [];
+    protected array $formatMachineReadableDefinition = [];
 
     abstract protected function getDefaultFormat(): string;
 
-    /**
-     * @return array|string
-     */
-    public function getFormat()
+    public function getFormat(): array|string
     {
         return $this->format;
     }
 
-    /**
-     * @param array|string $value
-     *
-     * @return $this
-     */
-    public function setFormat($value)
+    public function setFormat(array|string $value): static
     {
         $this->format = $value;
 
