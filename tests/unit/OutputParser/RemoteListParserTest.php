@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\OutputParser;
 
+use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\OutputParser\RemoteListParser;
 
@@ -45,9 +46,7 @@ class RemoteListParserTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider casesParse
-     */
+    #[DataProvider('casesParse')]
     public function testParse(array $expected, int $exitCode, string $stdOutput, string $stdError = ''): void
     {
         $parser = new RemoteListParser();

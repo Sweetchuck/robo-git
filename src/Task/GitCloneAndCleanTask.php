@@ -147,11 +147,11 @@ class GitCloneAndCleanTask extends BaseTask implements BuilderAwareInterface
     {
         $srcDir = $this->getSrcDir();
         $remoteUrl = $this->getRemoteUrl();
-
         $srcRemotes = $this->getRemotes($srcDir);
-        $srcRemoteName = array_search($remoteUrl, $srcRemotes);
 
-        return $srcRemoteName !== false ? $this->runActionExisting() : $this->runActionClone();
+        return in_array($remoteUrl, $srcRemotes) ?
+            $this->runActionExisting()
+            : $this->runActionClone();
     }
 
     protected function runActionExisting(): static

@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
+use Codeception\Attribute\DataProvider;
+
 /**
  * @covers \Sweetchuck\Robo\Git\Task\GitStatusTask
  * @covers \Sweetchuck\Robo\Git\Task\BaseTask
@@ -113,9 +115,7 @@ class GitStatusTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesGetCommand
-     */
+    #[DataProvider('casesGetCommand')]
     public function testGetCommand(string $expected, array $options): void
     {
         $this->tester->assertEquals(

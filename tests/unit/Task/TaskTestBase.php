@@ -6,41 +6,28 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Codeception\Test\Unit;
 use League\Container\Container as LeagueContainer;
+use League\Container\DefinitionContainerInterface;
 use Robo\Collection\CollectionBuilder;
 use Robo\Config\Config as RoboConfig;
 use Robo\Robo;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyOutput;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcessHelper;
 use Sweetchuck\Robo\Git\Test\Helper\Dummy\DummyTaskBuilder;
+use Sweetchuck\Robo\Git\Test\UnitTester;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\ErrorHandler\BufferingLogger;
 
 class TaskTestBase extends Unit
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    /**
-     * @var \League\Container\ContainerInterface
-     */
-    protected $container;
+    protected DefinitionContainerInterface $container;
 
-    /**
-     * @var \Robo\Config\Config
-     */
-    protected $config;
+    protected RoboConfig $config;
 
-    /**
-     * @var \Robo\Collection\CollectionBuilder
-     */
-    protected $builder;
+    protected CollectionBuilder $builder;
 
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\Helper\Dummy\DummyTaskBuilder
-     */
-    protected $taskBuilder;
+    protected DummyTaskBuilder $taskBuilder;
 
     // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
     public function _before()

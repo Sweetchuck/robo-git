@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\OutputParser;
 
+use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
 use Sweetchuck\Robo\Git\ListFilesItem;
 use Sweetchuck\Robo\Git\OutputParser\ListFilesParser;
@@ -112,9 +113,7 @@ class ListFilesParserTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider casesParse
-     */
+    #[DataProvider('casesParse')]
     public function testParse(array $expected, int $exitCode, string $stdOutput, string $stdError, array $options): void
     {
         $parser = new ListFilesParser();
