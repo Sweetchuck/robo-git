@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Sweetchuck\Robo\Git\Test\Helper\RoboFiles;
 
 use Psr\Log\LoggerAwareInterface;
@@ -11,6 +13,7 @@ use Sweetchuck\Robo\Git\GitTaskLoader;
 use Robo\Collection\CollectionBuilder;
 use Robo\Tasks as BaseRoboFile;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Filesystem\Path;
 
@@ -65,9 +68,6 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             });
     }
 
-    /**
-     * @return $this
-     */
     protected function branchListPrepareGitRepo(): CollectionBuilder
     {
         return $this
@@ -464,7 +464,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                     ->setToRevName($toRevName)
             )
             ->addCode(function (RoboStateData $data) {
-                $this->output()->writeln($data['numOfCommits']);
+                $this->output()->writeln((string) $data['numOfCommits']);
 
                 return 0;
             });
@@ -847,6 +847,37 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             );
 
         return $cb;
+    }
+    // endregion
+
+    // region Task - GitConfigSet
+    /**
+     * @command config-set:basic
+     */
+    public function gitConfigSetBasic()
+    {
+        return $this
+            ->collectionBuilder()
+            ->addTask(
+                $this
+                    ->taskTmpDir('robo-git.config-set.basic.', $this->tmpDirBase)
+                    ->cwd(true)
+            )
+            ->addTask($this->getTaskGitStackInitWorkingCopy())
+            ->addTask(
+                $this
+                    ->taskGitConfigSet()
+                    ->setName('myGroup.myName')
+                    ->setValue('myValue')
+            )
+            ->addCode(function (): int {
+                $process = new Process(['git', 'config', '--local', '--list']);
+                $process->run();
+                $gitConfig = parse_ini_string($process->getOutput());
+                $this->output()->write(Yaml::dump($gitConfig));
+
+                return 0;
+            });
     }
     // endregion
 

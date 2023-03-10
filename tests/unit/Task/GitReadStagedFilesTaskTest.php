@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
+use Codeception\Attribute\DataProvider;
 use Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
@@ -120,9 +121,7 @@ class GitReadStagedFilesTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesRun
-     */
+    #[DataProvider('casesRun')]
     public function testRun(array $expected, array $options): void
     {
         $task = $this->taskBuilder->taskGitReadStagedFiles($options);

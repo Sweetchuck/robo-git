@@ -8,40 +8,51 @@ use Codeception\Attribute\DataProvider;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
 /**
- * @covers \Sweetchuck\Robo\Git\Task\GitConfigGetTask
+ * @covers \Sweetchuck\Robo\Git\Task\GitConfigSetTask
  * @covers \Sweetchuck\Robo\Git\Task\GitConfigTaskBase
  * @covers \Sweetchuck\Robo\Git\Task\BaseTask
  */
-class GitConfigGetTaskTest extends TaskTestBase
+class GitConfigSetTaskTest extends TaskTestBase
 {
     public function casesGetCommand(): array
     {
         return [
-            'basic' => [
-                "git config 'user.name'",
+            'basic set' => [
+                "git config 'user.name' 'my value'",
                 [
                     'name' => 'user.name',
+                    'value' => 'my value',
+                ],
+            ],
+            'basic unset' => [
+                "git config --unset 'user.name'",
+                [
+                    'name' => 'user.name',
+                    'value' => null,
                 ],
             ],
             'source local' => [
-                "git config --local 'user.name'",
+                "git config --local 'user.name' 'my value'",
                 [
-                    'name' => 'user.name',
                     'source' => 'local',
+                    'name' => 'user.name',
+                    'value' => 'my value',
                 ],
             ],
             'source system' => [
-                "git config --system 'user.name'",
+                "git config --system 'user.name' 'my value'",
                 [
-                    'name' => 'user.name',
                     'source' => 'system',
+                    'name' => 'user.name',
+                    'value' => 'my value',
                 ],
             ],
             'source global' => [
-                "git config --global 'user.name'",
+                "git config --global 'user.name' 'my value'",
                 [
-                    'name' => 'user.name',
                     'source' => 'global',
+                    'name' => 'user.name',
+                    'value' => 'my value',
                 ],
             ],
         ];
@@ -54,8 +65,8 @@ class GitConfigGetTaskTest extends TaskTestBase
             $expected,
             $this
                 ->taskBuilder
-                ->taskGitConfigGet($options)
-                ->getCommand()
+                ->taskGitConfigSet($options)
+                ->getCommand(),
         );
     }
 
@@ -65,51 +76,71 @@ class GitConfigGetTaskTest extends TaskTestBase
             'basic' => [
                 [
                     'exitCode' => 0,
-                    'assets' => [
-                        'git.config.user.name' => 'Foo Bar',
-                    ],
                 ],
                 [
                     'name' => 'user.name',
-                ],
-                [
-                    'stdOutput' => "Foo Bar\n",
-                    'stdError' => '',
-                    'exitCode' => 0,
-                ],
-            ],
-            'error with stopOnFail true' => [
-                [
-                    'exitCode' => 1,
-                    'assets' => [
-                        'git.config.user.name' => null,
-                    ],
-                ],
-                [
-                    'name' => 'user.name',
-                    'stopOnFail' => true,
+                    'value' => 'my value',
                 ],
                 [
                     'stdOutput' => '',
                     'stdError' => '',
-                    'exitCode' => 1,
+                    'exitCode' => 0,
                 ],
             ],
-            'error with stopOnFail false' => [
+            'unset success' => [
                 [
                     'exitCode' => 0,
-                    'assets' => [
-                        'git.config.user.name' => null,
-                    ],
                 ],
                 [
                     'name' => 'user.name',
-                    'stopOnFail' => false,
+                    'value' => 'my value',
                 ],
                 [
                     'stdOutput' => '',
                     'stdError' => '',
-                    'exitCode' => 1,
+                    'exitCode' => 0,
+                ],
+            ],
+            'unset name exists 1; stop on fail 1' => [
+                [
+                    'exitCode' => 0,
+                ],
+                [
+                    'name' => 'user.name',
+                    'value' => null,
+                ],
+                [
+                    'stdOutput' => '',
+                    'stdError' => '',
+                    'exitCode' => 0,
+                ],
+            ],
+            'unset name exists 0; stop on fail 1' => [
+                [
+                    'exitCode' => 0,
+                ],
+                [
+                    'name' => 'user.name',
+                    'value' => null,
+                ],
+                [
+                    'stdOutput' => '',
+                    'stdError' => '',
+                    'exitCode' => 5,
+                ],
+            ],
+            'io error' => [
+                [
+                    'exitCode' => 4,
+                ],
+                [
+                    'name' => 'user.name',
+                    'value' => null,
+                ],
+                [
+                    'stdOutput' => '',
+                    'stdError' => '',
+                    'exitCode' => 4,
                 ],
             ],
         ];
@@ -118,43 +149,24 @@ class GitConfigGetTaskTest extends TaskTestBase
     #[DataProvider('casesRunSuccess')]
     public function testRunSuccess(array $expected, array $options, array $prophecy): void
     {
-        $expected += [
-            'assets' => [],
-        ];
-
         $prophecy += [
             'stdOutput' => '',
             'stdError' => '',
             'exitCode' => 0,
         ];
 
-        $processIndex = count(DummyProcess::$instances);
-        DummyProcess::$prophecy[$processIndex] = $prophecy;
+        DummyProcess::$prophecy[] = $prophecy;
 
         $result = $this
             ->taskBuilder
-            ->taskGitConfigGet($options)
+            ->taskGitConfigSet($options)
             ->run();
-
-        $this->tester->assertSameSize(
-            DummyProcess::$instances,
-            DummyProcess::$prophecy,
-            'Amount of process'
-        );
 
         if (array_key_exists('exitCode', $expected)) {
             $this->tester->assertSame(
                 $expected['exitCode'],
                 $result->getExitCode(),
                 'Exit code is different than the expected.'
-            );
-        }
-
-        foreach ($expected['assets'] as $name => $value) {
-            $this->tester->assertSame(
-                $value,
-                $result[$name],
-                "Asset $name"
             );
         }
     }

@@ -24,6 +24,7 @@ class DummyTaskBuilder implements BuilderAwareInterface, ContainerAwareInterface
         taskGitBranchList as public;
         taskGitCurrentBranch as public;
         taskGitConfigGet as public;
+        taskGitConfigSet as public;
         taskGitListFiles as public;
         taskGitListChangedFiles as public;
         taskGitListStagedFiles as public;

@@ -6,27 +6,9 @@ namespace Sweetchuck\Robo\Git\Task;
 
 use Robo\Contract\CommandInterface;
 
-class GitConfigGetTask extends BaseTask implements CommandInterface
+class GitConfigGetTask extends GitConfigTaskBase implements CommandInterface
 {
     protected string $taskName = 'Git - Config get';
-
-    protected string $action = 'config';
-
-    // region source
-    protected string $source = '';
-
-    public function getSource(): string
-    {
-        return $this->source;
-    }
-
-    public function setSource(string $source): static
-    {
-        $this->source = $source;
-
-        return $this;
-    }
-    // endregion
 
     // region name
     protected string $name = '';
@@ -44,54 +26,24 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
     }
     // endregion
 
-    // region stopOnFail
-    protected bool $stopOnFail = true;
-
-    public function getStopOnFail(): bool
-    {
-        return $this->stopOnFail;
-    }
-
-    public function setStopOnFail(bool $stopOnFail): static
-    {
-        $this->stopOnFail = $stopOnFail;
-
-        return $this;
-    }
-    // endregion
-
     protected function getOptions(): array
     {
-        $options = [];
-
-        $source = $this->getSource();
-        if (in_array($source, $this->getAllowedSources())) {
-            $options["--$source"] = [
-                'type' => 'flag',
-                'value' => true,
-            ];
-        }
+        $options = parent::getOptions();
 
         $options['name'] = [
             'type' => 'arg-normal',
             'value' => $this->getName(),
         ];
 
-        return $options + parent::getOptions();
+        return $options;
     }
 
     public function setOptions(array $options): static
     {
-        if (array_key_exists('source', $options)) {
-            $this->setSource($options['source']);
-        }
+        parent::setOptions($options);
 
         if (array_key_exists('name', $options)) {
             $this->setName($options['name']);
-        }
-
-        if (array_key_exists('stopOnFail', $options)) {
-            $this->setStopOnFail($options['stopOnFail']);
         }
 
         return $this;
@@ -105,15 +57,5 @@ class GitConfigGetTask extends BaseTask implements CommandInterface
             : null;
 
         return $this;
-    }
-
-    protected function getAllowedSources(): array
-    {
-        return ['local', 'system', 'global'];
-    }
-
-    protected function getTaskExitCode(): int
-    {
-        return $this->getStopOnFail() ? $this->actionExitCode : 0;
     }
 }

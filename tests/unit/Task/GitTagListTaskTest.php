@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
+use Codeception\Attribute\DataProvider;
+
 /**
  * @covers \Sweetchuck\Robo\Git\Task\GitTagListTask
  * @covers \Sweetchuck\Robo\Git\Task\BaseTask
@@ -124,9 +126,7 @@ class GitTagListTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesGetCommand
-     */
+    #[DataProvider('casesGetCommand')]
     public function testGetCommand(string $expected, array $options): void
     {
         $task = $this->taskBuilder->taskGitTagList($options);

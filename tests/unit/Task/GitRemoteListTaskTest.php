@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
+use Codeception\Attribute\DataProvider;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
 /**
@@ -29,9 +30,7 @@ class GitRemoteListTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesGetCommand
-     */
+    #[DataProvider('casesGetCommand')]
     public function testGetCommand(string $expected, array $options): void
     {
         $task = $this->taskBuilder->taskGitRemoteList($options);
@@ -89,9 +88,7 @@ class GitRemoteListTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesRunSuccess
-     */
+    #[DataProvider('casesRunSuccess')]
     public function testRunSuccess($expected, array $prophecy, array $options = []): void
     {
         $prophecy += [
