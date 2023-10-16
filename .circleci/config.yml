@@ -21,16 +21,16 @@ executors:
         docker:
             -
                 name: 'main'
-                image: 'cimg/php:8.1'
-    php_plus1:
-        environment:
-            <<: *env_common
-            <<: *env_composer
-
-        docker:
-            -
-                name: 'main'
                 image: 'cimg/php:8.2'
+#    php_plus1:
+#        environment:
+#            <<: *env_common
+#            <<: *env_composer
+#
+#        docker:
+#            -
+#                name: 'main'
+#                image: 'cimg/php:8.3'
 
 
 commands:
@@ -158,4 +158,4 @@ workflows:
                         parameters:
                             executor:
                                 - 'php_min'
-                                - 'php_plus1'
+#                                - 'php_plus1'
