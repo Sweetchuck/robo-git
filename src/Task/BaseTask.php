@@ -14,6 +14,7 @@ use Robo\Common\IO;
 use Robo\Result;
 use Robo\Task\BaseTask as RoboBaseTask;
 use Robo\TaskInfo;
+use Sweetchuck\Utils\Filter\EnabledFilter;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Process\Process;
 
@@ -170,6 +171,8 @@ abstract class BaseTask extends RoboBaseTask implements
         $cmdArgsExtraPattern = [];
         $cmdArgsExtraArgs = [];
 
+        $enabledFilter = new EnabledFilter();
+
         foreach ($options as $optionName => $option) {
             switch ($option['type']) {
                 case 'flag:main':
@@ -214,7 +217,11 @@ abstract class BaseTask extends RoboBaseTask implements
                     break;
 
                 case 'value:multi':
-                    $items = Utils::filterEnabled($option['value']);
+                    $items = array_filter($option['value'], $enabledFilter);
+                    if (gettype(reset($items)) === 'boolean') {
+                        $items = array_keys($items);
+                    }
+
                     if ($items) {
                         $cmdOptionsPattern[] = $optionName . str_repeat(' %s', count($items));
                         foreach ($items as $item) {
@@ -242,7 +249,11 @@ abstract class BaseTask extends RoboBaseTask implements
                     break;
 
                 case 'arg-extra:list':
-                    $args = Utils::filterEnabled($option['value']);
+                    $args = array_filter($option['value'], $enabledFilter);
+                    if (gettype(reset($args)) === 'boolean') {
+                        $args = array_keys($args);
+                    }
+
                     if ($args) {
                         $cmdArgsExtraPattern[] = trim(str_repeat(' %s', count($args)));
                         foreach ($args as $arg) {

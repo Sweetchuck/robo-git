@@ -6,18 +6,19 @@ use Consolidation\AnnotatedCommand\CommandData;
 use NuvoleWeb\Robo\Task\Config\Robo\loadTasks as ConfigLoader;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 use Robo\Tasks;
 use Robo\Collection\CollectionBuilder;
 use Robo\Common\ConfigAwareTrait;
 use Sweetchuck\Robo\Git\GitTaskLoader;
-use Sweetchuck\Utils\Filter\ArrayFilterEnabled;
+use Sweetchuck\Utils\Filter\EnabledFilter;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 
-class RoboFile extends Tasks implements LoggerAwareInterface, \Robo\Contract\ConfigAwareInterface
+class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterface
 {
     use ConfigLoader;
     use LoggerAwareTrait;
@@ -488,7 +489,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface, \Robo\Contract\Con
     {
         return array_filter(
             $this->getConfig()->get('php.executables'),
-            new ArrayFilterEnabled(),
+            new EnabledFilter(),
         );
     }
 }
