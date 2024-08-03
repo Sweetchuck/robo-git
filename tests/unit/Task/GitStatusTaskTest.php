@@ -5,14 +5,15 @@ declare(strict_types = 1);
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Sweetchuck\Robo\Git\Task\BaseTask;
+use Sweetchuck\Robo\Git\Task\GitStatusTask;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitStatusTask
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+#[CoversClass(GitStatusTask::class)]
+#[CoversClass(BaseTask::class)]
 class GitStatusTaskTest extends TaskTestBase
 {
-    public function casesGetCommand(): array
+    public static function casesGetCommand(): array
     {
         return [
             'basic' => [

@@ -4,20 +4,18 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit;
 
+use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Sweetchuck\Robo\Git\Tests\UnitTester;
 use Sweetchuck\Robo\Git\Utils;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Utils
- */
+#[CoversClass(Utils::class)]
 class UtilsTest extends Unit
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function casesParseDiffFilter(): array
+    public static function casesParseDiffFilter(): array
     {
         return [
             'empty' => ['', []],
@@ -42,10 +40,8 @@ class UtilsTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider casesParseDiffFilter
-     */
-    public function testParseDiffFilter(string $expected, array $diffFilter)
+    #[DataProvider('casesParseDiffFilter')]
+    public function testParseDiffFilter(string $expected, array $diffFilter): void
     {
         $this->tester->assertSame($expected, Utils::parseDiffFilter($diffFilter));
     }

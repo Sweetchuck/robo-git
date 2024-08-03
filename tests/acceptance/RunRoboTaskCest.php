@@ -4,9 +4,10 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
+use Codeception\Attribute\DataProvider;
 use Codeception\Example;
-use Sweetchuck\Robo\Git\Test\AcceptanceTester;
-use Sweetchuck\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
+use Sweetchuck\Robo\Git\Tests\AcceptanceTester;
+use Sweetchuck\Robo\Git\Tests\Helper\RoboFiles\GitRoboFile;
 use Symfony\Component\Yaml\Yaml;
 
 class RunRoboTaskCest extends CestBase
@@ -63,7 +64,7 @@ class RunRoboTaskCest extends CestBase
     // endregion
 
     // region Task - GitCurrentBranchTask
-    protected function currentBranchSuccessCases(): array
+    public static function currentBranchSuccessCases(): array
     {
         return [
             '1.0.x' => ['branchName' => '1.0.x'],
@@ -73,9 +74,7 @@ class RunRoboTaskCest extends CestBase
         ];
     }
 
-    /**
-     * @dataProvider currentBranchSuccessCases
-     */
+    #[DataProvider('currentBranchSuccessCases')]
     public function currentBranchSuccess(AcceptanceTester $i, Example $example): void
     {
         $roboTaskName = 'current-branch:success';
@@ -115,7 +114,7 @@ class RunRoboTaskCest extends CestBase
     // endregion
 
     // region Task - GitListStagedFilesTask
-    public function listStagedFiles(AcceptanceTester $i)
+    public function listStagedFiles(AcceptanceTester $i): void
     {
         $roboTaskName = 'list-staged-files';
         $id = $roboTaskName;

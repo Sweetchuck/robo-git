@@ -4,14 +4,14 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
-use Sweetchuck\Robo\Git\Test\AcceptanceTester;
-use Sweetchuck\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
+use Sweetchuck\Robo\Git\Tests\AcceptanceTester;
+use Sweetchuck\Robo\Git\Tests\Helper\RoboFiles\GitRoboFile;
 use Symfony\Component\Yaml\Yaml;
 
 class GitCloneAndCleanCest extends CestBase
 {
 
-    public function gitCloneAndCleanSuccess(AcceptanceTester $i)
+    public function gitCloneAndCleanSuccess(AcceptanceTester $i): void
     {
         $roboTaskName = 'clone-and-clean:success';
         $id = $roboTaskName;

@@ -6,16 +6,15 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\OutputParser;
 
 use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Robo\Git\ListStagedFilesItem;
 use Sweetchuck\Robo\Git\OutputParser\DiffNameStatusParser;
 
-/**
- * @covers \Sweetchuck\Robo\Git\OutputParser\DiffNameStatusParser
- */
+#[CoversClass(DiffNameStatusParser::class)]
 class DiffNameStatusParserTest extends Unit
 {
 
-    public function casesParse(): array
+    public static function casesParse(): array
     {
         return [
             'empty' => [

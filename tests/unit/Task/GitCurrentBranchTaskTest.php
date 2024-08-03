@@ -4,15 +4,17 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
+use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
+use Sweetchuck\Robo\Git\Task\BaseTask;
+use Sweetchuck\Robo\Git\Task\GitCurrentBranchTask;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitCurrentBranchTask
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+#[CoversClass(GitCurrentBranchTask::class)]
+#[CoversClass(BaseTask::class)]
 class GitCurrentBranchTaskTest extends TaskTestBase
 {
-    public function casesGetCommand(): array
+    public static function casesGetCommand(): array
     {
         return [
             'basic' => [
@@ -30,9 +32,7 @@ class GitCurrentBranchTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesGetCommand
-     */
+    #[DataProvider('casesGetCommand')]
     public function testGetCommand(string $expected, array $options): void
     {
         $task = $this->taskBuilder->taskGitCurrentBranch($options);
@@ -40,7 +40,7 @@ class GitCurrentBranchTaskTest extends TaskTestBase
         $this->tester->assertEquals($expected, $task->getCommand());
     }
 
-    public function casesRunSuccess(): array
+    public static function casesRunSuccess(): array
     {
         return [
             'empty' => [
@@ -66,9 +66,7 @@ class GitCurrentBranchTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesRunSuccess
-     */
+    #[DataProvider('casesRunSuccess')]
     public function testRunSuccess($expected, array $prophecy, array $options = []): void
     {
         $prophecy += [

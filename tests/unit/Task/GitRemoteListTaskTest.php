@@ -5,16 +5,17 @@ declare(strict_types = 1);
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
+use Sweetchuck\Robo\Git\Task\BaseTask;
+use Sweetchuck\Robo\Git\Task\GitRemoteListTask;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitRemoteListTask
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+#[CoversClass(GitRemoteListTask::class)]
+#[CoversClass(BaseTask::class)]
 class GitRemoteListTaskTest extends TaskTestBase
 {
 
-    public function casesGetCommand(): array
+    public static function casesGetCommand(): array
     {
         return [
             'basic' => [
@@ -37,7 +38,7 @@ class GitRemoteListTaskTest extends TaskTestBase
         $this->tester->assertSame($expected, $task->getCommand());
     }
 
-    public function casesRunSuccess(): array
+    public static function casesRunSuccess(): array
     {
         return [
             'empty' => [

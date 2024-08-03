@@ -6,15 +6,14 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\OutputParser;
 
 use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Robo\Git\ListFilesItem;
 use Sweetchuck\Robo\Git\OutputParser\ListFilesParser;
 
-/**
- * @covers \Sweetchuck\Robo\Git\OutputParser\ListFilesParser
- */
+#[CoversClass(ListFilesParser::class)]
 class ListFilesParserTest extends Unit
 {
-    public function casesParse(): array
+    public static function casesParse(): array
     {
         return [
             'empty' => [

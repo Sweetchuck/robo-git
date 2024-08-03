@@ -5,14 +5,15 @@ declare(strict_types = 1);
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Sweetchuck\Robo\Git\Task\BaseTask;
+use Sweetchuck\Robo\Git\Task\GitNumOfCommitsBetweenTask;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitNumOfCommitsBetweenTask
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+#[CoversClass(GitNumOfCommitsBetweenTask::class)]
+#[CoversClass(BaseTask::class)]
 class GitNumOfCommitsBetweenTaskTest extends TaskTestBase
 {
-    public function casesGetCommand(): array
+    public static function casesGetCommand(): array
     {
         return [
             'basic' => [

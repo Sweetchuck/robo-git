@@ -4,20 +4,20 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit;
 
+use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Robo\Git\ListFilesItem;
 
-/**
- * @covers \Sweetchuck\Robo\Git\ListFilesItem
- */
+#[CoversClass(ListFilesItem::class)]
 class ListFilesItemTest extends Unit
 {
     /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
+     * @var \Sweetchuck\Robo\Git\Tests\UnitTester
      */
     protected $tester;
 
-    public function casesToString(): array
+    public static function casesToString(): array
     {
         return [
             'basic' => [
@@ -29,9 +29,7 @@ class ListFilesItemTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider casesToString
-     */
+    #[DataProvider('casesToString')]
     public function testToString($expected, array $args): void
     {
         $item = new ListFilesItem($args);

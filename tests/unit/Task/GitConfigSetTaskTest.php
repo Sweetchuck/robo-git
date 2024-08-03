@@ -5,16 +5,18 @@ declare(strict_types = 1);
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
+use Sweetchuck\Robo\Git\Task\BaseTask;
+use Sweetchuck\Robo\Git\Task\GitConfigSetTask;
+use Sweetchuck\Robo\Git\Task\GitConfigTaskBase;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitConfigSetTask
- * @covers \Sweetchuck\Robo\Git\Task\GitConfigTaskBase
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+#[CoversClass(GitConfigSetTask::class)]
+#[CoversClass(GitConfigTaskBase::class)]
+#[CoversClass(BaseTask::class)]
 class GitConfigSetTaskTest extends TaskTestBase
 {
-    public function casesGetCommand(): array
+    public static function casesGetCommand(): array
     {
         return [
             'basic set' => [
@@ -70,7 +72,7 @@ class GitConfigSetTaskTest extends TaskTestBase
         );
     }
 
-    public function casesRunSuccess(): array
+    public static function casesRunSuccess(): array
     {
         return [
             'basic' => [

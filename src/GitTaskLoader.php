@@ -180,10 +180,8 @@ trait GitTaskLoader
 
     /**
      * @param \League\Container\ContainerAwareInterface $child
-     *
-     * @return $this
      */
-    protected function injectDependenciesContainer($child)
+    protected function injectDependenciesContainer($child): static
     {
         $container = $this instanceof ContainerAwareInterface ? $this->getContainer() : null;
         if ($container) {
@@ -195,10 +193,8 @@ trait GitTaskLoader
 
     /**
      * @param \Psr\Log\LoggerAwareInterface $child
-     *
-     * @return $this
      */
-    protected function injectDependenciesLogger($child)
+    protected function injectDependenciesLogger($child): static
     {
         $logger = $this instanceof LoggerAwareInterface ? $this->logger : null;
         if ($logger) {

@@ -5,13 +5,13 @@ declare(strict_types = 1);
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Sweetchuck\Robo\Git\Task\BaseTask;
 use Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitReadStagedFilesTask
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+#[CoversClass(GitReadStagedFilesTask::class)]
+#[CoversClass(BaseTask::class)]
 class GitReadStagedFilesTaskTest extends TaskTestBase
 {
     protected static function getMethod(string $name): \ReflectionMethod
@@ -55,7 +55,7 @@ class GitReadStagedFilesTaskTest extends TaskTestBase
         $this->tester->assertEquals($options['paths'], $task->getPaths());
     }
 
-    public function casesRun(): array
+    public static function casesRun(): array
     {
         return [
             'empty' => [

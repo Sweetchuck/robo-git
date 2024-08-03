@@ -4,20 +4,17 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit;
 
+use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Robo\Git\FormatHandler;
 
-/**
- * @covers \Sweetchuck\Robo\Git\FormatHandler
- */
+#[CoversClass(FormatHandler::class)]
 class FormatHandlerTest extends Unit
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
+    protected \Sweetchuck\Robo\Git\Tests\UnitTester $tester;
 
-    public function casesCreateMachineReadableFormatDefinition(): array
+    public static function casesCreateMachineReadableFormatDefinition(): array
     {
         return [
             'basic' => [
@@ -45,9 +42,7 @@ class FormatHandlerTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider casesCreateMachineReadableFormatDefinition
-     */
+    #[DataProvider('casesCreateMachineReadableFormatDefinition')]
     public function testCreateMachineReadableFormatDefinition($expected, array $properties): void
     {
         $uniqueHash = function (): string {
@@ -60,7 +55,7 @@ class FormatHandlerTest extends Unit
         $this->tester->assertSame($expected, $subject->createMachineReadableFormatDefinition($properties));
     }
 
-    public function casesParseStdOutput(): array
+    public static function casesParseStdOutput(): array
     {
         return [
             'basic' => [
@@ -114,9 +109,7 @@ class FormatHandlerTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider casesParseStdOutput
-     */
+    #[DataProvider('casesParseStdOutput')]
     public function testParseStdOutput(array $expected, string $stdOutput, array $definition): void
     {
         $this->tester->assertEquals(

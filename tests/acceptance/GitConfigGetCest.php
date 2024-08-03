@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
-use Sweetchuck\Robo\Git\Test\AcceptanceTester;
-use Sweetchuck\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
+use Sweetchuck\Robo\Git\Tests\AcceptanceTester;
+use Sweetchuck\Robo\Git\Tests\Helper\RoboFiles\GitRoboFile;
 
 class GitConfigGetCest extends CestBase
 {
-    public function configGetBasic(AcceptanceTester $i)
+    public function configGetBasic(AcceptanceTester $i): void
     {
         $roboTaskName = 'config-get:basic';
         $id = $roboTaskName;
@@ -38,7 +38,7 @@ class GitConfigGetCest extends CestBase
         $i->assertSame($expected['exitCode'], $exitCode, 'Robo task exit code');
     }
 
-    public function configGetCopy(AcceptanceTester $i)
+    public function configGetCopy(AcceptanceTester $i): void
     {
         $roboTaskName = 'config-get:copy';
         $id = $roboTaskName;

@@ -4,13 +4,16 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitListStagedFilesTask
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Sweetchuck\Robo\Git\Task\BaseTask;
+use Sweetchuck\Robo\Git\Task\GitListStagedFilesTask;
+
+#[CoversClass(GitListStagedFilesTask::class)]
+#[CoversClass(BaseTask::class)]
 class GitListStagedFilesTaskTest extends TaskTestBase
 {
-    public function casesGetCommand(): array
+    public static function casesGetCommand(): array
     {
         $cmd = 'git --no-pager diff --no-color --name-status --cached -z';
 
@@ -49,9 +52,7 @@ class GitListStagedFilesTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesGetCommand
-     */
+    #[DataProvider('casesGetCommand')]
     public function testGetCommand(string $expected, array $options): void
     {
         $task = $this->taskBuilder->taskGitListStagedFiles($options);

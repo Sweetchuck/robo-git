@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Sweetchuck\Robo\Git\Test\Helper\RoboFiles;
+namespace Sweetchuck\Robo\Git\Tests\Helper\RoboFiles;
 
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;

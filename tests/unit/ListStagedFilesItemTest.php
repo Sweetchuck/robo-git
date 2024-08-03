@@ -4,20 +4,18 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit;
 
+use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Robo\Git\ListStagedFilesItem;
+use Sweetchuck\Robo\Git\Tests\UnitTester;
 
-/**
- * @covers \Sweetchuck\Robo\Git\ListStagedFilesItem
- */
+#[CoversClass(ListStagedFilesItem::class)]
 class ListStagedFilesItemTest extends Unit
 {
-    /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function casesConstruct(): array
+    public static function casesConstruct(): array
     {
         return [
             'empty' => [
@@ -38,9 +36,7 @@ class ListStagedFilesItemTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider casesConstruct
-     */
+    #[DataProvider('casesConstruct')]
     public function testConstruct($expected, array $args): void
     {
         $expected += [

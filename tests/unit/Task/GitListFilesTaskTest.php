@@ -4,15 +4,15 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
+use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Sweetchuck\Robo\Git\ListFilesItem;
+use Sweetchuck\Robo\Git\Task\BaseTask;
 use Sweetchuck\Robo\Git\Task\GitListFilesTask;
-use Codeception\Util\Stub;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitListFilesTask
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+#[CoversClass(GitListFilesTask::class)]
+#[CoversClass(BaseTask::class)]
 class GitListFilesTaskTest extends TaskTestBase
 {
     protected static function getMethod(string $name): \ReflectionMethod
@@ -34,7 +34,7 @@ class GitListFilesTaskTest extends TaskTestBase
         parent::setUp();
     }
 
-    public function casesGetCommand(): array
+    public static function casesGetCommand(): array
     {
         return [
             'basic' => [
@@ -178,9 +178,7 @@ class GitListFilesTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesGetCommand
-     */
+    #[DataProvider('casesGetCommand')]
     public function testGetCommand(string $expected, array $options): void
     {
         $task = $this->taskBuilder->taskGitListFiles($options);
@@ -188,7 +186,7 @@ class GitListFilesTaskTest extends TaskTestBase
         $this->tester->assertSame($expected, $task->getCommand());
     }
 
-    public function casesRunSuccess(): array
+    public static function casesRunSuccess(): array
     {
         return [
             'basic' => [
@@ -208,9 +206,7 @@ class GitListFilesTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesRunSuccess
-     */
+    #[DataProvider('casesRunSuccess')]
     public function testRunSuccess(array $expectedFiles, array $options, string $prophecyStdOutput): void
     {
         $processIndex = count(DummyProcess::$instances);

@@ -4,13 +4,16 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
-/**
- * @covers \Sweetchuck\Robo\Git\Task\GitBranchListTask
- * @covers \Sweetchuck\Robo\Git\Task\BaseTask
- */
+use Codeception\Attribute\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Sweetchuck\Robo\Git\Task\BaseTask;
+use Sweetchuck\Robo\Git\Task\GitBranchListTask;
+
+#[CoversClass(GitBranchListTask::class)]
+#[CoversClass(BaseTask::class)]
 class GitBranchListTaskTest extends TaskTestBase
 {
-    public function casesGetCommand(): array
+    public static function casesGetCommand(): array
     {
         return [
             'basic' => [
@@ -126,9 +129,7 @@ class GitBranchListTaskTest extends TaskTestBase
         ];
     }
 
-    /**
-     * @dataProvider casesGetCommand
-     */
+    #[DataProvider('casesGetCommand')]
     public function testGetCommand(string $expected, array $options): void
     {
         $task = $this->taskBuilder->taskGitBranchList($options);
