@@ -3,5 +3,5 @@ actor: 'AcceptanceTester'
 modules:
     enabled:
         - 'Asserts'
-        - '\Sweetchuck\Robo\Git\Test\Helper\Acceptance'
+        - '\Sweetchuck\Robo\Git\Tests\Helper\Acceptance'
         - '\Sweetchuck\Codeception\Module\RoboTaskRunner\RoboTaskRunner'

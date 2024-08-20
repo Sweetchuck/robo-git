@@ -13,7 +13,7 @@ use Sweetchuck\Robo\Git\FormatHandler;
 class FormatHandlerTest extends Unit
 {
     /**
-     * @var \Sweetchuck\Robo\Git\Test\UnitTester
+     * @var \Sweetchuck\Robo\Git\Tests\UnitTester
      */
     protected $tester;
 

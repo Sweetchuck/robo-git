@@ -6,7 +6,6 @@ namespace Sweetchuck\Robo\Git\Tests\Unit\Task;
 
 use Sweetchuck\Robo\Git\ListFilesItem;
 use Sweetchuck\Robo\Git\Task\GitListFilesTask;
-use Codeception\Util\Stub;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcess;
 
 /**

@@ -1,5 +1,4 @@
-
-namespace: 'Sweetchuck\Robo\Git\Test'
+namespace: 'Sweetchuck\Robo\Git\Tests'
 
 actor: 'Tester'
 

@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\Git\Tests\Acceptance;
 
-use Sweetchuck\Robo\Git\Test\AcceptanceTester;
-use Sweetchuck\Robo\Git\Test\Helper\RoboFiles\GitRoboFile;
+use Sweetchuck\Robo\Git\Tests\AcceptanceTester;
+use Sweetchuck\Robo\Git\Tests\Helper\RoboFiles\GitRoboFile;
 
 class GitConfigSetCest extends CestBase
 {

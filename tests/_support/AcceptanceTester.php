@@ -1,6 +1,6 @@
 <?php
 
-namespace Sweetchuck\Robo\Git\Test;
+namespace Sweetchuck\Robo\Git\Tests;
 
 use Codeception\Actor;
 use Codeception\Lib\Friend;

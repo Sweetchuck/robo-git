@@ -3,4 +3,4 @@ actor: 'UnitTester'
 modules:
     enabled:
         - 'Asserts'
-        - '\Sweetchuck\Robo\Git\Test\Helper\Unit'
+        - '\Sweetchuck\Robo\Git\Tests\Helper\Unit'
