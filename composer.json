@@ -20,7 +20,6 @@
     },
     "license": "GPL-2.0-or-later",
     "config": {
-        "bin-dir": "bin",
         "sort-packages": true,
         "optimize-autoloader": true,
         "allow-plugins": {
