@@ -393,7 +393,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface
                 $execStack = $this->taskExecStack();
 
                 $cmdPattern = '%s';
-                $cmdArgs = [escapeshellcmd('bin/phpcs')];
+                $cmdArgs = [escapeshellcmd("{$this->binDir}/phpcs")];
 
                 $cmdPattern .= ' --colors';
 
