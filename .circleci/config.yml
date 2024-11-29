@@ -33,6 +33,16 @@ executors:
                 name: 'main'
                 image: 'cimg/php:8.3'
 
+    php_plus2:
+        resource_class: 'small'
+        environment:
+            <<: *env_common
+            <<: *env_composer
+        docker:
+            -
+                name: 'main'
+                image: 'cimg/php:8.4'
+
 
 commands:
     upgrade_git:
@@ -51,7 +61,29 @@ commands:
             -
                 run:
                     name: 'Install PCOV PHP extension - pecl install pcov'
-                    command: 'sudo pecl install pcov'
+                    command: |
+                        phpVersionMajorMinor="$(php -r 'echo substr(\PHP_VERSION_ID, 0, 3);')"
+                        # PHP 8.4 and pcov aren't friends.
+                        if [[ "${phpVersionMajorMinor}" = '804' ]] ; then
+                            echo 'IGNORE pcov installation'
+                            sudo pecl install xdebug
+                            echo 'xdebug.mode=develop,coverage' | sudo tee --append /etc/php.d/xdebug.ini
+
+                            exit 0
+                        fi
+
+                        if php -m | grep pcov ; then
+                            exit 0
+                        fi
+
+                        sudo pecl install pcov
+                        if php -m | grep pcov ; then
+                            exit 0
+                        fi
+
+                        scanDir="$(php -i | grep --color=never --only-matching --perl-regexp '(?<=^Scan this dir for additional \.ini files => ).+')"
+                        echo 'extension=pcov' | sudo tee "${scanDir}/pcov.ini"
+                        php -m | grep pcov
 
     composer_install:
         description: 'Install Composer dependencies with cache restore and save'
@@ -160,3 +192,4 @@ workflows:
                             executor:
                                 - 'php_min'
                                 - 'php_plus1'
+                                - 'php_plus2'
