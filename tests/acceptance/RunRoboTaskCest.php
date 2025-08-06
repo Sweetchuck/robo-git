@@ -56,7 +56,7 @@ class RunRoboTaskCest extends CestBase
         $i->assertSame(0, $exitCode, 'Robo task exit code');
         $i->assertSame($expected, $actual, 'Robo task stdOutput');
         $i->assertRegExp(
-            "/\\n \[Git branch list\] cd 'local' && git branch --format '(.+?)'\\n/",
+            "/\\n \[Git branch list\] cd 'local' && git branch --format='(.+?)'\\n/",
             $stdError,
             'Robo task stdError'
         );

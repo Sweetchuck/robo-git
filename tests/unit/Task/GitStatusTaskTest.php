@@ -51,7 +51,7 @@ class GitStatusTaskTest extends TaskTestBase
                 ],
             ],
             'findRenames 1' => [
-                "git status --porcelain -z --find-renames '1'",
+                "git status --porcelain -z --find-renames='1'",
                 [
                     'findRenames' => 1,
                 ],
@@ -69,7 +69,7 @@ class GitStatusTaskTest extends TaskTestBase
                 ],
             ],
             'ignored traditional' => [
-                "git status --porcelain -z --ignored 'traditional'",
+                "git status --porcelain -z --ignored='traditional'",
                 [
                     'ignored' => 'traditional',
                 ],
@@ -87,7 +87,7 @@ class GitStatusTaskTest extends TaskTestBase
                 ],
             ],
             'untracked-files value' => [
-                "git status --porcelain -z --untracked-files 'value'",
+                "git status --porcelain -z --untracked-files='value'",
                 [
                     'untrackedFiles' => 'value',
                 ],
@@ -101,7 +101,7 @@ class GitStatusTaskTest extends TaskTestBase
                 ],
             ],
             'all-in-one' => [
-                "git status --porcelain -z --renames --find-renames '1' --ignored 'a' --untracked-files 'b' -- '*.yml'",
+                "git status --porcelain -z --renames --find-renames='1' --ignored='a' --untracked-files='b' -- '*.yml'",
                 [
                     'renames' => true,
                     'findRenames' => 1,

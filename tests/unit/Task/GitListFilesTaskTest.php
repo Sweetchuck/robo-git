@@ -138,13 +138,13 @@ class GitListFilesTaskTest extends TaskTestBase
                 ],
             ],
             'excludePattern' => [
-                "git ls-files --exclude 'foo-*.php'",
+                "git ls-files --exclude='foo-*.php'",
                 [
                     'excludePattern' => 'foo-*.php',
                 ],
             ],
             'excludeFile' => [
-                "git ls-files --exclude-file 'foo.txt'",
+                "git ls-files --exclude-file='foo.txt'",
                 [
                     'excludeFile' => 'foo.txt',
                 ],

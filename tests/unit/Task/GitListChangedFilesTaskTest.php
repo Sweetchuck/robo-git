@@ -62,7 +62,7 @@ class GitListChangedFilesTaskTest extends TaskTestBase
                 ],
             ],
             'diffFilter' => [
-                "$cmd --diff-filter 'AMd' 'master..i42'",
+                "$cmd --diff-filter='AMd' 'master..i42'",
                 [
                     'diffFilter' => ['A' => false, 'a' => true, 'm' => true, 'd' => false, 'C' => null],
                     'fromRevName' => 'master',
