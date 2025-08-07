@@ -191,7 +191,7 @@ abstract class BaseTask extends RoboBaseTask implements
                     if ($option['value'] !== null) {
                         $pattern = '--' . ($option['value'] === false ? 'no-' : '') . $optionName;
                         if ($option['value'] && $option['value'] !== true) {
-                            $pattern .= ' %s';
+                            $pattern .= '=%s';
                             $cmdOptionsArgs[] = escapeshellarg($option['value']);
                         }
                         $cmdOptionsPattern[] = $pattern;
@@ -203,7 +203,7 @@ abstract class BaseTask extends RoboBaseTask implements
                         if ($option['value'] === '') {
                             $cmdOptionsPattern[] = $optionName;
                         } else {
-                            $cmdOptionsPattern[] = "$optionName %s";
+                            $cmdOptionsPattern[] = "$optionName=%s";
                             $cmdOptionsArgs[] = escapeshellarg((string) $option['value']);
                         }
                     }
@@ -211,7 +211,7 @@ abstract class BaseTask extends RoboBaseTask implements
 
                 case 'value:required':
                     if ($option['value']) {
-                        $cmdOptionsPattern[] = "$optionName %s";
+                        $cmdOptionsPattern[] = "$optionName=%s";
                         $cmdOptionsArgs[] = escapeshellarg($option['value']);
                     }
                     break;
@@ -232,7 +232,7 @@ abstract class BaseTask extends RoboBaseTask implements
 
                 case 'state:value-required':
                     if ($option['value']) {
-                        $cmdOptionsPattern[] = '--' . ($option['state'] ? '' : 'no-') . "$optionName %s";
+                        $cmdOptionsPattern[] = '--' . ($option['state'] ? '' : 'no-') . "$optionName=%s";
                         $cmdOptionsArgs[] = escapeshellarg($option['value']);
                     }
                     break;
@@ -241,7 +241,7 @@ abstract class BaseTask extends RoboBaseTask implements
                     if ($option['state'] !== null) {
                         $pattern = '--' . ($option['state'] ? '' : 'no-') . $optionName;
                         if ($option['value']) {
-                            $pattern .= ' %s';
+                            $pattern .= '=%s';
                             $cmdOptionsArgs[] = escapeshellarg($option['value']);
                         }
                         $cmdOptionsPattern[] = $pattern;

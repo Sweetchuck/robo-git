@@ -44,7 +44,7 @@ class GitListStagedFilesTaskTest extends TaskTestBase
                 ],
             ],
             'diffFilter' => [
-                "$cmd --diff-filter 'AMd'",
+                "$cmd --diff-filter='AMd'",
                 [
                     'diffFilter' => ['A' => false, 'a' => true, 'm' => true, 'd' => false, 'C' => null],
                 ],

@@ -17,34 +17,34 @@ class GitBranchListTaskTest extends TaskTestBase
     {
         return [
             'basic' => [
-                "git branch --format 'none'",
+                "git branch --format='none'",
                 [
                     'format' => 'none',
                 ],
             ],
             'workingDirectory' => [
-                "cd 'foo' && git branch --format 'none'",
+                "cd 'foo' && git branch --format='none'",
                 [
                     'workingDirectory' => 'foo',
                     'format' => 'none',
                 ],
             ],
             'gitExecutable' => [
-                "my-git branch --format 'none'",
+                "my-git branch --format='none'",
                 [
                     'gitExecutable' => 'my-git',
                     'format' => 'none',
                 ],
             ],
             'merged true empty' => [
-                "git branch --format 'none' --merged",
+                "git branch --format='none' --merged",
                 [
                     'format' => 'none',
                     'mergedState' => true,
                 ],
             ],
             'merged true foo' => [
-                "git branch --format 'none' --merged 'foo'",
+                "git branch --format='none' --merged='foo'",
                 [
                     'format' => 'none',
                     'mergedState' => true,
@@ -52,14 +52,14 @@ class GitBranchListTaskTest extends TaskTestBase
                 ],
             ],
             'merged false empty' => [
-                "git branch --format 'none' --no-merged",
+                "git branch --format='none' --no-merged",
                 [
                     'format' => 'none',
                     'mergedState' => false,
                 ],
             ],
             'merged false foo' => [
-                "git branch --format 'none' --no-merged 'foo'",
+                "git branch --format='none' --no-merged='foo'",
                 [
                     'format' => 'none',
                     'mergedState' => false,
@@ -67,28 +67,28 @@ class GitBranchListTaskTest extends TaskTestBase
                 ],
             ],
             'sort' => [
-                "git branch --format 'none' --sort 'foo'",
+                "git branch --format='none' --sort='foo'",
                 [
                     'format' => 'none',
                     'sort' => 'foo',
                 ],
             ],
             'list vector' => [
-                "git branch --format 'none' --list 'a' 'b'",
+                "git branch --format='none' --list 'a' 'b'",
                 [
                     'format' => 'none',
                     'listPatterns' => ['a', 'b'],
                 ],
             ],
             'list assoc' => [
-                "git branch --format 'none' --list 'a' 'c'",
+                "git branch --format='none' --list 'a' 'c'",
                 [
                     'format' => 'none',
                     'listPatterns' => ['a' => true, 'b' => false, 'c' => true],
                 ],
             ],
             'contains true empty' => [
-                "git branch --contains --format 'none'",
+                "git branch --contains --format='none'",
                 [
                     'containsState' => true,
                     'containsValue' => '',
@@ -96,7 +96,7 @@ class GitBranchListTaskTest extends TaskTestBase
                 ],
             ],
             'contains false empty' => [
-                "git branch --no-contains --format 'none'",
+                "git branch --no-contains --format='none'",
                 [
                     'containsState' => false,
                     'containsValue' => '',
@@ -104,7 +104,7 @@ class GitBranchListTaskTest extends TaskTestBase
                 ],
             ],
             'contains true foo' => [
-                "git branch --contains 'foo' --format 'none'",
+                "git branch --contains='foo' --format='none'",
                 [
                     'containsState' => true,
                     'containsValue' => 'foo',
@@ -112,7 +112,7 @@ class GitBranchListTaskTest extends TaskTestBase
                 ],
             ],
             'contains false foo' => [
-                "git branch --no-contains 'foo' --format 'none'",
+                "git branch --no-contains='foo' --format='none'",
                 [
                     'containsState' => false,
                     'containsValue' => 'foo',
@@ -120,7 +120,7 @@ class GitBranchListTaskTest extends TaskTestBase
                 ],
             ],
             'pointsAt foo' => [
-                "git branch --format 'none' --points-at 'foo'",
+                "git branch --format='none' --points-at='foo'",
                 [
                     'format' => 'none',
                     'pointsAt' => 'foo',

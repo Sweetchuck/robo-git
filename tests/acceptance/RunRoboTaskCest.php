@@ -56,7 +56,7 @@ class RunRoboTaskCest extends CestBase
         $i->assertSame(0, $exitCode, 'Robo task exit code');
         $i->assertSame($expected, $actual, 'Robo task stdOutput');
         $i->assertRegExp(
-            "/\\n \[Git branch list\] cd 'local' && git branch --format '(.+?)'\\n/",
+            "/\\n \[Git branch list\] cd 'local' && git branch --format='(.+?)'\\n/",
             $stdError,
             'Robo task stdError'
         );
@@ -208,6 +208,61 @@ class RunRoboTaskCest extends CestBase
             file_get_contents("{$this->expectedDir}/commands.txt"),
             $stdOutput,
             'Robo task stdOutput'
+        );
+    }
+    // endregion
+
+    // region Task - GitStatusTask
+    public function statusBasic(AcceptanceTester $i): void
+    {
+        $roboTaskName = 'status:basic';
+        $id = $roboTaskName;
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
+
+        $exitCode = $i->getRoboTaskExitCode($id);
+        $stdOutput = $i->getRoboTaskStdOutput($id);
+        $stdError = $i->getRoboTaskStdError($id);
+
+        $expected = [
+            'a.txt' => ' D',
+            'b.txt' => 'MM',
+            'c.txt' => 'D ',
+            'u.txt' => '??',
+        ];
+        $actual = Yaml::parse($stdOutput);
+
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
+        $i->assertSame($expected, $actual, 'Robo task stdOutput');
+        $i->assertStringContainsString(
+            "\n [Git status] git status --porcelain -z\n",
+            $stdError,
+            'Robo task stdError'
+        );
+    }
+
+    public function statusUntrackedFilesNo(AcceptanceTester $i): void
+    {
+        $roboTaskName = 'status:untracked-files-no';
+        $id = $roboTaskName;
+        $i->runRoboTask($id, GitRoboFile::class, $roboTaskName);
+
+        $exitCode = $i->getRoboTaskExitCode($id);
+        $stdOutput = $i->getRoboTaskStdOutput($id);
+        $stdError = $i->getRoboTaskStdError($id);
+
+        $expected = [
+            'a.txt' => ' D',
+            'b.txt' => 'MM',
+            'c.txt' => 'D ',
+        ];
+        $actual = Yaml::parse($stdOutput);
+
+        $i->assertSame(0, $exitCode, 'Robo task exit code');
+        $i->assertSame($expected, $actual, 'Robo task stdOutput');
+        $i->assertStringContainsString(
+            "\n [Git status] git status --porcelain -z --untracked-files='no'\n",
+            $stdError,
+            'Robo task stdError'
         );
     }
     // endregion

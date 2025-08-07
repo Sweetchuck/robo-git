@@ -710,6 +710,124 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     }
     // endregion
 
+    // region Task - GitStatusTask
+    /**
+     * @command status:basic
+     */
+    public function statusBasic(): CollectionBuilder
+    {
+        return $this
+            ->statusPrepareGitRepo()
+            ->addTask($this->taskGitStatus())
+            ->addCode(function (RoboStateData $data): int {
+                $this
+                    ->output()
+                    ->writeln(Yaml::dump($data['git.status'], 99));
+
+                return 0;
+            });
+    }
+
+    /**
+     * @command status:untracked-files-no
+     */
+    public function statusUntrackedFilesNo(): CollectionBuilder
+    {
+        return $this
+            ->statusPrepareGitRepo()
+            ->addTask(
+                $this
+                    ->taskGitStatus()
+                    ->setUntrackedFiles('no')
+            )
+            ->addCode(function (RoboStateData $data): int {
+                $this
+                    ->output()
+                    ->writeln(Yaml::dump($data['git.status'], 99));
+
+                return 0;
+            });
+    }
+
+    protected function statusPrepareGitRepo(): CollectionBuilder
+    {
+        $cb = $this
+            ->collectionBuilder()
+            ->addTask(
+                $this
+                    ->taskTmpDir('robo-git.status.', $this->tmpDirBase)
+                    ->cwd(true)
+            )
+            ->addTask(
+                $this
+                    ->taskWriteToFile('a.txt')
+                    ->text("A\n")
+            )
+            ->addTask(
+                $this
+                    ->taskWriteToFile('b.txt')
+                    ->text("B\n")
+            )
+            ->addTask(
+                $this
+                    ->taskWriteToFile('c.txt')
+                    ->text("C\n")
+            )
+            ->addTask(
+                $this
+                    ->getTaskGitStackInitWorkingCopy()
+                    ->add('a.txt')
+                    ->add('b.txt')
+                    ->add('c.txt')
+                    ->commit('Initial commit')
+            );
+
+        // a.txt => ' D' (deleted in working tree, not staged)
+        $cb->addCode(function (): int {
+            @unlink('a.txt');
+            return 0;
+        });
+
+        // b.txt => 'MM' (modified in index and in working tree)
+        $cb
+            ->addTask(
+                $this
+                    ->taskWriteToFile('b.txt')
+                    ->append(true)
+                    ->text("Stage1\n")
+            )
+            ->addTask(
+                $this
+                    ->taskGitStack()
+                    ->printOutput(false)
+                    ->add('b.txt')
+            )
+            ->addTask(
+                $this
+                    ->taskWriteToFile('b.txt')
+                    ->append(true)
+                    ->text("Stage2\n")
+            );
+
+        // c.txt => 'D ' (staged deletion)
+        $cb->addTask(
+            $this
+                ->taskGitStack()
+                ->printOutput(false)
+                ->exec("rm -- 'c.txt'")
+        );
+
+        // Create an untracked file that should not appear in the status when --untracked-files=no is used.
+        $cb->addTask(
+            $this
+                ->taskWriteToFile('u.txt')
+                ->text("U\n")
+        );
+
+        return $cb;
+    }
+    // endregion
+
     // region Task - GitConfigGet
     /**
      * @command config-get:basic
