@@ -7,6 +7,7 @@ namespace Sweetchuck\Robo\Git\Tests\Helper\RoboFiles;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Common\OutputAdapter;
+use Robo\Contract\TaskInterface;
 use Robo\State\Data as RoboStateData;
 use Sweetchuck\Robo\Git\GitComboTaskLoader;
 use Sweetchuck\Robo\Git\GitTaskLoader;
@@ -44,7 +45,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
             'mergedValue' => '',
             'sort' => '',
         ]
-    ): CollectionBuilder {
+    ): TaskInterface {
         $taskOptions = array_intersect_key(
             $options,
             [
@@ -52,7 +53,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
                 'mergedStatus' => null,
                 'mergedValue' => '',
                 'sort' => '',
-            ]
+            ],
         );
 
         return $this
@@ -124,7 +125,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command clone-and-clean:success
      */
-    public function cloneAndCleanExistsSuccess(): CollectionBuilder
+    public function cloneAndCleanExistsSuccess(): TaskInterface
     {
         return $this
             ->collectionBuilder()
@@ -235,7 +236,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command current-branch:success
      */
-    public function currentBranchSuccess(string $branchName): CollectionBuilder
+    public function currentBranchSuccess(string $branchName): TaskInterface
     {
         return $this
             ->currentBranchPrepareGitRepo()
@@ -288,7 +289,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command list-files
      */
-    public function listFiles(): CollectionBuilder
+    public function listFiles(): TaskInterface
     {
         return $this
             ->listFilesPrepareGitRepo()
@@ -349,7 +350,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command list-staged-files
      */
-    public function listStagedFiles()
+    public function listStagedFiles(): TaskInterface
     {
         return $this
             ->listStagedFilesPrepareGitRepo()
@@ -374,7 +375,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command list-changed-files
      */
-    public function listChangedFiles($fromRevName = '', $toRevName = '')
+    public function listChangedFiles($fromRevName = '', $toRevName = ''): TaskInterface
     {
         $listChangedFilesTask = $this->taskGitListChangedFiles();
         if ($fromRevName) {
@@ -452,7 +453,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command num-of-commits-between:basic
      */
-    public function numOfCommitsBetweenBasic(string $fromRevName, string $toRevName): CollectionBuilder
+    public function numOfCommitsBetweenBasic(string $fromRevName, string $toRevName): TaskInterface
     {
         return $this
             ->numOfCommitsBetweenPrepareGitRepo()
@@ -529,7 +530,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command read-staged-files:with-content
      */
-    public function readStagedFilesWithContent()
+    public function readStagedFilesWithContent(): TaskInterface
     {
         return $this
             ->readStagedFilesPrepareGitRepo()
@@ -559,7 +560,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command read-staged-files:without-content
      */
-    public function readStagedFilesWithoutContent()
+    public function readStagedFilesWithoutContent(): TaskInterface
     {
         return  $this
             ->readStagedFilesPrepareGitRepo()
@@ -639,7 +640,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command tag-list:basic
      */
-    public function tagListBasic(): CollectionBuilder
+    public function tagListBasic(): TaskInterface
     {
         return $this
             ->tagListPrepareGitRepo()
@@ -714,7 +715,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command status:basic
      */
-    public function statusBasic(): CollectionBuilder
+    public function statusBasic(): TaskInterface
     {
         return $this
             ->statusPrepareGitRepo()
@@ -731,7 +732,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command status:untracked-files-no
      */
-    public function statusUntrackedFilesNo(): CollectionBuilder
+    public function statusUntrackedFilesNo(): TaskInterface
     {
         return $this
             ->statusPrepareGitRepo()
@@ -828,11 +829,67 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     }
     // endregion
 
+    // region Task - GitRemoteListTask
+    /**
+     * @command remote-list:empty
+     */
+    public function remoteListEmpty(): TaskInterface
+    {
+        return $this
+            ->collectionBuilder()
+            ->addTask(
+                $this
+                    ->taskTmpDir('robo-git.remote-list.empty.', $this->tmpDirBase)
+                    ->cwd(true)
+            )
+            ->addTask($this->getTaskGitStackInitWorkingCopy())
+            ->addTask(
+                $this
+                    ->taskGitRemoteList()
+                    ->setVisibleStdOutput(false)
+            )
+            ->addCode(function (RoboStateData $data) {
+                $this->output()->writeln(Yaml::dump(
+                    [
+                        'git.remotes' => $data['git.remotes'],
+                        'git.remotes.names' => $data['git.remotes.names'],
+                        'git.remotes.fetch' => $data['git.remotes.fetch'],
+                        'git.remotes.push' => $data['git.remotes.push'],
+                    ],
+                    99,
+                ));
+            });
+    }
+
+    /**
+     * @command remote-list:basic
+     */
+    public function remoteListBasic(): TaskInterface
+    {
+        return $this
+            ->branchListPrepareGitRepo()
+            ->addTask(
+                $this
+                    ->taskGitRemoteList()
+                    ->deferTaskConfiguration('setWorkingDirectory', 'localDir')
+                    ->setVisibleStdOutput(false)
+            )
+            ->addCode(function (RoboStateData $data) {
+                $this->output()->writeln(Yaml::dump([
+                    'git.remotes' => $data['git.remotes'],
+                    'git.remotes.names' => $data['git.remotes.names'],
+                    'git.remotes.fetch' => $data['git.remotes.fetch'],
+                    'git.remotes.push' => $data['git.remotes.push'],
+                ], 50));
+            });
+    }
+    // endregion
+
     // region Task - GitConfigGet
     /**
      * @command config-get:basic
      */
-    public function configGetBasic()
+    public function configGetBasic(): TaskInterface
     {
         return $this
             ->collectionBuilder()
@@ -867,7 +924,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command config-get:copy
      */
-    public function configGetCopy()
+    public function configGetCopy(): TaskInterface
     {
         $cb = $this->collectionBuilder();
         $cb
@@ -972,7 +1029,7 @@ class GitRoboFile extends BaseRoboFile implements LoggerAwareInterface
     /**
      * @command config-set:basic
      */
-    public function gitConfigSetBasic()
+    public function gitConfigSetBasic(): TaskInterface
     {
         return $this
             ->collectionBuilder()
