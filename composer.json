@@ -20,14 +20,16 @@
     },
     "license": "GPL-2.0-or-later",
     "config": {
-        "bin-dir": "bin",
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "sweetchuck/git-hooks": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.4",
         "consolidation/robo": "^2.0"
     },
     "require-dev": {
@@ -59,7 +61,7 @@
         "clear": [
             "@clear:composer"
         ],
-        "clear:composer": "rm -rf ./vendor/ ./bin/"
+        "clear:composer": "rm -rf ./vendor/"
     },
     "scripts-descriptions": {
         "clear": "Deletes all 3th-party codes",
