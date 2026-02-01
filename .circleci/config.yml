@@ -25,17 +25,6 @@ executors:
         docker:
             -
                 name: 'main'
-                image: 'circleci/php:7.3'
-
-    php_plus1:
-        environment:
-            <<: *env_common
-            <<: *env_xdebug
-            <<: *env_composer
-
-        docker:
-            -
-                name: 'main'
                 image: 'circleci/php:7.4'
 
 commands:
@@ -80,7 +69,8 @@ commands:
             -
                 run:
                     name: 'Run linters'
-                    command: 'bin/robo lint'
+                    command: |
+                        "$(composer config bin-dir)/robo" lint
 
     test:
         description: 'Run tests'
@@ -94,7 +84,8 @@ commands:
             -
                 run:
                     name: 'Codeception - unit'
-                    command: 'bin/robo test unit'
+                    command: |
+                        "$(composer config bin-dir)/robo" test unit
             -
                 codecov/upload:
                     flags: 'unit'
@@ -102,7 +93,8 @@ commands:
             -
                 run:
                     name: 'Codeception - acceptance'
-                    command: 'bin/robo test acceptance'
+                    command: |
+                        "$(composer config bin-dir)/robo" test acceptance
             -
                 codecov/upload:
                     flags: 'acceptance'
@@ -130,15 +122,7 @@ jobs:
         executor: 'php_min'
         working_directory: '~/repo'
         steps:
-            - 'upgrade_git'
-            - 'checkout'
-            - 'composer_install'
-            - 'test'
-    test_php_plus1:
-        executor: 'php_plus1'
-        working_directory: '~/repo'
-        steps:
-            - 'upgrade_git'
+            #- 'upgrade_git'
             - 'checkout'
             - 'composer_install'
             - 'test'
@@ -154,9 +138,5 @@ workflows:
                         - 'build'
             -
                 test_php_min:
-                    requires:
-                        - 'build'
-            -
-                test_php_plus1:
                     requires:
                         - 'build'
