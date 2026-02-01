@@ -198,11 +198,6 @@ class RoboFile extends Tasks implements LoggerAwareInterface
         return getenv($this->getEnvVarName('php_executable')) ?: PHP_BINARY;
     }
 
-    protected function getPhpdbgExecutable(): string
-    {
-        return getenv($this->getEnvVarName('phpdbg_executable')) ?: Path::join(PHP_BINDIR, 'phpdbg');
-    }
-
     /**
      * @return $this
      */
@@ -272,13 +267,8 @@ class RoboFile extends Tasks implements LoggerAwareInterface
         $logDir = $this->getLogDir();
 
         $cmdArgs = [];
-        if ($this->isPhpDbgAvailable()) {
-            $cmdPattern = '%s -qrr';
-            $cmdArgs[] = escapeshellcmd($this->getPhpdbgExecutable());
-        } else {
-            $cmdPattern = '%s';
-            $cmdArgs[] = escapeshellcmd($this->getPhpExecutable());
-        }
+        $cmdPattern = '%s';
+        $cmdArgs[] = escapeshellcmd($this->getPhpExecutable());
 
         $cmdPattern .= ' %s';
         $cmdArgs[] = escapeshellcmd("{$this->binDir}/codecept");
@@ -461,16 +451,6 @@ class RoboFile extends Tasks implements LoggerAwareInterface
         }
 
         return in_array($extension, explode("\n", $process->getOutput()));
-    }
-
-    protected function isPhpDbgAvailable(): bool
-    {
-        $command = [
-            escapeshellcmd($this->getPhpdbgExecutable()),
-            '-qrr',
-        ];
-
-        return (new Process($command))->run() === 0;
     }
 
     protected function getLogDir(): string

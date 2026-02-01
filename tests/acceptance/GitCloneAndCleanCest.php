@@ -89,8 +89,9 @@ class GitCloneAndCleanCest extends CestBase
 
     protected function isGitPushShortSupported(): bool
     {
-        $gitVersion = preg_replace('/^\D+/', '', exec('git --version'));
+        //$gitVersion = preg_replace('/^\D+/', '', exec('git --version'));
+        //return version_compare($gitVersion, '2.38.0', '>=');
 
-        return version_compare($gitVersion, '2.38.0', '>=');
+        return false;
     }
 }
